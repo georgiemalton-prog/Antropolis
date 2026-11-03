@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Colony health check</title>
+<style>
+  :root{--bg:#efe7d4;--panel:#fffaf0;--ink:#2b2216;--mute:#7b6f58;--line:#e2d6bb;--ok:#2e8b57;--bad:#c0392b;--accent:#b8651a}
+  @media (prefers-color-scheme:dark){:root{--bg:#150f08;--panel:#271c11;--ink:#f6ead6;--mute:#b8a587;--line:#3f2e1b;--ok:#6fcf8f;--bad:#ff7a6a;--accent:#f2ae45}}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,sans-serif}
+  main{max-width:640px;margin:0 auto;padding:16px}
+  h1{font-size:24px;margin:8px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:12px 0}
+  label{font-weight:600}
+  input{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:180px}
+  button{font:inherit;font-weight:700;padding:10px 18px;border:0;border-radius:12px;background:var(--accent);color:#fff;cursor:pointer}
+  button:disabled{opacity:.5}
+  ol{padding-left:0;list-style:none}
+  li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0}
+  li b{display:block}
+  li small{color:var(--mute)}
+  .ok b::before{content:"\2714  ";color:var(--ok)}
+  .bad b::before{content:"\2718  ";color:var(--bad)}
+  .run b::before{content:"\2026  ";color:var(--mute)}
+  #sum{font-weight:700}
+  #stage{position:absolute;left:-9999px;top:0;width:390px;height:780px}
+</style>
+</head>
+<body>
+<main>
+  <h1>The Colony health check</h1>
+  <p>This page plays your game at high speed, hidden in the background, and checks the important things still work.
+     It uses its own pretend storage, so it never touches your real saved colony.</p>
+  <div class="card">
+    <label for="file">Game file name</label><br>
+    <input id="file" value="index.html"> <button id="run">Run checks</button>
+    <p class="mute" style="margin:8px 0 0"><small>Put this page next to the game on your website (for example GitHub Pages) and press Run checks. It takes about a minute.</small></p>
+  </div>
+  <p id="sum"></p>
+  <ol id="out"></ol>
+</main>
+<div id="stage"></div>
+
+<script>
+/* ------------------------------------------------------------------
+   HOW THIS WORKS (plain English)
+   1. We download the game's HTML as text.
+   2. We slip a tiny script into the top of it that:
+        - replaces the clock, so we can jump time forward instantly,
+        - replaces the save storage with a pretend one,
+        - records any errors.
+   3. We load that copy of the game into a hidden frame and poke at it.
+   ------------------------------------------------------------------ */
+
+var OLD_SAVE = "{\"S\":{\"a\":0,\"tot\":50,\"cnt\":{\"nurse\":0,\"forager\":14,\"soldier\":10},\"up\":{\"dig\":1,\"warm\":1,\"leaf\":1,\"venom\":1,\"jelly\":1,\"sentry\":1,\"armor\":1,\"twin\":1,\"guard\":1},\"tier\":2,\"dg\":1,\"fd\":665.421826538549,\"st\":1,\"fed\":0,\"hp\":120,\"wv\":2,\"t\":1793712702049,\"seed\":2750377685,\"nb\":7,\"bg\":[1,1,1,1,1,1,1],\"w\":17,\"fo\":14,\"so\":10,\"sc\":6,\"sup\":0,\"wk\":9,\"ij\":[0,0,0,0,0,0,0],\"eg\":[],\"lay\":0.8748300000190099,\"kt\":5,\"it\":2.3335000000020942,\"hc\":1,\"cl\":[2,2,2,2,2,0,1],\"ql\":1,\"jl\":0,\"sp\":[{\"p\":0.9733639877129238,\"stock\":5.423290999999496,\"cap\":6,\"rg\":0.05,\"side\":1,\"ty\":1},{\"p\":0.7273103659998459,\"stock\":7.352464749999518,\"cap\":8,\"rg\":0.07500000000000001,\"side\":1,\"ty\":1},{\"p\":0.710843434928069,\"stock\":8,\"cap\":8,\"rg\":0.07500000000000001,\"side\":1,\"ty\":2},{\"p\":0.6014683453881688,\"stock\":5.7249274999990085,\"cap\":8,\"rg\":0.07500000000000001,\"side\":-1,\"ty\":0},{\"p\":0.5683611471280807,\"stock\":8,\"cap\":8,\"rg\":0.07500000000000001,\"side\":-1,\"ty\":2},{\"p\":0.13200538221459945,\"stock\":10,\"cap\":10,\"rg\":0.1,\"side\":1,\"ty\":1}],\"gl\":9,\"gt\":445,\"dep\":228,\"bro\":1,\"sv\":0,\"fr\":4.394836375311245,\"frf\":13.07948405558735,\"dr\":0.00837485109932553,\"wm\":1,\"ms\":4,\"sd\":{\"0\":1,\"3\":1},\"mh\":0.8600000000000004},\"P\":{\"lp\":0,\"ev\":0,\"pk\":{}},\"m\":false}";   // a real save made by an earlier version of the game
+// Stamp it as "saved just now", so offline progress does not change it while we check the upgrade.
+OLD_SAVE = (function (s) { var d = JSON.parse(s); d.S.t = Date.now(); return JSON.stringify(d); })(OLD_SAVE);
+
+var gameText = null;
+
+function injected(storeName) {
+  // This text is placed at the very top of the game, before its own code runs.
+  return '<script>(function(){' +
+    'var VT=0,base=Date.now(),q=[];' +
+    'performance.now=function(){return VT};Date.now=function(){return base+VT};' +
+    'window.requestAnimationFrame=function(cb){q.push(cb);return q.length};' +
+    'window.__step=function(n,ms){for(var i=0;i<n;i++){VT+=ms;var c=q;q=[];for(var j=0;j<c.length;j++)c[j](VT)}};' +
+    'var mem=window.parent.' + storeName + ';' +
+    'var ls={getItem:function(k){return Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null},setItem:function(k,v){mem[k]=String(v)},removeItem:function(k){delete mem[k]},clear:function(){for(var k in mem)delete mem[k]}};' +
+    'try{Object.defineProperty(window,"localStorage",{value:ls,configurable:true})}catch(e){}' +
+    'window.__safeStore=(window.localStorage===ls);' +
+    'window.__errors=[];window.addEventListener("error",function(e){__errors.push(String(e.message))});' +
+    '})()<\/script>';
+}
+
+// Load a fresh copy of the game with the given pretend storage. Resolves with the game's window.
+function loadGame(store) {
+  return new Promise(function (resolve, reject) {
+    window.__mem = store;
+    var stage = document.getElementById('stage');
+    stage.innerHTML = '';
+    var f = document.createElement('iframe');
+    f.style.cssText = 'width:390px;height:780px;border:0';
+    var html = gameText.replace(/<head>/i, '<head>' + injected('__mem'));
+    f.onload = function () {
+      var w = f.contentWindow;
+      setTimeout(function () {
+        if (!w.__safeStore) return reject(new Error('Could not protect your real save, so the checks were stopped.'));
+        w.go('col');          // the Colony tab draws nothing, so fast-forwarding is quick
+        resolve(w);
+      }, 50);
+    };
+    f.srcdoc = html;
+    stage.appendChild(f);
+  });
+}
+
+function newStore(extra) {
+  var s = { thecolony_intro: '1', thecolony_tab: 'nest', thecolony_music: '0' };
+  for (var k in (extra || {})) s[k] = extra[k];
+  return s;
+}
+
+// A simple "player": taps the queen sometimes and buys things when it can.
+function bot(w) {
+  if (w.dead) return;
+  if (Math.random() < 0.5) { w.S.layTimer = Math.max(0, w.S.layTimer - Math.min(2, w.layGap() * 0.05)); w.S.queenTaps = (w.S.queenTaps || 0) + 1; }
+  try { w.dig(); } catch (e) {}
+  for (var i = 0; i < 7; i++) { try { w.upgClass(i); } catch (e) {} }
+  try { w.buildHill(); } catch (e) {}
+}
+
+// Play the game forward. One "second" here is 30 frames of 1/30 s.
+function play(w, seconds, withBot, everySecond) {
+  for (var s = 0; s < seconds; s++) {
+    w.__step(30, 1000 / 30);
+    if (withBot) bot(w);
+    if (everySecond) everySecond(s + 1);
+  }
+}
+
+function noErrors(w) {
+  if (w.__errors.length) throw new Error('Game error: ' + w.__errors[0]);
+}
+
+function expect(ok, msg) { if (!ok) throw new Error(msg); }
+
+/* ------------------------------------------------------------------
+   THE CHECKS
+   Each check gets a fresh game and either finishes quietly (pass)
+   or throws an error with a plain-English reason (fail).
+   ------------------------------------------------------------------ */
+var CHECKS = [
+
+  ['The game loads without errors', async function () {
+    var w = await loadGame(newStore());
+    play(w, 3);
+    noErrors(w);
+    return 'Loaded and ran for 3 seconds.';
+  }],
+
+  ['A new colony starts correctly', async function () {
+    var w = await loadGame(newStore());
+    play(w, 1);
+    var S = w.S;
+    expect(S.tier === 0, 'New colony should start in the first nest.');
+    expect(w.popn() >= 5 && w.popn() <= 8, 'New colony should have a handful of ants, found ' + w.popn() + '.');
+    expect(S.workers >= 1, 'New colony should have a worker.');
+    expect(S.queenHp > 0, 'The queen should be alive.');
+    return w.popn() + ' ants, ' + Math.round(S.food) + ' food.';
+  }],
+
+  ['The first ten minutes hit their milestones', async function () {
+    var w = await loadGame(newStore());
+    var seen = {};
+    play(w, 600, true, function (s) {
+      var S = w.S;
+      if (!seen.spot && S.foodSpots.length) seen.spot = s;
+      if (!seen.food && (S.deliveries || 0) > 0) seen.food = s;
+      if (!seen.ten && w.popn() >= 10) seen.ten = s;
+      if (!seen.nest && S.tier >= 1) seen.nest = s;
+      if (!seen.side && S.sideTunnels > 0 && S.sideDug[0] >= 1) seen.side = s;
+    });
+    noErrors(w);
+    expect(seen.spot && seen.spot <= 150, 'Workers should find a food spot within 2.5 minutes.');
+    expect(seen.food && seen.food <= 180, 'Foragers should bring food home within 3 minutes.');
+    expect(seen.ten && seen.ten <= 240, 'The colony should reach 10 ants within 4 minutes.');
+    expect(seen.nest && seen.nest <= 240, 'The first nest upgrade should be possible within 4 minutes.');
+    expect(seen.side && seen.side <= 420, 'A side tunnel should be finished within 7 minutes.');
+    expect(w.S.queenHp > 0 && !w.dead, 'The colony should still be alive.');
+    function m(s) { return (s / 60).toFixed(1) + ' min'; }
+    return 'Food spot ' + m(seen.spot) + ', first delivery ' + m(seen.food) + ', 10 ants ' + m(seen.ten) + ', nest upgrade ' + m(seen.nest) + ', side tunnel ' + m(seen.side) + '.';
+  }],
+
+  ['Saving and loading keeps the colony', async function () {
+    var store = newStore();
+    var w = await loadGame(store);
+    play(w, 240, true);
+    w.save();
+    var before = { pop: w.popn(), tier: w.S.tier, food: Math.round(w.S.food), tunnels: w.S.sideTunnels };
+    var w2 = await loadGame(store);
+    var after = { pop: w2.popn(), tier: w2.S.tier, food: Math.round(w2.S.food), tunnels: w2.S.sideTunnels };   // read straight after loading
+    play(w2, 2);
+    noErrors(w2);
+    expect(after.pop === before.pop, 'Ant count changed from ' + before.pop + ' to ' + after.pop + '.');
+    expect(after.tier === before.tier, 'Nest stage changed.');
+    expect(after.tunnels === before.tunnels, 'Side tunnels changed.');
+    expect(Math.abs(after.food - before.food) <= 5, 'Food changed from ' + before.food + ' to ' + after.food + '.');
+    return before.pop + ' ants, nest stage ' + before.tier + ', ' + before.food + ' food: all kept.';
+  }],
+
+  ['A save from an older version still loads', async function () {
+    var w = await loadGame(newStore({ thecolony2: OLD_SAVE }));
+    var old = JSON.parse(OLD_SAVE).S;
+    var loaded = { tier: w.S.tier, pop: w.popn(), tunnels: w.S.sideTunnels, food: w.S.food, levels: JSON.stringify(w.S.classLevel) };
+    play(w, 2);
+    noErrors(w);
+    var oldPop = old.w + old.fo + old.so + old.sc + old.sup + old.wk;
+    expect(loaded.tier === old.tier, 'Nest stage was lost (' + old.tier + ' became ' + loaded.tier + ').');
+    expect(loaded.pop === oldPop, 'Ants were lost (' + oldPop + ' became ' + loaded.pop + ').');
+    expect(loaded.tunnels === old.nb, 'Side tunnels were lost.');
+    expect(Math.abs(loaded.food - old.fd) < 1, 'Food was lost (' + Math.round(old.fd) + ' became ' + Math.round(loaded.food) + ').');
+    expect(loaded.levels === JSON.stringify(old.cl), 'Upgrade levels were lost.');
+    return 'Old save loaded exactly: nest stage ' + loaded.tier + ', ' + loaded.pop + ' ants, ' + loaded.tunnels + ' side tunnels, ' + Math.round(loaded.food) + ' food.';
+  }],
+
+  ['A backup code can be copied and loaded back', async function () {
+    var w = await loadGame(newStore());
+    play(w, 240, true);
+    var code = w.saveCode(), before = { pop: w.popn(), tier: w.S.tier, hatched: w.S.totalHatched };
+    var store = newStore(), w2 = await loadGame(store);
+    var d = w2.decodeSave(code);
+    expect(d && d.S.totalHatched === before.hatched, 'The save code could not be read back.');
+    w2.tryLoadSave(code);          // first tap asks to confirm
+    expect(!w2.loadingBackup, 'Loading should ask for confirmation first.');
+    w2.tryLoadSave(code);          // second tap loads it
+    expect(w2.loadingBackup, 'The backup did not load after confirming.');
+    var w3 = await loadGame(store);
+    var popAfter = w3.popn(), tierAfter = w3.S.tier;     // read straight after loading
+    play(w3, 1);
+    noErrors(w3);
+    expect(popAfter === before.pop && tierAfter === before.tier, 'The loaded colony does not match the backup.');
+    expect(w2.decodeSave('not a save') === null, 'Rubbish text should be rejected.');
+    return 'Code of ' + code.length + ' characters restored ' + before.pop + ' ants.';
+  }],
+
+  ['A damaged save is rescued from the backup', async function () {
+    var w = await loadGame(newStore({ thecolony2: '{"v":3,"S":{broken', thecolony2_backup: OLD_SAVE }));
+    play(w, 2);
+    noErrors(w);
+    expect(w.popn() >= 50 && w.S.tier === 2, 'The backup was not restored (found ' + w.popn() + ' ants).');
+    return 'Damaged save replaced by the backup: ' + w.popn() + ' ants.';
+  }],
+
+  ['Battery saver draws less but keeps game time the same', async function () {
+    async function run(on) {
+      var w = await loadGame(newStore({ thecolony_battery: on ? '1' : '0' }));
+      w.go('nest');
+      var draws = 0, orig = w.drawT;
+      w.drawT = function (n) { draws++; orig(n); };
+      w.S.layTimer = 100;
+      w.__step(600, 1000 / 60);            // ten seconds at 60 frames a second
+      noErrors(w);
+      return { draws: draws, timer: w.S.layTimer };
+    }
+    var off = await run(false), on = await run(true);
+    expect(Math.abs(off.timer - on.timer) < 0.5, 'Game time ran at a different speed (' + off.timer.toFixed(1) + ' vs ' + on.timer.toFixed(1) + ').');
+    expect(on.draws < off.draws * 0.65, 'Battery saver did not reduce drawing (' + off.draws + ' vs ' + on.draws + ' frames).');
+    return 'Ten seconds: ' + off.draws + ' frames drawn normally, ' + on.draws + ' with battery saver; game time identical.';
+  }],
+
+  ['Offline progress works', async function () {
+    var w = await loadGame(newStore());
+    play(w, 360, true);
+    var before = { pop: w.popn(), food: w.S.food };
+    w.S.savedAt = w.Date.now() - 20 * 60 * 1000;    // pretend we left 20 minutes ago
+    w.resumeFromAway();
+    noErrors(w);
+    var shown = w.document.getElementById('away') && w.document.getElementById('away').classList.contains('on');
+    expect(shown, 'The "While you were away" summary did not appear.');
+    expect(w.popn() > before.pop, 'No new ants were raised while away.');
+    return 'After 20 minutes away: ' + before.pop + ' to ' + w.popn() + ' ants.';
+  }],
+
+  ['Ants move smoothly and stay in the tunnels', async function () {
+    var w = await loadGame(newStore());
+    play(w, 420, true);
+    w.go('tun');
+    var jumps = 0, outside = 0, frames = 0, nan = 0;
+    var prev = new Map(), who = {};
+    function inside(x, y) {          // is this point in a dug tunnel, chamber or the nest?
+      if (y < 26) return true;
+      var tw = w.tunW() / 2 + 3, i, k, c = w.cav();
+      if (((x - c.x) / (c.rx + 2)) ** 2 + ((y - c.y) / (c.ry + 2)) ** 2 <= 1) return true;
+      function seg(ax, ay, bx, by) { var dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy, t = L ? Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L)) : 0; return Math.hypot(x - ax - dx * t, y - ay - dy * t); }
+      for (i = 1; i < w.PT.length; i++) if (seg(w.PT[i - 1][0], w.PT[i - 1][1], w.PT[i][0], w.PT[i][1]) <= tw) return true;
+      if (w.S.dug >= 1 && Math.abs(x - w.PT[0][0]) < 5) return true;
+      for (k = 0; k < w.S.sideTunnels; k++) { var q = w.BP[k]; if (!q) continue; for (i = 1; i < q.PT.length; i++) if (seg(q.PT[i - 1][0], q.PT[i - 1][1], q.PT[i][0], q.PT[i][1]) <= tw) return true;
+        var en = q.PT[q.PT.length - 1]; if (((x - en[0]) / 14) ** 2 + ((y - en[1]) / 10) ** 2 <= 1) return true; }
+      for (i = 0; i < w.S.tier && i < 4; i++) { var p = w.PT[w.CI[i]], cx = p[0] + (i % 2 ? -34 : 34); if (((x - cx) / 28) ** 2 + ((y - p[1]) / 18) ** 2 <= 1 || (Math.abs(y - p[1]) < 6 && x >= Math.min(p[0], cx) && x <= Math.max(p[0], cx))) return true; }
+      var ip = w.infPos(); if (((x - ip.x) / 48) ** 2 + ((y - ip.y) / 19) ** 2 <= 1) return true;
+      return false;
+    }
+    for (var f = 0; f < 600; f++) {
+      w.__step(1, 1000 / 30);
+      w.marchers.concat(w.crewA).forEach(function (a) {
+        if (a.wx == null) return;
+        if (!isFinite(a.wx) || !isFinite(a.wy)) nan++;
+        var p = prev.get(a);
+        if (p && (a.al == null || a.al > 0.5) && Math.hypot(a.wx - p[0], a.wy - p[1]) > 10) jumps++;
+        prev.set(a, (a.al == null || a.al > 0.5) ? [a.wx, a.wy] : null);
+        frames++;
+        if (!inside(a.wx, a.wy)) {
+          outside++;
+          var tag = a.k == null ? 'worker ' + a.st : ['nurse', 'forager', 'soldier', 'scout', 'super major'][a.k] + (a.inj ? ' injured' : a.kp ? ' chamber keeper' : a.sf ? ' on the surface' : a.ex ? ' exploring' : a.xf ? ' changing tunnel' : '');
+          who[tag] = (who[tag] || 0) + 1;
+        }
+      });
+    }
+    noErrors(w);
+    expect(nan === 0, nan + ' ant positions were broken (not a number).');
+    expect(jumps === 0, 'Ants teleported ' + jumps + ' times.');
+    var worst = Object.keys(who).sort(function (a, b) { return who[b] - who[a]; }).slice(0, 3).map(function (k) { return k + ' (' + who[k] + ')'; }).join(', ');
+    expect(outside / frames < 0.02, 'Ants were inside solid dirt ' + (100 * outside / frames).toFixed(1) + '% of the time. Mostly: ' + worst + '.');
+    return 'Watched ' + frames + ' ant-frames: no jumps, ' + (100 * outside / frames).toFixed(2) + '% outside tunnels' + (worst ? ' (' + worst + ')' : '') + '.';
+  }],
+  ['Orders and buildings work and are saved', async function () {
+    var store = newStore();
+    var w = await loadGame(store);
+    play(w, 240, true);
+    w.S.food = 5000;
+    w.setOrd('fg', 3); w.setOrd('gd', 75); w.setOrd('wk', 2); w.setOrd('nu', 25);
+    var cap0 = w.foodCap();
+    w.startBuild(0);
+    expect(w.S.proj, 'The Food store project did not start.');
+    w.S.proj.left = 0.2;
+    play(w, 3);
+    expect(w.S.bld.store === 1, 'The Food store was not built.');
+    expect(w.foodCap() > cap0, 'The Food store did not raise the food limit.');
+    w.save();
+    var w2 = await loadGame(store);
+    noErrors(w2);
+    expect(w2.S.orders.fg === 3 && w2.S.orders.gd === 75 && w2.S.orders.wk === 2 && w2.S.orders.nu === 25, 'Orders were not kept after loading.');
+    expect(w2.S.bld.store === 1, 'The building was not kept after loading.');
+    return 'Orders and a Food store (limit ' + cap0 + ' to ' + w.foodCap() + ') survive saving and loading.';
+  }],
+  ['Threats and boss warnings run without trouble', async function () {
+    var w = await loadGame(newStore());
+    play(w, 600, true);
+    w.S.food = 3000;
+    w.S.mites = 0.9;
+    play(w, 60);
+    w.S.wave = 9;
+    play(w, 120);
+    noErrors(w);
+    expect(!isNaN(w.S.food) && w.S.food >= 0, 'Food became broken.');
+    expect(!isNaN(w.S.queenHp), 'Queen health became broken.');
+    return 'Mites, a boss warning and two minutes of play ran with no errors.';
+  }],
+  ['The underground has soil, springs and finds', async function () {
+    var w = await loadGame(newStore());
+    var f = w.feat();
+    expect(f.bands.length === 5 && f.bands[4].t === 0, 'The deepest soil layer should be easy loam so the opening pace stays the same.');
+    var rocks = f.bands.filter(function (b) { return b.t === 3; }).length;
+    expect(rocks <= 1, 'Too many rock layers (' + rocks + ').');
+    var a = w.feat().springs.length;
+    expect(a >= 2, 'The map has no springs.');
+    play(w, 300, true);
+    w.S.tier = 3; w.S.dug = 1; w.S.sideTunnels = 2; w.S.sideDug = [1, 1];
+    play(w, 5);
+    noErrors(w);
+    var found = Object.keys(w.S.rare).length;
+    expect(found >= 3, 'Digging all the way up should uncover several finds, but only ' + found + ' were found.');
+    var m = w.soilMul(100);
+    expect(m > .4 && m < 1.5, 'Soil speed is out of range.');
+    return a + ' springs, soil layers, and ' + found + ' finds uncovered.';
+  }]
+];
+
+async function runAll() {
+  var btn = document.getElementById('run'), out = document.getElementById('out'), sum = document.getElementById('sum');
+  btn.disabled = true; out.innerHTML = ''; sum.textContent = 'Loading the game...';
+  try {
+    var r = await fetch(document.getElementById('file').value, { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    gameText = await r.text();
+  } catch (e) {
+    sum.textContent = 'Could not load the game file. Check the name, and open this page from your website rather than from your computer\'s files.';
+    btn.disabled = false; return;
+  }
+  var passed = 0;
+  for (var i = 0; i < CHECKS.length; i++) {
+    var li = document.createElement('li'); li.className = 'run';
+    li.innerHTML = '<b></b><small>Running...</small>';
+    li.querySelector('b').textContent = CHECKS[i][0];
+    out.appendChild(li);
+    sum.textContent = 'Running check ' + (i + 1) + ' of ' + CHECKS.length + '...';
+    await new Promise(function (r) { setTimeout(r, 30); });
+    try {
+      var note = await CHECKS[i][1]();
+      li.className = 'ok'; li.querySelector('small').textContent = note || 'Passed.'; passed++;
+    } catch (e) {
+      li.className = 'bad'; li.querySelector('small').textContent = e.message;
+    }
+  }
+  sum.textContent = passed === CHECKS.length ? 'All ' + passed + ' checks passed.' : (CHECKS.length - passed) + ' of ' + CHECKS.length + ' checks failed.';
+  window.__done = { passed: passed, total: CHECKS.length };
+  btn.disabled = false;
+}
+
+document.getElementById('run').onclick = runAll;
+</script>
+</body>
+</html>
