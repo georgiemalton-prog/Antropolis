@@ -1,0 +1,7 @@
+{
+  "appId": "com.antropolis.game",
+  "appName": "Antropolis",
+  "webDir": "www",
+  "backgroundColor": "#0b0603",
+  "android": { "allowMixedContent": false }
+}
