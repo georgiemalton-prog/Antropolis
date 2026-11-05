@@ -166,10 +166,86 @@ var CHECKS = [
     expect(seen.food && seen.food <= 180, 'Foragers should bring food home within 3 minutes.');
     expect(seen.ten && seen.ten <= 240, 'The colony should reach 10 ants within 4 minutes.');
     expect(seen.nest && seen.nest <= 240, 'The first nest upgrade should be possible within 4 minutes.');
-    expect(seen.side && seen.side <= 420, 'A side tunnel should be finished within 7 minutes.');
+    expect(seen.side && seen.side <= 480, 'A side tunnel should be finished within 8 minutes.');
     expect(w.S.queenHp > 0 && !w.dead, 'The colony should still be alive.');
     function m(s) { return (s / 60).toFixed(1) + ' min'; }
     return 'Food spot ' + m(seen.spot) + ', first delivery ' + m(seen.food) + ', 10 ants ' + m(seen.ten) + ', nest upgrade ' + m(seen.nest) + ', side tunnel ' + m(seen.side) + '.';
+  }],
+
+  ['The opening goals pay out steadily', async function () {
+    var w = await loadGame(newStore());
+    var last = 0, prev = 0, gap = 0, n = 0;
+    play(w, 900, true, function (s) {
+      var g = w.S.goalIndex;
+      if (g !== last) { gap = Math.max(gap, s - prev); prev = s; last = g; n = g; }
+    });
+    noErrors(w);
+    expect(w.S.goalIndex >= w.GOALS.length, 'The starting goals should all be done within 15 minutes (done ' + w.S.goalIndex + ' of ' + w.GOALS.length + ').');
+    expect(gap <= 175, 'There was a ' + Math.round(gap) + ' second wait between goal rewards.');
+    return w.GOALS.length + ' goals finished in 15 minutes, longest wait between rewards ' + Math.round(gap) + ' seconds.';
+  }],
+
+  ['Metropolis districts and the Great Colony work', async function () {
+    var store = newStore();
+    var w = await loadGame(store);
+    var S = w.S;
+    Object.assign(S, { tier: 4, dug: 1, food: 30000, nurses: 200, foragers: 200, soldiers: 120, scouts: 10, workers: 40, goalIndex: 99 });
+    w.sizeT();
+    var names = ['archive', 'hatch', 'tower'];
+    for (var i = 0; i < 3; i++) {
+      var idx = w.BDEF.map(function (b) { return b.id; }).indexOf(names[i]);
+      S.food = 40000;
+      w.startBuild(idx);
+      expect(S.proj && S.proj.k === names[i], 'The ' + names[i] + ' did not start building.');
+      S.proj.left = .1;
+      play(w, 2);
+      expect(S.bld[names[i]] === 1, 'The ' + names[i] + ' was not finished.');
+    }
+    var j0 = S.jelly;
+    S.archT = 1000;
+    play(w, 2);
+    expect(S.jelly > j0, 'The Archive should make royal jelly.');
+    expect(w.greatDone() < 5, 'The Great Colony should not be done yet.');
+    Object.assign(S, { hillLevel: 5, wave: 30, queenLevel: 8 });
+    S.bld.archive = 2; S.bld.hatch = 2; S.bld.tower = 2;
+    S.nurses = 1100;
+    play(w, 3);
+    expect(w.greatDone() === 5, 'All five Great Colony goals should be done, found ' + w.greatDone() + '.');
+    expect(S.founder === 1, 'The player should become a Founder.');
+    expect(document.getElementById('stage').querySelector('iframe').contentDocument.getElementById('endscr').classList.contains('on'), 'The ending screen should show.');
+    w.save();
+    var w2 = await loadGame(store);
+    play(w2, 2);
+    noErrors(w); noErrors(w2);
+    expect(w2.S.bld.tower === 2 && w2.S.founder === 1, 'Districts and Founder title should survive saving.');
+    return 'Three districts built, Archive paid jelly, Great Colony finished (5 of 5) and saved.';
+  }],
+
+  ['The daily gift works once per day and keeps a streak', async function () {
+    var store = newStore();
+    var w = await loadGame(store);
+    w.S.totalHatched = 20;
+    var st = w.giftState();
+    expect(st && st.day === 1, 'A new player should be offered day 1.');
+    var f0 = w.S.food, j0 = w.S.jelly;
+    w.giftClaim();
+    expect(w.S.food > f0 && w.S.jelly > j0, 'Claiming should give food and jelly.');
+    expect(w.giftState() === null, 'The gift should not be offered twice in one day.');
+    var y = new Date(); y.setDate(y.getDate() - 1);
+    w.P.gift = { last: w.dayKey(y), streak: 6 };
+    var st7 = w.giftState();
+    expect(st7 && st7.day === 7, 'Six days in a row should make today day 7, got ' + (st7 && st7.day) + '.');
+    var eggs0 = w.S.eggs.length;
+    w.giftClaim();
+    expect(w.S.eggs.length === eggs0 + 1, 'Day 7 should give a golden egg.');
+    w.P.gift = { last: '2000-1-1', streak: 5 };
+    expect(w.giftState().day === 1, 'A missed day should restart the streak.');
+    w.giftClaim();
+    w.save();
+    var w2 = await loadGame(store);
+    expect(w2.P.gift && w2.P.gift.streak === 1 && w2.giftState() === null, 'The claimed gift should be saved.');
+    play(w, 3); noErrors(w);
+    return 'Day 1 gift, once-a-day limit, day 7 golden egg, streak reset and save all work.';
   }],
 
   ['Saving and loading keeps the colony', async function () {

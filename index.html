@@ -22,7 +22,7 @@ h2{display:flex;align-items:center;gap:12px;font-size:26px;font-weight:400;lette
 h2{color:var(--accent2)}
 h2::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--accent),transparent)}
 .brand{display:flex;justify-content:center;margin:0 0 6px}.brand img{height:62px;width:auto;margin:-4px 0 -6px;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse 62% 74% at 50% 50%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 62% 74% at 50% 50%,#000 52%,transparent 100%);filter:drop-shadow(0 0 14px rgba(232,110,40,.35))}
-.top{display:flex;justify-content:space-between;gap:5px;margin:0 0 8px}
+.top{display:flex;justify-content:flex-end;gap:5px;margin:0 0 8px}#setb{flex:0 0 auto!important;padding:7px 18px!important;font-size:13px!important}#setquick .link{flex:1;white-space:nowrap}
 .big{font-size:40px;font-weight:600;line-height:1;letter-spacing:.01em}
 .mute{color:var(--mute)}
 .scene{position:relative;border-radius:26px;overflow:hidden;background:#2a1d13;touch-action:manipulation;box-shadow:0 18px 40px -16px rgba(0,0,0,.8),0 0 0 1px var(--accent),0 0 22px -6px rgba(232,110,40,.45)}
@@ -51,10 +51,12 @@ canvas.zin{animation:zin 1.1s ease-out}
 .card:focus-visible,.nav button:focus-visible,.link:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:496px;margin:0 auto;display:flex;gap:4px;padding:6px;background:var(--glass);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);border:1px solid var(--line);border-radius:28px;box-shadow:0 16px 34px -10px rgba(0,0,0,.5);z-index:6}
 .nav button{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0 7px;border:0;border-radius:22px;background:transparent;color:var(--mute);font:700 12px var(--ff);cursor:pointer;transition:background .25s,color .25s,transform .15s,box-shadow .25s}
-.nav button span{font-size:21px;line-height:1.15;transition:transform .25s}
+.nav button span{font-size:21px;line-height:1.15;transition:transform .25s;display:block}.nav button span svg{width:31px;height:31px;display:block}
 .nav button.on{background:linear-gradient(180deg,var(--accent2),var(--accent));color:var(--aink);box-shadow:0 8px 18px -8px var(--accent)}
 .nav button.on span{transform:translateY(-1px) scale(1.12)}
 .nav button:active{transform:scale(.95)}
+.nav button.nudge span{animation:nud 1.3s ease-in-out infinite}.nav button.nudge{box-shadow:inset 0 0 0 2px var(--accent)}@keyframes nud{50%{transform:translateY(-4px) scale(1.18)}}
+.gh2{margin:2px 0 0 22px;font-size:12.5px;color:var(--mute)}
 .toast{position:fixed;left:14px;right:14px;bottom:calc(92px + env(safe-area-inset-bottom,0px));max-width:492px;margin:auto;background:rgba(36,24,12,.94);color:#fbeed8;border:1px solid var(--accent);padding:11px 16px;border-radius:18px;box-shadow:0 12px 28px -8px rgba(0,0,0,.6);opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;pointer-events:none;text-align:center;font-weight:600;z-index:7}
 .toast.on{opacity:1;transform:none}
 .over{position:fixed;inset:0;background:radial-gradient(ellipse at center,rgba(60,15,10,.88),rgba(8,4,2,.96));display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;color:#f3e6d2;z-index:20}
@@ -62,6 +64,13 @@ canvas.zin{animation:zin 1.1s ease-out}
 .link{background:none;border:0;color:var(--mute);font:600 13px var(--ff);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:10px 0;margin-top:16px}
 .top .link{flex:1;white-space:nowrap;text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:6px 4px;font-size:12px;margin:0;background:rgba(26,17,10,.45)}
 .hud{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;z-index:2}.hchip{background:rgba(30,20,10,.58);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff4df;border-radius:16px;padding:6px 13px;box-shadow:0 4px 14px -6px rgba(0,0,0,.6)}.hchip.r{text-align:right}.hchip b{font:400 30px/1 var(--fh);letter-spacing:.03em;color:#fff4df}.hchip small{display:block;font:600 11px var(--ff);opacity:.82;margin-top:2px}.hchip small b{font:700 11px var(--ff)}
+/* Tunnel tab: the map gets the room. Header and goal card hide, and the ant count shrinks to a tiny chip top right. */
+body.tt .brand,body.tt .top,body.tt .tpw,body.tt #goals,body.tt #goal,body.tt .hchip.r{display:none}
+body.tt main{padding-top:10px}
+body.tt .hud{justify-content:flex-end;top:8px;right:8px}
+body.tt .hchip{display:flex;align-items:baseline;gap:5px;padding:3px 9px;border-radius:12px}
+body.tt .hchip b{font-size:15px;letter-spacing:.02em}
+body.tt .hchip small{margin:0;font-size:10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:600}
 .chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
@@ -109,10 +118,10 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #title .sub{font:400 18px var(--fh);letter-spacing:.2em;color:#9a6b3a;background:none;border:0;cursor:pointer;padding:6px}
 #title .sub:hover{color:#f5b23c}
 </style></head>
-<body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><p class="tag">Dig. Breed. Defend.</p><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button></div><main>
+<body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
-<div class="top"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button> <button class="link" id="setb">Settings</button></div>
-<div class="row" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
+<div class="top"><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
+<div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
 <div id="goals"></div><p id="goal" class="gline"></p>
 <div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food · <b id="jel">0</b> jelly</small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas></div>
 
@@ -127,6 +136,7 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 <div class="pn" id="p-col">
  <h2>Dig deeper</h2><div id="tier"></div>
  <h2>Chambers</h2><p class="mute" id="rooms" style="margin:0 0 4px"></p><h2>The Anthill</h2><p class="mute" id="hilltx" style="margin:0 0 6px"></p><button class="card dig" id="hillbtn" style="margin:0 0 10px">Build</button><h2>Your ants and queen</h2><p class="mute" style="margin:0 0 4px">Tap a card to level it up with royal jelly. Jelly comes from cleared waves, bosses, scout finds, milestones and golden eggs.</p><div id="bl"></div>
+ <h2>The Great Colony</h2><div id="great"></div>
  <h2>Colony orders</h2><div id="orders"></div><p class="mute" id="thr" style="margin:6px 0 0"></p>
  <h2>Build</h2><div id="build"></div>
  <h2>Upgrades</h2><div id="ul"></div>
@@ -134,13 +144,19 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
  <button class="link" id="reset">Erase everything</button>
 </div>
 </main>
-<nav class="nav"><button data-t="nest" class="on"><span>🐜</span>Nest</button><button data-t="tun"><span>🕳️</span>Tunnel</button><button data-t="col"><span>🍄</span>Colony</button></nav>
+<nav class="nav"><button data-t="nest" class="on"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkN"><rect width="96" height="96" fill="#fff"/><path d="M36 84V68C36 55 60 55 60 68V84Z" fill="#000"/></mask></defs><g mask="url(#mkN)"><path d="M10 84H86" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M15 84C15 56 29 32 48 32S81 56 81 84Z"/></g><path d="M68 30q2-9 9-12M72 31q7-5 13-3" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span>Nest</button><button data-t="tun"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkT"><rect width="96" height="96" fill="#fff"/><path d="M42 12V46C42 60 56 58 56 72V90M42 46H30" stroke="#000" stroke-width="11" fill="none"/><circle cx="25" cy="46" r="9" fill="#000"/></mask></defs><g mask="url(#mkT)"><rect x="12" y="14" width="72" height="72" rx="14"/></g></svg></span>Tunnel</button><button data-t="col"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkC"><rect width="96" height="96" fill="#fff"/><circle cx="30" cy="30" r="6" fill="#000"/><circle cx="66" cy="30" r="6" fill="#000"/><circle cx="48" cy="70" r="7.5" fill="#000"/></mask></defs><path d="M30 30H66M30 30L48 70M66 30L48 70" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/><g mask="url(#mkC)"><circle cx="30" cy="30" r="14"/><circle cx="66" cy="30" r="14"/><circle cx="48" cy="70" r="16"/></g></svg></span>Colony</button></nav>
 <div class="over" id="over"><h2 style="font-size:32px;margin:0">The nest has fallen</h2><p id="overp" style="max-width:320px"></p><button class="card dig" id="again"><b>Found a new colony</b></button></div>
 <div class="intro" id="intro" role="dialog" aria-modal="true"><div class="icard"><div id="ipg"></div><div class="idots" id="idots"></div><div class="irow"><button class="card" id="iback">Back</button><button class="card dig" id="inext">Next</button></div></div></div>
+<div class="over" id="endscr"><h2 style="font-size:40px;margin:0">THE GREAT COLONY</h2><p style="max-width:330px">From one queen and a handful of ants, you built a Metropolis under the grass. The tunnels never sleep, and the whole meadow knows your name.</p><p class="mute" style="max-width:330px">You are now a <b>Founder</b>. Keep playing, master every ant class, or start a Royal Flight and found a new colony.</p><button class="card dig" id="endok"><b>Keep playing</b></button></div>
+<div class="intro" id="gift" role="dialog" aria-modal="true"><div class="icard"><div id="giftt"></div><div class="irow"><button class="card dig" id="giftok">Claim</button></div></div></div>
 <div class="gold" id="gold" aria-live="polite">✦ GOLDEN EGG ✦<small>A Super Major has hatched!</small></div>
 <div class="toast" id="toast"></div>
 
 <script>
+/* Safety: a canvas ellipse with a negative radius throws and would stop the frame, so clamp radii at zero. */
+(function () { var E = CanvasRenderingContext2D.prototype.ellipse; CanvasRenderingContext2D.prototype.ellipse = function (x, y, rx, ry, r, a0, a1, ccw) { if (!(rx >= 0))
+    rx = rx < 0 ? -rx : 0; if (!(ry >= 0))
+    ry = ry < 0 ? -ry : 0; return E.call(this, x, y, rx, ry, r, a0, a1, ccw); }; })();
 /* THE COLONY - a single-file ant colony game (canvas + vanilla JS).
 
    How this file is laid out
@@ -225,6 +241,8 @@ var SFX = {
     boom: function () { tn(90, .4, 'sawtooth', .2, .3); vib([40, 30, 60]); },
     win: function () { seq([523, 659, 784, 1047], 110); vib([30, 40, 30, 40, 60]); },
     alarm: function () { seq([330, 247, 330, 247], 140, 'square', .07); vib([80, 60, 80]); },
+    tier: function () { seq([440, 440, 440, 494, 523, 494, 523, 659, 880], 95, 'square', .06); vib([40, 30, 40, 30, 90]); },
+    fan: function () { seq([523, 659, 784, 1047, 784, 1047, 1319, 1568], 120, 'square', .07); vib([60, 40, 60, 40, 200]); },
     lose: function () { tn(300, .9, 'sawtooth', .15, .2); vib(300); },
     dig: function () { if (digging)
         tn(70 + Math.random() * 30, .07, 'square', .04, .6); }
@@ -233,6 +251,9 @@ card($('tier'), 'tierbtn', function () { dig(); }).classList.add('dig');
 var fly = card($('pr'), 'fly', function () { royal(); });
 fly.classList.add('dig');
 LG.forEach(function (l) { card($('pr'), 'l-' + l.id, function () { perk(l); }); });
+$('giftok').onclick = giftClaim;
+setInterval(giftCheck, 2500);
+$('endok').onclick = function () { $('endscr').classList.remove('on'); };
 $('again').onclick = function () { newRun(Math.floor(gain() / 2)); };
 var rs = 0;
 $('reset').onclick = function () {
@@ -252,6 +273,53 @@ $('snd').onclick = function () { mut = !mut; this.textContent = mut ? 'Sound off
 var tab = 'nest', camT = 0;
 document.querySelectorAll('.nav button').forEach(function (b) { b.onclick = function () { go(b.dataset.t); }; });
 var cv = $('cv'), cx = cv.getContext('2d'), W = 320, H = 267, WH = 534, K = 1.1, dpr = 1, cam = 0, PT = [], CUM = [], LEN = 0, pebs = [], marchers = [], fx = [], foes = [], wvi = { n: 0 }, nf = 0, QX = 160, QY = 480, pulse = 0, shake = 0, lastP = 0, dtip = 0;
+/* The queen wanders slowly around her chamber and goes back to her bed now and then. Offsets are from the chamber centre. */
+var Q = { ox: 7, oy: -3, tx: 7, ty: -3, fx: 1, tf: 1, ph: 0, wait: 4, tilt: 0, n: 0, sv: 0 };
+function qPos() { return { x: QX + Q.ox, y: QY + Q.oy }; }
+function qRear() { var s = 17 / Math.sqrt(ZM[S.tier]); return { x: QX + Q.ox - Q.fx * s * 2.3, y: QY + Q.oy + 5 }; }
+function queenWalk(dt) {
+    var dx, dy, d, v = 0, vt = 0, sg, tr, wx, mv;
+    if (still) { Q.ox = 7; Q.oy = -3; Q.sv = 0; return; }
+    if (Q.wait > 0)
+        Q.wait -= dt;
+    else {
+        dx = Q.tx - Q.ox;
+        dy = Q.ty - Q.oy;
+        d = Math.hypot(dx, dy);
+        if (d < 1.2) {
+            var home = Q.tx === 7 && Q.ty === -3;
+            Q.wait = home ? 7 + Math.random() * 8 : 1.5 + Math.random() * 4;
+            Q.n++;
+            wx = 24 + S.tier * 4;
+            if (!home && Q.n % 3 === 0) { Q.tx = 7; Q.ty = -3; }
+            else
+                for (tr = 0; tr < 4; tr++) {
+                    Q.tx = 7 + (Math.random() * 2 - 1) * wx;
+                    Q.ty = -6 + Math.random() * 20;
+                    if (Math.hypot(Q.tx - Q.ox, Q.ty - Q.oy) > 12)
+                        break;
+                }
+        }
+        else {
+            sg = dx > 2 ? 1 : dx < -2 ? -1 : Q.tf;
+            Q.tf = sg;
+            if (Math.abs(Q.fx - sg) < .12) {
+                vt = Math.min(6.5 + S.tier * .4, d * 1.3 + 1.2);
+            }
+        }
+    }
+    Q.sv += (vt - Q.sv) * Math.min(1, dt * 2.2);
+    if (vt > 0 && Q.sv > .05) {
+        mv = Math.min(Q.sv * dt, Math.hypot(Q.tx - Q.ox, Q.ty - Q.oy));
+        d = Math.hypot(Q.tx - Q.ox, Q.ty - Q.oy) || 1;
+        Q.ox += (Q.tx - Q.ox) / d * mv;
+        Q.oy += (Q.ty - Q.oy) / d * mv;
+    }
+    v = Q.sv;
+    Q.fx += (Q.tf - Q.fx) * Math.min(1, dt * 7);
+    Q.ph += v * dt * 1.2;
+    Q.tilt += ((vt > 0 ? Math.atan2(Q.ty - Q.oy, Math.max(8, Math.abs(Q.tx - Q.ox))) * .4 * Q.tf : 0) - Q.tilt) * Math.min(1, dt * 3);
+}
 var PN = [[.22, .05], [.22, .13], [.75, .21], [.8, .3], [.25, .38], [.22, .5], [.75, .58], [.7, .7], [.5, .88]];
 var FN = ['beetle', 'spider', 'wasp', 'wood louse'], IC = ['', '', '', ''], CI = [6, 7, 5, 4];
 var still = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -265,7 +333,7 @@ cv.addEventListener('pointerdown', function (e) {
     pulseRing('255,233,168');
     pulse = 1;
     SFX.lay();
-    fx.push({ x: QX + Math.random() * 50 - 25, y: QY - 34, vx: 0, vy: -40, l: .9, t: '-' + cut.toFixed(1) + 's', f: 13, c: '#ffe9a8', g: 0 });
+    fx.push({ x: QX + Q.ox + Math.random() * 50 - 25, y: QY + Q.oy - 31, vx: 0, vy: -40, l: .9, t: '-' + cut.toFixed(1) + 's', f: 13, c: '#ffe9a8', g: 0 });
 });
 var BRN = [], BP = [], MP = [], MAIN = null, nbt = 25, ltx = performance.now(), follow = 0, dy0 = null;
 /* Speed trick: skip re-setting innerHTML when the text has not changed (the HUD updates every frame). */
@@ -278,7 +346,7 @@ var rings = [], flash = 0, motes = [];
 for (var mi = 0; mi < 40; mi++)
     motes.push({ a: Math.random() * 6.28, b: Math.random() * 6.28, s: .2 + Math.random() * .6, x: Math.random(), y: Math.random() });
 cv.addEventListener('pointerdown', function () { if (tab === 'nest' && !dead) {
-    fx.push({ x: QX - 34, y: QY + 2, vx: -26 - Math.random() * 14, vy: -26, l: .9, t: '\ud83e\udd5a', f: 10, g: 140 });
+    var qr = qRear(); fx.push({ x: qr.x, y: qr.y - 2, vx: Q.fx * (-26 - Math.random() * 14), vy: -26, l: .9, t: '@egg', f: 10, g: 140 });
     if (Math.random() < .3)
         pulseRing('255,235,200');
 } });
@@ -315,7 +383,7 @@ RD[6] = 'Dig every tunnel and chamber. Only workers can dig. Each trip they carr
 RD.push('Her egg-laying and health. Lays more eggs at levels 3 and 5.');
 var ph1 = 0, bph = [], lastTr = 0;
 var ROOMS = [{ n: 'Fungus Garden', b: 'colony eats 30% less food' }, { n: 'Nursery', b: 'eggs hatch 15% faster' }, { n: 'Barracks', b: 'soldiers deal 15% more damage' }, { n: 'Royal Court', b: 'the queen lays 10% sooner' }];
-var DN = ['Seed stash', 'Crystal vein', 'Fungus grove', 'Ancient relic'], DI = ['\ud83c\udf30', '\ud83d\udc8e', '\ud83c\udf44', '\ud83c\udffa'];
+var DN = ['Seed stash', 'Crystal vein', 'Fungus grove', 'Ancient relic'], DI = ['@seed', '@crystal', '@fungus', '@relic'];
 var carc = [];
 var uz = 1, camX = 0, SK = 110, ptrs = {}, pd0 = 0, uz0 = 1;
 cv.addEventListener('pointerdown', function (e) { if (tab !== 'tun')
@@ -363,15 +431,26 @@ var exc = null, crewA = [], spoil = [], cavHeap = 0;
 var IP = [], ii = 0, introWasDead = false;
 
 var GOALS = [
-    { t: 'Tap the queen to hurry an egg', n: function () { return Math.min(3, S.queenTaps || 0) + ' / 3'; }, ok: function () { return (S.queenTaps || 0) >= 3; }, fd: 15, r: '+15 food' },
-    { t: 'Hatch your first new ant', ok: function () { return S.totalHatched >= 1; }, fd: 20, r: '+20 food' },
-    { t: 'Workers discover a food spot', ok: function () { return S.foodSpots.length >= 1; }, fd: 25, r: '+25 food' },
-    { t: 'A forager brings food home', ok: function () { return (S.deliveries || 0) >= 1; }, jl: 3, fd: 20, r: '+3 royal jelly' },
-    { t: 'Reach 10 ants', n: function () { return Math.min(10, popn()) + ' / 10'; }, ok: function () { return popn() >= 10; }, fd: 40, r: '+40 food' },
-    { t: 'Dig your first side tunnel', ok: function () { return S.sideTunnels > 0 && S.sideDug[0] >= 1; }, jl: 2, r: '+2 royal jelly' },
-    { t: 'Reach 25 ants', n: function () { return Math.min(25, popn()) + ' / 25'; }, ok: function () { return popn() >= 25; }, fd: 60, r: '+60 food' },
-    { t: 'Dig your first nest upgrade', ok: function () { return S.tier >= 1; }, jl: 3, r: '+3 royal jelly' },
-    { t: 'Break through to the surface', ok: function () { return S.dug >= 1; }, jl: 5, r: '+5 royal jelly' }
+    { t: 'Tap the queen to hurry an egg', h: 'Tap her on the Nest tab.', tab: 'nest', n: function () { return Math.min(3, S.queenTaps || 0) + ' / 3'; }, ok: function () { return (S.queenTaps || 0) >= 3; }, fd: 15, r: '+15 food' },
+    { t: 'Hatch your first new ant', h: 'Eggs hatch by themselves. Keep tapping to speed them up.', tab: 'nest', ok: function () { return S.totalHatched >= 1; }, fd: 20, r: '+20 food' },
+    { t: 'Workers discover a food spot', h: 'Your workers are digging. Watch the Tunnel tab.', tab: 'tun', ok: function () { return S.foodSpots.length >= 1; }, fd: 25, r: '+25 food' },
+    { t: 'A forager brings food home', h: 'Foragers carry food along the tunnel to the queen.', tab: 'tun', ok: function () { return (S.deliveries || 0) >= 1; }, jl: 3, fd: 20, r: '+3 royal jelly' },
+    { t: 'Reach 10 ants', h: 'Every egg costs a little food. Foragers keep it coming.', tab: 'nest', n: function () { return Math.min(10, popn()) + ' / 10'; }, ok: function () { return popn() >= 10; }, fd: 40, r: '+40 food' },
+    { t: 'Dig your first nest upgrade', h: 'Open the Colony tab and tap Dig deeper.', tab: 'col', ok: function () { return S.tier >= 1; }, jl: 3, r: '+3 royal jelly' },
+    { t: 'Level up an ant with royal jelly', h: 'Colony tab, Your ants and queen. Tap a card to spend jelly.', tab: 'col', ok: function () { return S.queenLevel > 0 || S.classLevel.some(function (l) { return l > 0; }); }, fd: 40, r: '+40 food' },
+    { t: 'Reach 15 ants', h: 'Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(15, popn()) + ' / 15'; }, ok: function () { return popn() >= 15; }, fd: 40, r: '+40 food' },
+    { t: 'Bring home 15 loads of food', h: 'More foragers means more food.', tab: 'tun', n: function () { return Math.min(15, S.deliveries || 0) + ' / 15'; }, ok: function () { return (S.deliveries || 0) >= 15; }, jl: 2, r: '+2 royal jelly' },
+    { t: 'Reach 20 ants', h: 'More ants means more foragers and more food.', tab: 'nest', n: function () { return Math.min(20, popn()) + ' / 20'; }, ok: function () { return popn() >= 20; }, jl: 1, fd: 40, r: '+1 jelly, +40 food' },
+    { t: 'Reach 25 ants', h: 'Bigger nests hold more ants.', tab: 'nest', n: function () { return Math.min(25, popn()) + ' / 25'; }, ok: function () { return popn() >= 25; }, fd: 60, r: '+60 food' },
+    { t: 'Bring home 40 loads of food', h: 'Send more foragers out by hatching more eggs.', tab: 'tun', n: function () { return Math.min(40, S.deliveries || 0) + ' / 40'; }, ok: function () { return (S.deliveries || 0) >= 40; }, fd: 80, r: '+80 food' },
+    { t: 'Dig your first side tunnel', h: 'Workers dig it by themselves. It leads to chambers and finds.', tab: 'tun', ok: function () { return S.sideTunnels > 0 && S.sideDug[0] >= 1; }, jl: 2, r: '+2 royal jelly' },
+    { t: 'Reach 30 ants', h: 'Your nest fits 40. Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(30, popn()) + ' / 30'; }, ok: function () { return popn() >= 30; }, jl: 1, fd: 60, r: '+1 jelly, +60 food' },
+    { t: 'Dig the Colony nest stage', h: 'Colony tab, Dig deeper. It needs more ants and food.', tab: 'col', ok: function () { return S.tier >= 2; }, jl: 4, r: '+4 royal jelly' },
+    { t: 'Reach 40 ants', h: 'The tunnel waits just under the grass until the colony has 40 ants.', tab: 'nest', n: function () { return Math.min(40, popn()) + ' / 40'; }, ok: function () { return popn() >= 40; }, jl: 2, fd: 80, r: '+2 jelly, +80 food' },
+    { t: 'Break through to the surface', h: 'Your tunnel is nearly at the grass. Invaders come next.', tab: 'tun', ok: function () { return S.dug >= 1; }, jl: 5, r: '+5 royal jelly' },
+    { t: 'Beat your first invader wave', h: 'Soldiers fight at the tunnel mouth. Keep them healthy.', tab: 'tun', ok: function () { return S.wave >= 1; }, jl: 4, r: '+4 royal jelly' },
+    { t: 'Reach 45 ants', h: 'Almost a full colony.', tab: 'nest', n: function () { return Math.min(45, popn()) + ' / 45'; }, ok: function () { return popn() >= 45; }, fd: 90, r: '+90 food' },
+    { t: 'Reach 50 ants', h: 'Your colony is growing up.', tab: 'nest', n: function () { return Math.min(50, popn()) + ' / 50'; }, ok: function () { return popn() >= 50; }, jl: 5, fd: 100, r: '+5 jelly, +100 food' }
 ];
 var layoutV = 0, followIx = -1, lastFd = 0, sel = null, selFollow = false, tdn = null, gAcc = 0, worm = null;
 var antLbl = document.createElement('div');
@@ -497,7 +576,7 @@ function seq(fs, gap, ty, v) { fs.forEach(function (f, i) { setTimeout(function 
    3. SAVING, LOADING AND STARTING A NEW COLONY
    ====================================================================== */
 
-function fresh() { return { totalHatched: 0, upgrades: {}, tier: 0, dug: 0, food: 14, queenHp: 100, wave: 0, savedAt: Date.now(), seed: (Math.random() * 4e9) >>> 0, sideTunnels: 0, sideDug: [], nurses: 1, foragers: 2, soldiers: 1, scouts: 1, superMajors: 0, workers: 1, injured: [0, 0, 0, 0, 0, 0, 0], eggs: [], layTimer: 8, killTimer: 5, injuryTimer: 2, healProgress: 0, classLevel: [0, 0, 0, 0, 0, 0, 0], queenLevel: 0, jelly: 0, foodSpots: [], goalIndex: 0, queenTaps: 0, deliveries: 0, deepFirst: 1, orders: { wk: 1, fg: 0, gd: 50, nu: 50 }, bld: { store: 0, nest: 0, farm: 0, rax: 0 }, proj: null, rare: {}, spores: 0 }; }
+function fresh() { return { totalHatched: 0, upgrades: {}, tier: 0, dug: 0, food: 14, queenHp: 100, wave: 0, savedAt: Date.now(), seed: (Math.random() * 4e9) >>> 0, sideTunnels: 0, sideDug: [], nurses: 1, foragers: 2, soldiers: 1, scouts: 1, superMajors: 0, workers: 1, injured: [0, 0, 0, 0, 0, 0, 0], eggs: [], layTimer: 8, killTimer: 5, injuryTimer: 2, healProgress: 0, classLevel: [0, 0, 0, 0, 0, 0, 0], queenLevel: 0, jelly: 0, foodSpots: [], goalIndex: 0, goalV: 3, queenTaps: 0, deliveries: 0, deepFirst: 1, orders: { wk: 1, fg: 0, gd: 50, nu: 50 }, bld: { store: 0, nest: 0, farm: 0, rax: 0, archive: 0, hatch: 0, tower: 0 }, proj: null, rare: {}, spores: 0 }; }
 
 /* Saves are stored as { v: version, S: colony, P: legacy perks, m: muted }.
    Version 3 renamed the short field names (fd, dg, ...) to readable ones.
@@ -559,6 +638,18 @@ function load() {
         if (d) {
             S = Object.assign(fresh(), d.S);
             (S.eggs || []).forEach(function (e) { e.b = 0; });
+            if (!d.S.goalV && S.goalIndex >= 9)
+                S.goalIndex = 99;
+            else if (d.S.goalV === 2 && S.goalIndex < 99) {
+                /* Three stepping-stone goals were added: move saved colonies along so none repeats or is skipped. */
+                if (S.goalIndex >= 16)
+                    S.goalIndex += 3;
+                else if (S.goalIndex >= 14)
+                    S.goalIndex += 2;
+                else if (S.goalIndex >= 13)
+                    S.goalIndex += 1;
+            }
+            S.goalV = 3;
             S.orders = Object.assign(fresh().orders, S.orders);
             S.bld = Object.assign(fresh().bld, S.bld);
             P = Object.assign({ legacy: 0, legacyEver: 0, perks: {} }, d.P);
@@ -658,7 +749,12 @@ function spotMax() { return Math.min(10, 3 + S.tier * 2); }
 
 function spotsTick(dt) { S.foodSpots.forEach(function (s) { s.stock = Math.min(s.cap, s.stock + s.rg * dt); }); }
 
+/* Until the first tunnel is dug far enough to move about in, everyone stays in the nest. */
+function tunOK() { return S.dug >= .1; }
+
 function pickTarget(m) {
+    if (!tunOK())
+        return null;
     var c = [], w = 0, i, s, r;
     for (i = 0; i < S.foodSpots.length; i++) {
         s = S.foodSpots[i];
@@ -740,7 +836,12 @@ function forageStep(m, dt, sp) {
         }
         return;
     }
-    var v = m.v * sp * .45;
+    var v = m.v * sp * .45 * (m.pan > 0 ? 2.4 : 1);
+    if (m.pan > 0) {
+        m.pan -= dt;
+        if (!m.home && m.wait <= 0 && m.tp != null)
+            m.home = 1;
+    }
     if (m.wait > 0) {
         m.wait -= dt;
         var qp = 1 - .004 - ((m.fi || 0) % 14) * .004;
@@ -990,7 +1091,7 @@ function cav() { var top = QY - (36 + S.tier * 2) - 14, cy = WH + 34; return { x
 function digCap() { return S.dug >= 1 || (S.tier >= 2 && popn() >= 40) ? 1 : .8; }
 
 function digNest() { var n = T[S.tier + 1]; if (!n || popn() < TP[S.tier + 1] || S.food < TF[S.tier + 1])
-    return; S.food -= TF[S.tier + 1]; S.tier++; SFX.win(); toast('Your nest is now a ' + n.n + '. Room for ' + capN() + ' ants.'); }
+    return; S.food -= TF[S.tier + 1]; S.tier++; SFX.tier(); toast('Your nest is now a ' + n.n + '. Room for ' + capN() + ' ants.'); }
 
 function dig() { var t = S.tier; digNest(); if (S.tier > t) {
     sizeT();
@@ -1122,6 +1223,50 @@ function tendRoute(H, tg) {
     return r;
 }
 
+function homeAnchor(h) { return h.c ? { t: 'c', c: h.c } : h.b != null ? { t: 'b', b: h.b, s: h.s } : { t: 'm', m: h.m }; }
+
+/* Walking route between two work-site homes through the real tunnels (no teleporting). */
+function siteRoute(A, B) {
+    var r = [], mp;
+    if (A.c) {
+        r.push(lnSeg(A.c[0], A.c[1], QX, QY));
+        mp = 1;
+    }
+    else if (A.b != null) {
+        r.push(brSeg(BP[A.b], A.s, 0));
+        mp = juncP(A.b);
+    }
+    else
+        mp = A.m;
+    if (B.c) {
+        r.push(mainSeg(mp, 1));
+        r.push(lnSeg(QX, QY, B.c[0], B.c[1]));
+    }
+    else if (B.b != null) {
+        r.push(mainSeg(mp, juncP(B.b)));
+        r.push(brSeg(BP[B.b], 0, B.s));
+    }
+    else
+        r.push(mainSeg(mp, B.m));
+    return r;
+}
+
+function startTravel(a, rt, tg, kind) {
+    var L = 0;
+    rt.forEach(function (g) { L += g.n; });
+    a.kind = null;
+    a.then = kind;
+    a.st = 'tgo';
+    a.trt = rt;
+    a.tL = L;
+    a.tg = tg;
+    a.tlv = layoutV;
+    a.xr = 1;
+    a.d = 0;
+    a.pile = null;
+    a.carry = 0;
+}
+
 function tendPick(a) {
     var piles = spoil.filter(function (p) { return p.n >= 1 && p.tg && (p.tg.b == null || (BP[p.tg.b] && p.tg.b < S.sideTunnels)) && (p.res || 0) < 2; }), tg, pile = null;
     if (piles.length) {
@@ -1156,6 +1301,8 @@ function tendPick(a) {
     var H = tendHome(), rt = tendRoute(H, tg), L = 0;
     rt.forEach(function (g) { L += g.n; });
     a.kind = null;
+    a.then = null;
+    a.xr = 0;
     a.st = 'tgo';
     a.trt = rt;
     a.tL = L;
@@ -1170,7 +1317,7 @@ function tendPick(a) {
 
 function tendStep(a, dt, SP, bits) {
     var v = SP * (a.spd || 1) * dt;
-    if (a.trt && a.tg && a.tlv !== layoutV) {
+    if (a.trt && a.tg && a.tlv !== layoutV && !a.xr) {
         var oldL = a.tL, nL = 0;
         a.trt = tendRoute(tendHome(), a.tg);
         a.trt.forEach(function (g) { nL += g.n; });
@@ -1178,8 +1325,10 @@ function tendStep(a, dt, SP, bits) {
         a.tL = nL;
         a.tlv = layoutV;
     }
+    if (a.st === 'tarr')
+        return;
     if (a.st !== 'tgo' && a.st !== 'twork' && a.st !== 'tret' && a.st !== 'tdump') {
-        if (!tendPick(a)) {
+        if (a.noPick || !tendPick(a)) {
             a.st = 'idle';
             a.si = -1;
         }
@@ -1189,6 +1338,10 @@ function tendStep(a, dt, SP, bits) {
         a.d += v;
         if (a.d >= a.tL) {
             a.d = a.tL;
+            if (a.then) {
+                a.st = 'tarr';
+                return;
+            }
             a.st = 'twork';
             a.t = 0;
             a.hit = 0;
@@ -1238,7 +1391,7 @@ function tendStep(a, dt, SP, bits) {
             for (var j = 0; j < 4; j++)
                 fx.push({ x: H.x, y: H.y - 2, vx: (Math.random() - .5) * 26, vy: -8 - Math.random() * 12, l: .45, c: '#a67c52', s: 2, g: 50 });
             a.carry = 0;
-            if (!tendPick(a)) {
+            if (a.noPick || !tendPick(a)) {
                 a.st = 'idle';
                 a.si = -1;
             }
@@ -1249,11 +1402,11 @@ function tendStep(a, dt, SP, bits) {
 function crewTick(dt) {
     if (dead)
         return;
-    var nW = Math.min(S.workers, 18), now = performance.now(), ss = crewSites(now), SP = 26, DIG_T = 2.2, bits = 2 + (S.classLevel[6] >= 4 ? 1 : 0);
+    var nW = Math.min(S.workers, 18), now = performance.now(), ss = crewSites(now), SP = 26, DIG_T = 3.6, bits = 2 + (S.classLevel[6] >= 4 ? 1 : 0);
     while (crewA.length < nW)
         crewA.push({ st: 'idle', d: 0, t: Math.random() * 2, si: -1, j: 0, carry: 0, hit: 0, spd: .85 + Math.random() * .3, dgt: .8 + Math.random() * .45, ln: Math.random() * 2 - 1, dd: Math.random() * 12 });
     crewA.length = nW;
-    var biteLen = 14 * Math.pow(S.workers / Math.max(1, nW), .85) * (1 + .25 * S.classLevel[6]) * (S.classLevel[6] >= 8 ? 1.3 : 1) * (1 + .5 * pk('swift')) * (S.orders.wk === 0 ? 1.3 : S.orders.wk === 2 ? .7 : 1);
+    var biteLen = 20 * Math.pow(S.workers / Math.max(1, nW), .85) * (1 + .25 * S.classLevel[6]) * (S.classLevel[6] >= 8 ? 1.3 : 1) * (1 + .5 * pk('swift')) * (S.orders.wk === 0 ? 1.3 : S.orders.wk === 2 ? .7 : 1);
     for (var q = spoil.length - 1; q >= 0; q--) {
         spoil[q].n -= dt * .06;
         if (spoil[q].n <= 0)
@@ -1262,27 +1415,75 @@ function crewTick(dt) {
     cavHeap = Math.max(0, cavHeap - dt * .03 * (S.orders.wk === 2 ? 4 : 1));
     var byKind = {}, cnt = {};
     ss.forEach(function (s) { byKind[s.kind] = s; cnt[s.kind] = 0; });
-    crewA.forEach(function (a) { if (a.kind && byKind[a.kind])
-        cnt[a.kind]++; });
+    crewA.forEach(function (a) { var kk = a.kind || a.then; if (kk && byKind[kk])
+        cnt[kk]++; });
+    function rehome(a, from) {
+        var sv = ss.length ? leastBusy() : null;
+        if (sv) {
+            cnt[sv.kind]++;
+            startTravel(a, siteRoute(from, sv.home), sv.home, sv.kind);
+        }
+        else {
+            var Hh = tendHome(), rtH = tendRoute(Hh, from), LH = 0;
+            rtH.forEach(function (g) { LH += g.n; });
+            a.kind = null;
+            a.then = null;
+            a.xr = 0;
+            a.trt = rtH;
+            a.tL = LH;
+            a.tg = from;
+            a.tlv = layoutV;
+            a.d = LH;
+            a.st = 'tret';
+            a.carry = 0;
+            a.pile = null;
+        }
+    }
     function leastBusy() { var best = null; ss.forEach(function (s) { if (!best || cnt[s.kind] / s.w < cnt[best.kind] / best.w)
         best = s; }); return best; }
     crewA.forEach(function (a, i) {
         var s = a.kind ? byKind[a.kind] : null;
-        if (!s && ss.length) {
+        a.noPick = ss.length > 0;
+        if (a.noPick && !s && !a.then && (a.st === 'tgo' || a.st === 'twork')) {
+            /* A digging job opened up: finish the walk home first, then take it. */
             if (a.pile)
                 a.pile.res = Math.max(0, (a.pile.res || 1) - 1);
             a.pile = null;
-            s = leastBusy();
-            cnt[s.kind]++;
-            a.kind = s.kind;
-            a.d = s.L;
-            a.st = 'back';
             a.carry = 0;
+            a.st = 'tret';
+        }
+        if (s)
+            a.hm = homeAnchor(s.home);
+        else if (a.kind && a.hm && !a.then) {
+            /* Their job vanished (tunnel finished): walk on from where they are, no popping. */
+            rehome(a, a.hm);
+            a.hm = null;
+        }
+        if (!s && ss.length && !a.then && !(a.st && a.st[0] === 't' && a.st !== 'tarr')) {
+            if (a.pile)
+                a.pile.res = Math.max(0, (a.pile.res || 1) - 1);
+            var s0 = leastBusy();
+            cnt[s0.kind]++;
+            /* Walk to the new face through the tunnels instead of popping up there. */
+            startTravel(a, tendRoute(tendHome(), s0.home), s0.home, s0.kind);
         }
         if (!s) {
             a.kind = null;
             a.si = -1;
             tendStep(a, dt, SP, bits);
+            if (a.st === 'tarr') {
+                var s2 = byKind[a.then];
+                a.then = null;
+                a.xr = 0;
+                a.trt = null;
+                if (s2) {
+                    a.kind = s2.kind;
+                    a.d = s2.L;
+                    a.st = 'back';
+                }
+                else
+                    rehome(a, a.tg);
+            }
             return;
         }
         a.si = ss.indexOf(s);
@@ -1327,8 +1528,8 @@ function crewTick(dt) {
                 if (lb && lb !== s && cnt[s.kind] / s.w > cnt[lb.kind] / lb.w + 1.01) {
                     cnt[s.kind]--;
                     cnt[lb.kind]++;
-                    a.kind = lb.kind;
-                    a.d = lb.L;
+                    startTravel(a, siteRoute(homeAnchor(s.home), homeAnchor(lb.home)), lb.home, lb.kind);
+                    a.si = -1;
                 }
             }
         }
@@ -1507,8 +1708,68 @@ function kill() {
     if (S.injured[k] > cnt(k))
         S.injured[k] = Math.max(0, cnt(k));
     SFX.hit();
-    fx.push({ x: QX, y: QY - 20, vx: 0, vy: -20, l: .8, t: '\ud83d\udc80', f: 14, g: 0 });
+    var vic = marchers.filter(function (m) { return m.k === k && !m.inj && m.wx != null; })[0];
+    if (vic) {
+        fallen.push({ x: vic.wx, y: vic.wy, ang: vic.wa || 0, k: k, t: 5, s: Math.random() * 2 - 1 });
+        if (fallen.length > 14)
+            fallen.shift();
+        burst(vic.wx, vic.wy, 5, ['#8a6340', '#5a3d22'], 30);
+    }
+    else
+        fx.push({ x: QX, y: QY - 20, vx: 0, vy: -20, l: .8, t: '@skull', f: 14, g: 0 });
     sync();
+}
+
+/* Ants that fall in battle lie curled on their backs for a few seconds, then fade. */
+var fallen = [];
+
+function fallenTick(dt) { for (var i = fallen.length - 1; i >= 0; i--) {
+    fallen[i].t -= dt;
+    if (fallen[i].t <= 0)
+        fallen.splice(i, 1);
+} }
+
+function drawFallen() {
+    for (var i = 0; i < fallen.length; i++) {
+        var f = fallen[i], u = SZ[f.k] * 1.55 / 3.6 * .72, j;
+        cx.save();
+        cx.globalAlpha = Math.min(1, f.t / 1.5) * .9;
+        cx.translate(f.x, f.y);
+        cx.rotate(f.ang + f.s * .7);
+        cx.fillStyle = 'rgba(0,0,0,.22)';
+        cx.beginPath();
+        cx.ellipse(0, u * .3, u * 2.2, u * .9, 0, 0, 7);
+        cx.fill();
+        cx.strokeStyle = '#120a05';
+        cx.lineWidth = Math.max(.3, u * .35);
+        cx.lineCap = 'round';
+        cx.beginPath();
+        for (j = -1; j <= 1; j++) {
+            cx.moveTo(j * u * .55, -u * .2);
+            cx.lineTo(j * u * .55 + u * .3, -u * 1.1);
+            cx.lineTo(j * u * .55 - u * .2, -u * 1.6);
+            cx.moveTo(j * u * .55, u * .2);
+            cx.lineTo(j * u * .55 + u * .3, u * 1.1);
+            cx.lineTo(j * u * .55 - u * .2, u * 1.5);
+        }
+        cx.stroke();
+        cx.fillStyle = '#2b1509';
+        cx.beginPath();
+        cx.ellipse(-u * 1.5, 0, u * 1.1, u * .8, 0, 0, 7);
+        cx.fill();
+        cx.beginPath();
+        cx.ellipse(0, 0, u * .7, u * .5, 0, 0, 7);
+        cx.fill();
+        cx.beginPath();
+        cx.arc(u * 1.2, 0, u * .6, 0, 7);
+        cx.fill();
+        cx.fillStyle = CC[f.k];
+        cx.globalAlpha *= .55;
+        cx.beginPath();
+        cx.ellipse(-u * 1.5, 0, u * .6, u * .4, 0, 0, 7);
+        cx.fill();
+        cx.restore();
+    }
 }
 
 function injure() {
@@ -1916,6 +2177,8 @@ function moveArmy(dt, t) {
             }
             else {
                 var G = 3 + Math.min(S.sideTunnels, 6), isG = m.u < S.orders.gd / 100 || G === 3, sl = isG ? m.fi % 3 : 3 + m.fi % (G - 3), post = (sl < 3 || !(S.sideDug[sl - 3] >= 1)) ? lo + .025 + m.u * (.06 + .0025 * Math.min(S.soldiers, 60)) : juncP(sl - 3) + (m.u * .03 - .015);
+                if (!tunOK())
+                    post = 1 - .006 - (m.fi % 14) * .004;
                 m.sp = (m.sp || 0) - dt;
                 if (m.sp <= 0) {
                     m.sp = (3 + Math.random() * 5) * (.7 + trait(m, 6));
@@ -1965,7 +2228,7 @@ function wave() {
     foes = [];
     /* Waves grow with your defence so a fight takes roughly the same time however big the colony is.
        Armoured beetles and bosses then take longer unless you have the right answer. */
-    var unit = dps() * .85 * (8 + Math.min(S.tier, 4) * 1.2) / cnt * (boss ? 1 - .12 * prep : 1);
+    var unit = dps() * .85 * (8 + Math.min(S.tier, 4) * 1.2) / cnt * (boss ? 1 - .12 * prep : 1) * (1 - .08 * S.bld.tower);
     for (var i = 0; i < cnt; i++) {
         var b = boss && i === 0, h = Math.max(base * (b ? 2.2 : .65), unit * (b ? 2.2 : 1)) * (tp === 3 ? 1.4 : 1);
         foes.push({ p: -.06 * i, tp: tp, boss: b, hp: h, max: h, kl: tp === 3 ? 1 + Math.floor(Math.random() * 2) : 0, kt: 1.2, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i - (cnt - 1) / 2) * 2 });
@@ -1981,7 +2244,7 @@ function loot(p, w) {
     S.food = Math.min(foodCap(), S.food + f);
     gainJelly(w.boss ? 5 : 1);
     SFX.win();
-    fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '\ud83c\udf43', f: 22, g: 0 });
+    fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
     toast((w.boss ? 'Boss defeated! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
 
@@ -2185,6 +2448,113 @@ function chamberRim(x, y, rx, ry) {
     cx.fill();
 }
 
+/* Small hand-drawn symbols (no emoji): egg, skull, leaf and the underground finds. */
+function glyph(n, x, y, sz) {
+    var u = sz / 16;
+    cx.save();
+    cx.translate(x, y);
+    cx.scale(u, u);
+    cx.lineJoin = 'round';
+    cx.lineCap = 'round';
+    if (n === '@egg') {
+        cx.fillStyle = '#f2e6c8';
+        cx.beginPath();
+        cx.ellipse(0, 0, 4.6, 6, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = 'rgba(120,90,50,.25)';
+        cx.beginPath();
+        cx.ellipse(1.5, 1.5, 2.6, 3.8, 0, 0, 7);
+        cx.fill();
+    }
+    else if (n === '@skull') {
+        cx.fillStyle = '#e8e0cf';
+        cx.beginPath();
+        cx.arc(0, -1.5, 6, 0, 7);
+        cx.fill();
+        cx.fillRect(-3.4, 2, 6.8, 4.5);
+        cx.fillStyle = '#1a100a';
+        cx.beginPath();
+        cx.arc(-2.4, -1.4, 1.7, 0, 7);
+        cx.arc(2.4, -1.4, 1.7, 0, 7);
+        cx.fill();
+        cx.fillRect(-.6, 1.2, 1.2, 1.6);
+    }
+    else if (n === '@leaf') {
+        cx.fillStyle = '#7fc46a';
+        cx.beginPath();
+        cx.moveTo(-6, 5);
+        cx.quadraticCurveTo(-6, -6, 6, -6);
+        cx.quadraticCurveTo(6, 6, -6, 5);
+        cx.fill();
+        cx.strokeStyle = '#3f7a35';
+        cx.lineWidth = 1.2;
+        cx.beginPath();
+        cx.moveTo(-6, 5);
+        cx.lineTo(3, -3);
+        cx.stroke();
+    }
+    else if (n === '@seed') {
+        cx.fillStyle = '#b07a3c';
+        cx.beginPath();
+        cx.ellipse(0, 1.5, 4.6, 5.2, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = '#6b4520';
+        cx.beginPath();
+        cx.ellipse(0, -3, 5.2, 2.6, 0, Math.PI, 0);
+        cx.fill();
+        cx.fillRect(-.7, -6.5, 1.4, 2.5);
+    }
+    else if (n === '@crystal') {
+        cx.fillStyle = '#7fd8ff';
+        cx.beginPath();
+        cx.moveTo(0, -7);
+        cx.lineTo(5, -1);
+        cx.lineTo(0, 7);
+        cx.lineTo(-5, -1);
+        cx.closePath();
+        cx.fill();
+        cx.fillStyle = 'rgba(255,255,255,.55)';
+        cx.beginPath();
+        cx.moveTo(0, -7);
+        cx.lineTo(-5, -1);
+        cx.lineTo(0, -1);
+        cx.closePath();
+        cx.fill();
+    }
+    else if (n === '@fungus') {
+        cx.fillStyle = '#e8d9bd';
+        cx.fillRect(-1.8, 0, 3.6, 6);
+        cx.fillStyle = '#c4583f';
+        cx.beginPath();
+        cx.ellipse(0, 0, 7, 5.5, 0, Math.PI, 0);
+        cx.fill();
+        cx.fillStyle = '#f6e9d0';
+        cx.beginPath();
+        cx.arc(-2.6, -2.2, 1, 0, 7);
+        cx.arc(2.2, -3, 1.1, 0, 7);
+        cx.fill();
+    }
+    else if (n === '@relic') {
+        cx.fillStyle = '#c28a52';
+        cx.beginPath();
+        cx.moveTo(-2.6, -6);
+        cx.lineTo(2.6, -6);
+        cx.lineTo(2, -3);
+        cx.quadraticCurveTo(6, 0, 3, 5);
+        cx.lineTo(-3, 5);
+        cx.quadraticCurveTo(-6, 0, -2, -3);
+        cx.closePath();
+        cx.fill();
+        cx.strokeStyle = '#7a4d26';
+        cx.lineWidth = 1;
+        cx.beginPath();
+        cx.moveTo(-4.4, 0);
+        cx.lineTo(4.4, 0);
+        cx.stroke();
+    }
+    cx.restore();
+}
+
 function chamberIn(x, y, rx, ry, ic) {
     var g = cx.createRadialGradient(x, y - ry * .3, 2, x, y, rx);
     g.addColorStop(0, '#a07650');
@@ -2205,10 +2575,7 @@ function chamberIn(x, y, rx, ry, ic) {
         cx.fill();
     }
     if (ic) {
-        cx.font = '16px serif';
-        cx.textAlign = 'center';
-        cx.fillStyle = '#fff';
-        cx.fillText(ic, x, y + 6);
+        glyph(ic, x, y + 1, 16);
     }
 }
 
@@ -2304,7 +2671,7 @@ function drawWorld(now) {
         cx.fill();
     }
     drawCushion(now);
-    drawAnt(QX + 7, QY - 3, 0, 17 + pulse * 3, false, now * .004, 3);
+    var qp = qPos(); drawAnt(qp.x, qp.y, Q.tilt, 17 + pulse * 3, false, Q.ph, 3);
     foes.forEach(function (f) {
         var a = at(f.p), sz = foeSz(f), fl = f.tp === 2 ? Math.sin(now * .006 + f.o) * 1.5 : 0, lim = tunW() * .3;
         f.o = Math.max(-lim, Math.min(lim, f.o));
@@ -2317,7 +2684,9 @@ function drawWorld(now) {
     });
     fx.forEach(function (p) {
         cx.globalAlpha = Math.max(0, Math.min(1, p.l * 2));
-        if (p.t) {
+        if (p.t && p.t[0] === '@')
+            glyph(p.t, p.x, p.y, p.f || 14);
+        else if (p.t) {
             cx.font = (p.c ? '700 ' : '') + (p.f || 22) + 'px ' + (p.c ? 'system-ui' : 'serif');
             cx.textAlign = 'center';
             cx.fillStyle = p.c || '#fff';
@@ -2521,8 +2890,23 @@ function cavernIn() {
     }
 }
 
+var BEDS = { k: '', a: [] }, STRAW = ['#d6bb78', '#c2a05a', '#a98440', '#7d6030', '#6a5028', '#8a6c38'];
+function bedStraw(ex, ey) {
+    var k = ex + ',' + ey, sd = 7, i, inner;
+    if (BEDS.k === k)
+        return BEDS.a;
+    var r = function () { sd = (sd * 16807) % 2147483647; return sd / 2147483647; };
+    BEDS.a = [];
+    for (i = 0; i < 130; i++) {
+        inner = i >= 70;
+        BEDS.a.push({ a: r() * 6.283, r: inner ? .1 + r() * .65 : .78 + r() * .3, l: inner ? 5 + r() * 7 : 7 + r() * 10, j: (r() - .5) * 1.2, c: Math.floor(r() * 3) + (inner ? 3 : 0) });
+    }
+    BEDS.k = k;
+    return BEDS.a;
+}
+
 function drawCushion(now) {
-    var c = cav(), rx = 62 + S.tier * 5, ry = 36 + S.tier * 2, i, g, cxc = QX - 4, cyc = QY + 7, ex = rx * .8, ey = ry * .62, u, x, yt;
+    var c = cav(), rx = 62 + S.tier * 5, ry = 36 + S.tier * 2, i, g, cxc = QX - 4, cyc = QY + 7, ex = rx * .86, ey = ry * .68, u, x, yt, st = bedStraw(Math.round(ex), Math.round(ey));
     cx.strokeStyle = 'rgba(90,60,36,.85)';
     cx.lineWidth = 1.1;
     for (i = 0; i < 9; i++) {
@@ -2534,47 +2918,97 @@ function drawCushion(now) {
         cx.quadraticCurveTo(x + 3, yt + 9, x - 1, yt + 13 + (i % 3) * 5);
         cx.stroke();
     }
+    /* Clay lamps at the edges of the cavern. */
     [[-.84, 0], [.84, 1]].forEach(function (q) {
-        var x0 = c.x + q[0] * c.rx, y0 = WH - 16, k = q[1];
+        var x0 = c.x + q[0] * c.rx, y0 = WH - 16, k = q[1], fl = .8 + .2 * Math.sin(now * .011 + k * 2.4) + .08 * Math.sin(now * .027 + k);
         cx.save();
         cx.globalCompositeOperation = 'lighter';
-        glow(x0, y0 - 4, 18, k ? '190,120,255' : '90,220,255', .28 + .1 * Math.sin(now * .003 + k * 2));
+        glow(x0, y0 - 6, 22, '255,160,70', .3 * fl);
         cx.restore();
-        [[0, 0, 5, 12], [-5, 2, 4, 8], [5, 3, 4, 7]].forEach(function (p, n) { cx.fillStyle = k ? (n ? '#9a6ae0' : '#c8a0ff') : (n ? '#4fb8e0' : '#9be8ff'); cx.strokeStyle = 'rgba(255,255,255,.55)'; cx.lineWidth = .6; cx.beginPath(); cx.moveTo(x0 + p[0] - p[2] * .5, y0 + p[1] + 3); cx.lineTo(x0 + p[0] - p[2] * .4, y0 + p[1] - p[3] * .6); cx.lineTo(x0 + p[0], y0 + p[1] - p[3]); cx.lineTo(x0 + p[0] + p[2] * .4, y0 + p[1] - p[3] * .6); cx.lineTo(x0 + p[0] + p[2] * .5, y0 + p[1] + 3); cx.closePath(); cx.fill(); cx.stroke(); });
+        cx.fillStyle = '#6e4a2a';
+        cx.strokeStyle = '#2e1c0e';
+        cx.lineWidth = .9;
+        cx.beginPath();
+        cx.moveTo(x0 - 7, y0 - 2);
+        cx.quadraticCurveTo(x0 - 8, y0 + 5, x0, y0 + 6);
+        cx.quadraticCurveTo(x0 + 8, y0 + 5, x0 + 7, y0 - 2);
+        cx.closePath();
+        cx.fill();
+        cx.stroke();
+        cx.fillStyle = '#8a6038';
+        cx.beginPath();
+        cx.ellipse(x0, y0 - 2, 7, 2.2, 0, 0, 7);
+        cx.fill();
+        cx.stroke();
+        cx.fillStyle = '#ffcf6a';
+        cx.beginPath();
+        cx.moveTo(x0 - 2.2, y0 - 2.5);
+        cx.quadraticCurveTo(x0 - 2.6, y0 - 7 * fl, x0, y0 - 10 * fl);
+        cx.quadraticCurveTo(x0 + 2.6, y0 - 7 * fl, x0 + 2.2, y0 - 2.5);
+        cx.fill();
+        cx.fillStyle = '#fff0b0';
+        cx.beginPath();
+        cx.ellipse(x0, y0 - 4.5, 1, 2.2 * fl, 0, 0, 7);
+        cx.fill();
     });
-    cx.fillStyle = 'rgba(0,0,0,.25)';
+    /* The nest bed: a woven ring of straw and twigs, lined with moss. */
+    cx.fillStyle = 'rgba(0,0,0,.28)';
     cx.beginPath();
-    cx.ellipse(cxc + 2, cyc + 5, ex, ey, 0, 0, 7);
+    cx.ellipse(cxc + 2, cyc + 5, ex * 1.04, ey * 1.06, 0, 0, 7);
     cx.fill();
-    g = cx.createRadialGradient(cxc - 8, cyc - 6, 4, cxc, cyc, ex);
-    g.addColorStop(0, '#7a45b0');
-    g.addColorStop(.7, '#47227a');
-    g.addColorStop(1, '#2a1250');
+    g = cx.createRadialGradient(cxc - 6, cyc - 4, 3, cxc, cyc, ex);
+    g.addColorStop(0, '#7b6234');
+    g.addColorStop(.7, '#4e3b1e');
+    g.addColorStop(1, '#33260f');
     cx.fillStyle = g;
     cx.beginPath();
     cx.ellipse(cxc, cyc, ex, ey, 0, 0, 7);
     cx.fill();
-    cx.strokeStyle = '#e8c256';
-    cx.lineWidth = 2;
-    cx.beginPath();
-    cx.ellipse(cxc, cyc, ex, ey, 0, 0, 7);
-    cx.stroke();
-    cx.strokeStyle = 'rgba(232,194,86,.45)';
-    cx.lineWidth = .8;
-    cx.beginPath();
-    cx.ellipse(cxc, cyc, ex * .78, ey * .72, 0, 0, 7);
-    cx.stroke();
-    cx.fillStyle = '#f2c94c';
-    for (i = 0; i < 5; i++)
-        for (var k = 0; k < 2; k++) {
-            cx.beginPath();
-            cx.arc(cxc + (i - 2) * ex * .34, cyc + (k ? .3 : -.3) * ey, 1.3, 0, 7);
-            cx.fill();
-        }
-    [-1, 1].forEach(function (d) { var tx = cxc + d * ex * .97, ty = cyc + ey * .2; cx.strokeStyle = '#e8c256'; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(tx, ty); cx.lineTo(tx + d * 2, ty + 7); cx.stroke(); cx.fillStyle = '#f2c94c'; cx.beginPath(); cx.arc(tx + d * 2, ty + 9, 2.3, 0, 7); cx.fill(); });
+    cx.lineCap = 'round';
+    cx.lineWidth = 1.4;
+    for (var ci = 3; ci < 6; ci++) {
+        cx.strokeStyle = STRAW[ci];
+        cx.beginPath();
+        st.forEach(function (p) { if (p.c !== ci) return; var px = cxc + Math.cos(p.a) * ex * p.r, py = cyc + Math.sin(p.a) * ey * p.r, t = p.a + 1.571 + p.j; cx.moveTo(px, py); cx.lineTo(px + Math.cos(t) * p.l, py + Math.sin(t) * p.l * .5); });
+        cx.stroke();
+    }
+    for (ci = 0; ci < 3; ci++) {
+        cx.strokeStyle = STRAW[ci];
+        cx.lineWidth = 1.7;
+        cx.beginPath();
+        st.forEach(function (p) { if (p.c !== ci) return; var px = cxc + Math.cos(p.a) * ex * p.r, py = cyc + Math.sin(p.a) * ey * p.r, t = p.a + 1.571 + p.j; cx.moveTo(px, py); cx.lineTo(px + Math.cos(t) * p.l, py + Math.sin(t) * p.l * .5); });
+        cx.stroke();
+    }
+    for (i = 0; i < 11; i++) {
+        var a0 = i * .57 + .2, kk = 1 + (i % 3) * .03;
+        cx.strokeStyle = '#3f2a18';
+        cx.lineWidth = 2.8;
+        cx.beginPath();
+        cx.ellipse(cxc, cyc, ex * kk, ey * kk, 0, a0, a0 + .62);
+        cx.stroke();
+        cx.strokeStyle = 'rgba(190,150,95,.55)';
+        cx.lineWidth = .9;
+        cx.beginPath();
+        cx.ellipse(cxc, cyc, ex * kk, ey * kk, 0, a0 + .05, a0 + .55);
+        cx.stroke();
+    }
+    [.4, 1.7, 2.9, 4.1, 5.3].forEach(function (a, n) {
+        var mx = cxc + Math.cos(a) * ex * .96, my = cyc + Math.sin(a) * ey * .96;
+        cx.fillStyle = '#566f2e';
+        cx.beginPath();
+        cx.ellipse(mx, my, 6, 2.6, a, 0, 7);
+        cx.fill();
+        cx.fillStyle = '#86a346';
+        cx.beginPath();
+        cx.arc(mx - 1.5, my - .6, 1, 0, 7);
+        cx.arc(mx + 2, my + .4, .8, 0, 7);
+        cx.fill();
+    });
+    cx.fillStyle = '#6b5a45';
+    [[.9, .55], [-1.05, .35], [.15, .92]].forEach(function (p) { cx.beginPath(); cx.ellipse(cxc + p[0] * ex, cyc + p[1] * ey, 2.4, 1.6, 0, 0, 7); cx.fill(); });
     cx.save();
     cx.globalCompositeOperation = 'lighter';
-    glow(QX, QY, rx * 1.1, '255,200,110', .1 + .04 * Math.sin(now * .003));
+    glow(QX, QY, rx * 1.1, '255,185,100', .09 + .035 * Math.sin(now * .003));
     cx.restore();
 }
 
@@ -3232,131 +3666,202 @@ function drawAnt(x, y, ang, sz, leaf, ph, kd) {
 }
 
 function queen(s, ph) {
-    var br = 1 + Math.sin(ph * .5) * .03 + pulse * .08, j, i, g;
+    var tm = performance.now() * .002, br = 1 + Math.sin(tm) * .03 + pulse * .08, j, i, g, fl = Math.abs(Q.fx) < .04 ? .04 : Math.abs(Q.fx);
+    cx.scale(Q.fx < 0 ? -fl : fl, 1);
     cx.fillStyle = 'rgba(0,0,0,.35)';
     cx.beginPath();
     cx.ellipse(-s * .5, s * .95, s * 2.4, s * .45, 0, 0, 7);
     cx.fill();
-    cx.strokeStyle = '#2a0f08';
-    cx.lineWidth = s * .11;
+    var wk = Math.min(1, Q.sv / 5), idl = Math.sin(tm * 1.1) * .012;
+    function glossy(x0, y0, r0, x1, y1, r1, a, b, c) {
+        var gr = cx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+        gr.addColorStop(0, a);
+        gr.addColorStop(.5, b);
+        gr.addColorStop(1, c);
+        return gr;
+    }
+    cx.save();
+    cx.translate(0, Math.sin(ph * 2) * s * .045 * wk + Math.sin(tm * 1.3) * s * .015);
+    cx.rotate(Math.sin(ph) * .035 * wk + idl);
     cx.lineJoin = 'round';
     cx.lineCap = 'round';
-    cx.beginPath();
+    /* Legs: thigh, knee, shin and a little claw, dark and glossy. */
     for (j = -1; j <= 1; j++) {
-        var w = Math.sin(ph + j * 2) * s * .06, x0 = s * .3 + j * s * .34;
-        [1, -1].forEach(function (d) { cx.moveTo(x0, d * s * .3); cx.lineTo(x0 + j * s * .3 + w, d * s * .75); cx.lineTo(x0 + j * s * .55 + w, d * s * 1.05); });
+        var w = Math.sin(ph + j * 2) * s * (.04 + .13 * wk) + Math.sin(tm * 2.2 + j * 1.7) * s * .02, x0 = s * .3 + j * s * .32;
+        [1, -1].forEach(function (d, n) {
+            var w2 = n ? -w : w, kx = x0 + j * s * .3 + w2 * .6, ky = d * s * .74, fx2 = x0 + j * s * .72 + w2, fy = d * s * 1.12;
+            cx.strokeStyle = '#1c0e06';
+            cx.lineWidth = s * .15;
+            cx.beginPath();
+            cx.moveTo(x0, d * s * .28);
+            cx.lineTo(kx, ky);
+            cx.lineTo(fx2, fy);
+            cx.stroke();
+            cx.lineWidth = s * .075;
+            cx.strokeStyle = '#5c2e15';
+            cx.beginPath();
+            cx.moveTo(x0, d * s * .28);
+            cx.lineTo(kx, ky);
+            cx.stroke();
+            cx.strokeStyle = '#7a4020';
+            cx.beginPath();
+            cx.moveTo(kx, ky);
+            cx.lineTo(fx2, fy);
+            cx.stroke();
+            cx.fillStyle = '#2a140a';
+            cx.beginPath();
+            cx.arc(kx, ky, s * .09, 0, 7);
+            cx.fill();
+            cx.strokeStyle = '#1c0e06';
+            cx.lineWidth = s * .05;
+            cx.beginPath();
+            cx.moveTo(fx2, fy);
+            cx.lineTo(fx2 + j * s * .1 + d * 0, fy + d * s * .1);
+            cx.stroke();
+        });
     }
-    cx.stroke();
-    g = cx.createRadialGradient(-s * 1.5, -s * .35, s * .1, -s * 1.35, 0, s * 1.5);
-    g.addColorStop(0, '#b2512f');
-    g.addColorStop(.45, '#6e2416');
-    g.addColorStop(1, '#220906');
-    cx.fillStyle = g;
-    cx.beginPath();
-    cx.ellipse(-s * 1.4, 0, s * 1.35, s * .82 * br, 0, 0, 7);
-    cx.fill();
-    cx.strokeStyle = '#e8c256';
-    cx.lineWidth = s * .07;
-    for (i = 0; i < 5; i++) {
-        var bx = -s * (.55 + i * .4), bh = s * .8 * br * Math.sqrt(Math.max(0, 1 - Math.pow((bx + s * 1.4) / (s * 1.35), 2)));
+    /* Gaster: a pointed teardrop of dark glossy plates with amber edges. */
+    cx.save();
+    cx.translate(-s * .1, 0);
+    cx.rotate(Math.sin(tm * .9) * .035 + Math.sin(ph + 1.2) * .05 * wk);
+    cx.translate(s * .1 - s * .42, 0);
+    function gp() {
         cx.beginPath();
-        cx.ellipse(bx, 0, s * .12, bh, 0, -1.35, 1.35);
+        cx.moveTo(-s * .18, -s * .2);
+        cx.bezierCurveTo(-s * .7, -s * .98 * br, -s * 2.1, -s * .98 * br, -s * 2.85, -s * .1);
+        cx.quadraticCurveTo(-s * 3.0, 0, -s * 2.85, s * .1);
+        cx.bezierCurveTo(-s * 2.1, s * .98 * br, -s * .7, s * .98 * br, -s * .18, s * .2);
+        cx.closePath();
+    }
+    gp();
+    cx.fillStyle = glossy(-s * 1.3, -s * .4, s * .1, -s * 1.4, 0, s * 1.7, '#7a5238', '#2e1b12', '#120904');
+    cx.fill();
+    cx.save();
+    gp();
+    cx.clip();
+    for (i = 0; i < 6; i++) {
+        var bx = -s * (.5 + i * .4), bh = s * 1.05 * br;
+        cx.strokeStyle = 'rgba(0,0,0,.5)';
+        cx.lineWidth = s * .09;
+        cx.beginPath();
+        cx.ellipse(bx - s * .06, 0, s * .3, bh, 0, -1.5, 1.5);
+        cx.stroke();
+        cx.strokeStyle = i % 2 ? 'rgba(210,150,70,.55)' : 'rgba(190,120,50,.4)';
+        cx.lineWidth = s * .045;
+        cx.beginPath();
+        cx.ellipse(bx + s * .02, 0, s * .3, bh, 0, -1.5, 1.5);
         cx.stroke();
     }
-    cx.fillStyle = 'rgba(255,230,200,.22)';
+    cx.fillStyle = 'rgba(255,225,190,.2)';
     cx.beginPath();
-    cx.ellipse(-s * 1.5, -s * .42, s * .75, s * .15, -.1, 0, 7);
+    cx.ellipse(-s * 1.45, -s * .52, s * .95, s * .13, -.06, 0, 7);
     cx.fill();
+    cx.fillStyle = 'rgba(255,150,60,.12)';
+    cx.beginPath();
+    cx.ellipse(-s * 1.4, s * .72, s * 1.0, s * .08, .04, 0, 7);
+    cx.fill();
+    cx.restore();
     if (pulse > .3) {
         cx.fillStyle = 'rgba(250,245,230,' + Math.min(1, pulse) + ')';
         cx.beginPath();
-        cx.ellipse(-s * 2.8 - pulse * s * .4, s * .05, s * .2, s * .26, 0, 0, 7);
+        cx.ellipse(-s * 2.95 - pulse * s * .4, s * .05, s * .2, s * .26, 0, 0, 7);
         cx.fill();
     }
-    cx.fillStyle = 'rgba(220,235,255,.28)';
-    cx.strokeStyle = 'rgba(255,255,255,.55)';
-    cx.lineWidth = s * .03;
-    [1, -1].forEach(function (d) { cx.beginPath(); cx.ellipse(-s * .55, d * s * .55, s * 1.1, s * .26, d * .16, 0, 7); cx.fill(); cx.stroke(); });
-    cx.fillStyle = '#2a0f08';
-    cx.beginPath();
-    cx.ellipse(-s * .05, 0, s * .2, s * .16, 0, 0, 7);
-    cx.fill();
-    g = cx.createRadialGradient(s * .3, -s * .2, s * .05, s * .38, 0, s * .7);
-    g.addColorStop(0, '#a64a2a');
-    g.addColorStop(1, '#2a0d08');
-    cx.fillStyle = g;
-    cx.beginPath();
-    cx.ellipse(s * .38, 0, s * .58, s * .44, 0, 0, 7);
-    cx.fill();
-    cx.strokeStyle = '#e8c256';
-    cx.lineWidth = s * .08;
-    cx.beginPath();
-    cx.ellipse(s * .84, 0, s * .1, s * .36, 0, -1.4, 1.4);
-    cx.stroke();
-    g = cx.createRadialGradient(s * 1.15, -s * .2, s * .05, s * 1.25, 0, s * .6);
-    g.addColorStop(0, '#a64a2a');
-    g.addColorStop(1, '#2a0d08');
-    cx.fillStyle = g;
-    cx.beginPath();
-    cx.ellipse(s * 1.25, 0, s * .5, s * .43, 0, 0, 7);
-    cx.fill();
-    cx.strokeStyle = '#1a0804';
-    cx.lineWidth = s * .08;
-    cx.beginPath();
-    [1, -1].forEach(function (d) { cx.moveTo(s * 1.62, d * s * .14); cx.quadraticCurveTo(s * 1.95, d * s * .2, s * 1.88, -d * s * .02); });
-    cx.stroke();
-    var aw = Math.sin(ph * .7) * s * .08;
-    cx.lineWidth = s * .06;
-    cx.beginPath();
-    [1, -1].forEach(function (d) { cx.moveTo(s * 1.5, d * s * .25); cx.lineTo(s * 1.8, d * (s * .6) + aw); cx.lineTo(s * 2.1, d * s * .5 + aw); });
-    cx.stroke();
-    [1, -1].forEach(function (d) { cx.fillStyle = '#0c0504'; cx.beginPath(); cx.ellipse(s * 1.38, d * s * .27, s * .12, s * .15, 0, 0, 7); cx.fill(); cx.fillStyle = 'rgba(255,255,255,.85)'; cx.beginPath(); cx.arc(s * 1.34, d * s * .22, s * .035, 0, 7); cx.fill(); });
-    var bx2 = s * 1.1, by = -s * .36;
-    cx.save();
-    cx.globalCompositeOperation = 'lighter';
-    g = cx.createRadialGradient(bx2, by - s * .4, 0, bx2, by - s * .4, s * .9);
-    g.addColorStop(0, 'rgba(255,215,90,.35)');
-    g.addColorStop(1, 'rgba(255,215,90,0)');
-    cx.fillStyle = g;
-    cx.beginPath();
-    cx.arc(bx2, by - s * .4, s * .9, 0, 7);
-    cx.fill();
     cx.restore();
-    g = cx.createLinearGradient(0, by - s * .8, 0, by);
-    g.addColorStop(0, '#fff0a0');
-    g.addColorStop(1, '#c8921a');
-    cx.fillStyle = g;
-    cx.strokeStyle = '#7a5410';
-    cx.lineWidth = s * .04;
+    /* Wing scars: the queen shed her wings, only pale stubs remain. */
+    cx.fillStyle = 'rgba(232,212,165,.2)';
+    cx.strokeStyle = 'rgba(210,180,120,.4)';
+    cx.lineWidth = s * .03;
+    [1, -1].forEach(function (d) { cx.beginPath(); cx.ellipse(-s * .4, d * s * .5, s * .8, s * .2, d * .2, 0, 7); cx.fill(); cx.stroke(); });
+    /* Waist: a narrow stalk with a small node. */
+    cx.fillStyle = '#2a140a';
     cx.beginPath();
-    cx.moveTo(bx2 - s * .38, by);
-    cx.lineTo(bx2 - s * .4, by - s * .55);
-    cx.lineTo(bx2 - s * .2, by - s * .28);
-    cx.lineTo(bx2, by - s * .7);
-    cx.lineTo(bx2 + s * .2, by - s * .28);
-    cx.lineTo(bx2 + s * .4, by - s * .55);
-    cx.lineTo(bx2 + s * .38, by);
+    cx.ellipse(-s * .4, 0, s * .34, s * .1, 0, 0, 7);
+    cx.fill();
+    cx.fillStyle = '#5a2c12';
+    cx.beginPath();
+    cx.ellipse(-s * .5, 0, s * .1, s * .19, 0, 0, 7);
+    cx.fill();
+    /* Thorax: three plated lobes, rusty red. */
+    var th = [[-.12, .26, .26], [.24, .4, .35], [.62, .27, .34]];
+    th.forEach(function (t, n) {
+        cx.fillStyle = glossy(s * (t[0] - .1), -s * t[2] * .5, s * .04, s * t[0], 0, s * .62, '#bd5a2a', '#7c3014', '#321206');
+        cx.beginPath();
+        cx.ellipse(s * t[0], 0, s * t[1], s * t[2], 0, 0, 7);
+        cx.fill();
+        cx.strokeStyle = 'rgba(25,8,2,.55)';
+        cx.lineWidth = s * .05;
+        cx.stroke();
+        cx.fillStyle = 'rgba(255,215,170,.28)';
+        cx.beginPath();
+        cx.ellipse(s * (t[0] - .03), -s * t[2] * .5, s * t[1] * .55, s * t[2] * .14, 0, 0, 7);
+        cx.fill();
+    });
+    /* Head: wider, with big eyes, hooked jaws and bent antennae. */
+    cx.save();
+    cx.translate(s * .95, 0);
+    cx.rotate(Math.sin(tm * .8) * .1 + Math.sin(tm * 2.1) * .035 + Math.sin(ph * 2) * .03 * wk);
+    cx.translate(-s * .95, 0);
+    g = glossy(s * 1.15, -s * .25, s * .05, s * 1.3, 0, s * .72, '#bd5a2a', '#7c3014', '#321206');
+    cx.fillStyle = g;
+    cx.beginPath();
+    cx.moveTo(s * .9, -s * .2);
+    cx.bezierCurveTo(s * 1.0, -s * .62, s * 1.55, -s * .6, s * 1.78, -s * .22);
+    cx.quadraticCurveTo(s * 1.86, 0, s * 1.78, s * .22);
+    cx.bezierCurveTo(s * 1.55, s * .6, s * 1.0, s * .62, s * .9, s * .2);
     cx.closePath();
     cx.fill();
+    cx.strokeStyle = 'rgba(25,8,2,.55)';
+    cx.lineWidth = s * .05;
     cx.stroke();
-    cx.fillStyle = '#fff3b0';
-    [[-.4, -.55], [0, -.7], [.4, -.55]].forEach(function (p) { cx.beginPath(); cx.arc(bx2 + s * p[0], by + s * p[1] + (p[1] < -.6 ? -s * .02 : 0), s * .06, 0, 7); cx.fill(); });
-    cx.fillStyle = '#e8363f';
+    cx.fillStyle = 'rgba(255,215,170,.25)';
     cx.beginPath();
-    cx.arc(bx2, by - s * .2, s * .09, 0, 7);
+    cx.ellipse(s * 1.3, -s * .38, s * .3, s * .07, 0, 0, 7);
     cx.fill();
-    cx.fillStyle = '#5fd0ff';
-    cx.beginPath();
-    cx.arc(bx2 - s * .22, by - s * .12, s * .05, 0, 7);
-    cx.fill();
-    cx.fillStyle = '#7fffb0';
-    cx.beginPath();
-    cx.arc(bx2 + s * .22, by - s * .12, s * .05, 0, 7);
-    cx.fill();
-    cx.fillStyle = 'rgba(255,255,255,.8)';
-    cx.beginPath();
-    cx.arc(bx2 - s * .03, by - s * .23, s * .025, 0, 7);
-    cx.fill();
+    [1, -1].forEach(function (d) {
+        var aw = Math.sin(tm * 2.3 + d * 1.9) * s * .1 + Math.sin(tm * .7 + d) * s * .06 + Math.sin(ph * .9 + d) * s * .06 * wk, ex = s * 1.9, ey = d * s * (.62 + .06) + aw;
+        /* mandibles */
+        cx.fillStyle = '#26120a';
+        cx.beginPath();
+        cx.moveTo(s * 1.68, d * s * .08);
+        cx.quadraticCurveTo(s * 2.1, d * s * .2, s * 2.02, -d * s * .12);
+        cx.quadraticCurveTo(s * 1.92, d * s * .04, s * 1.68, d * s * .2);
+        cx.closePath();
+        cx.fill();
+        cx.fillStyle = '#e0a860';
+        cx.beginPath();
+        cx.arc(s * 2.0, -d * s * .1, s * .035, 0, 7);
+        cx.fill();
+        /* antennae: scape, elbow, then a segmented tip */
+        cx.strokeStyle = '#1c0e06';
+        cx.lineWidth = s * .075;
+        cx.beginPath();
+        cx.moveTo(s * 1.55, d * s * .2);
+        cx.lineTo(s * 1.9, d * s * .55 + aw * .5);
+        cx.lineTo(s * 2.3, d * s * .5 + aw);
+        cx.lineTo(s * 2.55, d * s * .72 + aw * 1.4);
+        cx.stroke();
+        cx.fillStyle = '#1c0e06';
+        cx.beginPath();
+        cx.arc(s * 1.9, d * s * .55 + aw * .5, s * .06, 0, 7);
+        cx.arc(s * 2.58, d * s * .74 + aw * 1.4, s * .08, 0, 7);
+        cx.fill();
+        /* compound eye */
+        cx.fillStyle = '#0c0504';
+        cx.beginPath();
+        cx.ellipse(s * 1.42, d * s * .33, s * .17, s * .15, d * .5, 0, 7);
+        cx.fill();
+        cx.fillStyle = 'rgba(255,200,150,.85)';
+        cx.beginPath();
+        cx.arc(s * 1.37, d * s * .29, s * .05, 0, 7);
+        cx.fill();
+        cx.fillStyle = 'rgba(255,255,255,.4)';
+        cx.beginPath();
+        cx.arc(s * 1.46, d * s * .37, s * .025, 0, 7);
+        cx.fill();
+    });
+    cx.restore();
+    cx.restore();
 }
 
 function drawFoe(x, y, ang, sz, tp, ph) {
@@ -3770,6 +4275,10 @@ function drawArmy(now) {
                 y = a.y + a.ny * sdp * tw * .3;
                 ang = a.ang + sdp * 1.35 + Math.sin(now * .012 + m.ph) * .12;
             }
+            if (m.wait > 0 && k === 1 && !m.inj)
+                ang += Math.sin(now * .004 + m.ph * 7) * .45;
+            else if (!foes.length && (k === 2 || k === 4) && !m.inj)
+                ang += Math.sin(now * .0015 + m.ph * 5) * .35;
             if (!foes.length)
                 m.eng = 0;
             if ((k === 2 || k === 4) && foes.length) {
@@ -3835,7 +4344,9 @@ function drawArmy(now) {
             cx.fill();
         }
     });
+    drawFallen();
     cx.restore();
+    drawLurker(performance.now());
 }
 
 
@@ -4018,7 +4529,7 @@ catch (e) { } }
    15. HUD, SCREENS AND TUTORIAL
    ====================================================================== */
 
-function ui() { ordersUi(); hudColony(); hudClasses(); renderGoals(); var n = performance.now(), dt = Math.min(.1, (n - ltx) / 1000); ltx = n; extra(dt); }
+function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); var n = performance.now(), dt = Math.min(.1, (n - ltx) / 1000); ltx = n; extra(dt); }
 
 function hudColony() {
     var pop = popn(), cap = capN(), gap = layGap();
@@ -4064,7 +4575,7 @@ function hudClasses() {
     var pop = popn(), ij = injN(), i;
     var rt = '';
     for (i = 0; i < 4; i++)
-        rt += (S.tier > i ? '\u2714 ' : '\ud83d\udd12 ') + ROOMS[i].n + ': ' + ROOMS[i].b + '<br>';
+        rt += (S.tier > i ? '\u2714 ' : 'Locked: ') + ROOMS[i].n + ': ' + ROOMS[i].b + '<br>';
     $('rooms').innerHTML = rt;
     hillUi();
     $('goal').innerHTML = goalText();
@@ -4094,11 +4605,102 @@ function goalText() {
         return '<b>Goal:</b> you have no foragers yet. Keep hatching eggs until one appears.';
     if (nt)
         return '<b>Goal:</b> dig a ' + nt.n + ' on the Colony tab. You have ' + pop + ' of ' + TP[S.tier + 1] + ' ants and ' + Math.floor(Math.min(S.food, TF[S.tier + 1])) + ' of ' + TF[S.tier + 1] + ' food.';
-    return S.hillLevel < 5 ? '<b>Goal:</b> your nest is fully dug. Build the next anthill level on the Colony tab. Raiders will come for it, so keep your soldiers strong.' : '<b>Goal:</b> the anthill is complete. Master every ant class and the queen.';
+    if (S.hillLevel < 5)
+        return '<b>Goal:</b> your nest is fully dug. Build the next anthill level on the Colony tab. Raiders will come for it, so keep your soldiers strong.';
+    var gn = GREAT.filter(function (g) { return !g.ok(); })[0];
+    return gn ? '<b>Great Colony:</b> ' + gn.t + ' (' + gn.n() + '). See the Colony tab.' : '<b>The Great Colony stands.</b> Master every ant class, or start a Royal Flight.';
+}
+
+var GREAT = [
+    { t: 'Raise the anthill to level 2', n: function () { return Math.min(2, S.hillLevel || 0) + ' / 2'; }, ok: function () { return (S.hillLevel || 0) >= 2; } },
+    { t: 'Reach 1,000 ants', n: function () { return fmt(Math.min(1000, popn())) + ' / 1000'; }, ok: function () { return popn() >= 1000; } },
+    { t: 'Beat 30 invader waves', n: function () { return Math.min(30, S.wave) + ' / 30'; }, ok: function () { return S.wave >= 30; } },
+    { t: 'Raise all three Metropolis districts to level 2', n: function () { return Math.min(2, S.bld.archive) + Math.min(2, S.bld.hatch) + Math.min(2, S.bld.tower) + ' / 6'; }, ok: function () { return S.bld.archive >= 2 && S.bld.hatch >= 2 && S.bld.tower >= 2; } },
+    { t: 'Raise the queen to level 6', n: function () { return Math.min(6, S.queenLevel) + ' / 6'; }, ok: function () { return S.queenLevel >= 6; } }
+];
+
+function greatDone() { var n = 0; GREAT.forEach(function (g) { if (g.ok())
+    n++; }); return n; }
+
+function greatUi() {
+    var el = $('great');
+    if (!el)
+        return;
+    var h = '<div class="gcard"><div class="gh">Progress <span>' + greatDone() + ' of ' + GREAT.length + (S.founder ? ' \u2022 Founder' : '') + '</span></div><div class="bar" style="margin:4px 0 8px"><i style="width:' + Math.round(greatDone() / GREAT.length * 100) + '%;background:var(--accent)"></i></div>';
+    GREAT.forEach(function (g) { var ok = g.ok(); h += '<div class="gi' + (ok ? '' : ' on') + '"><span class="gk">' + (ok ? '\u2714' : '\u25B6') + '</span><span class="gt">' + g.t + (ok ? '' : ' <em>' + g.n() + '</em>') + '</span></div>'; });
+    el.innerHTML = h + '</div>';
+}
+
+/* The Queen's Gift: one reward each calendar day, with a 7-day streak. P.gift = { last: 'YYYY-M-D', streak }. */
+function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+
+function giftState() {
+    var g = P.gift || { last: '', streak: 0 }, y = new Date();
+    if (g.last === dayKey())
+        return null;
+    y.setDate(y.getDate() - 1);
+    var st = g.last === dayKey(y) ? g.streak + 1 : 1;
+    return { streak: st, day: (st - 1) % 7 + 1 };
+}
+
+function giftReward(day) { return { food: Math.round(foodCap() * (.04 + .01 * day)), jelly: day === 7 ? 6 : day >= 4 ? 2 : 1, egg: day === 7 }; }
+
+function giftShow() {
+    var st = giftState(), r, h = '', i;
+    if (!st)
+        return false;
+    r = giftReward(st.day);
+    h = '<h3>The Queen\u2019s Gift</h3><p>' + (st.streak > 1 ? 'Day ' + st.day + ' of 7 in a row. Welcome back!' : 'A gift from the colony for coming back today.') + '</p><div class="idots" style="gap:10px">';
+    for (i = 1; i <= 7; i++)
+        h += '<i class="' + (i === st.day ? 'on' : '') + '" style="' + (i < st.day ? 'background:var(--accent2)' : '') + '"></i>';
+    h += '</div><p><b>+' + fmt(r.food) + ' food, +' + r.jelly + ' royal jelly' + (r.egg ? ', and a golden egg' : '') + '</b></p>' + (st.day < 7 ? '<p class="mute">Come back tomorrow for a bigger gift. Day 7 brings a golden egg.</p>' : '');
+    $('giftt').innerHTML = h;
+    $('gift').classList.add('on');
+    return true;
+}
+
+function giftClaim() {
+    var st = giftState(), r;
+    $('gift').classList.remove('on');
+    if (!st)
+        return;
+    r = giftReward(st.day);
+    S.food = Math.min(foodCap(), S.food + r.food);
+    gainJelly(r.jelly);
+    if (r.egg)
+        S.eggs.push({ t: 12, b: performance.now(), c: 4 });
+    P.gift = { last: dayKey(), streak: st.streak };
+    SFX.win();
+    burst(QX, QY - 20, 30, ['#ffe27a', '#fff', '#9be07a'], 120);
+    toast('Queen\u2019s Gift claimed: +' + fmt(r.food) + ' food, +' + r.jelly + ' jelly' + (r.egg ? ', golden egg!' : '.'));
+    save();
+}
+
+function giftCheck() {
+    var t = $('title');
+    if (dead || S.totalHatched < 5 || (t && t.style.display !== 'none' && !navigator.webdriver))
+        return;
+    if ($('intro').classList.contains('on') || ($('away') && $('away').classList.contains('on')) || $('endscr').classList.contains('on') || $('gift').classList.contains('on'))
+        return;
+    giftShow();
+}
+
+function showEnding() {
+    var e = $('endscr');
+    if (e)
+        e.classList.add('on');
 }
 
 function goalsTick() {
     var G;
+    if (!S.founder && S.tier >= 4 && greatDone() >= GREAT.length) {
+        S.founder = 1;
+        gainJelly(25);
+        flash = 1;
+        burst(QX, QY, 80, ['#ffd35a', '#fff', '#7fcf8f'], 200);
+        SFX.fan();
+        showEnding();
+    }
     while (S.goalIndex < GOALS.length && GOALS[S.goalIndex].ok()) {
         G = GOALS[S.goalIndex];
         if (G.fd)
@@ -4116,19 +4718,21 @@ function goalsTick() {
 function renderGoals() {
     var g = $('goals'), p = $('goal'), G;
     if (S.goalIndex >= GOALS.length) {
+        document.querySelectorAll('.nav button.nudge').forEach(function (b) { b.classList.remove('nudge'); });
         g.innerHTML = '';
         p.style.display = '';
         return;
     }
     p.style.display = 'none';
     G = GOALS[S.goalIndex];
-    g.innerHTML = '<div class="gcard"><div class="gh">Goal ' + (S.goalIndex + 1) + ' of ' + GOALS.length + ' <span>Reward: ' + G.r + '</span></div><div class="gi on"><span class="gk">▶</span><span class="gt">' + G.t + (G.n ? ' <em>' + G.n() + '</em>' : '') + '</span></div></div>';
+    g.innerHTML = '<div class="gcard"><div class="gh">Goal ' + (S.goalIndex + 1) + ' of ' + GOALS.length + ' <span>Reward: ' + G.r + '</span></div><div class="gi on"><span class="gk">▶</span><span class="gt">' + G.t + (G.n ? ' <em>' + G.n() + '</em>' : '') + '</span></div>' + (G.h ? '<div class="gh2">' + G.h + '</div>' : '') + '</div>';
+    document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('nudge', !!G.tab && b.dataset.t === G.tab && tab !== G.tab); });
 }
 
 function antInfo(s) {
     var o = s.o, t, a;
     if (s.t === 'a')
-        return ['Worker', { dig: 'Chewing at the tunnel face', out: 'Carrying dirt away', drop: 'Tossing dirt onto the spoil pile', back: 'Heading back to dig', idle: 'Resting between jobs', tgo: o.pile ? 'Going to clear a spoil pile' : 'Going to smooth the tunnel walls', twork: o.pile ? 'Shovelling up loose dirt' : 'Scraping the tunnel walls smooth', tret: S.dug >= 1 ? 'Carrying dirt up to the anthill' : 'Carrying dirt to the spoil heap', tdump: S.dug >= 1 ? 'Tipping dirt onto the anthill' : 'Tipping dirt onto the spoil heap' }[o.st] || ''];
+        return ['Worker', { dig: 'Chewing at the tunnel face', out: 'Carrying dirt away', drop: 'Tossing dirt onto the spoil pile', back: 'Heading back to dig', idle: 'Resting between jobs', tgo: o.then ? 'Walking to a new digging spot' : o.pile ? 'Going to clear a spoil pile' : 'Going to smooth the tunnel walls', twork: o.pile ? 'Shovelling up loose dirt' : 'Scraping the tunnel walls smooth', tret: S.dug >= 1 ? 'Carrying dirt up to the anthill' : 'Carrying dirt to the spoil heap', tdump: S.dug >= 1 ? 'Tipping dirt onto the anthill' : 'Tipping dirt onto the spoil heap' }[o.st] || ''];
     t = CN[o.k];
     if (o.inj)
         return [t, o.st === 2 ? 'Resting while nurses heal it' : 'Limping to the infirmary'];
@@ -4252,7 +4856,7 @@ function foldSections() {
             body.style.display = 'none';
             return;
         }
-        var open = sv[name] != null ? sv[name] : (name === 'Dig deeper' || name === 'Colony orders' || name === 'Build' || name === 'Your ants and queen' || (name === 'The Anthill' && S.tier >= 4));
+        var open = sv[name] != null ? sv[name] : (name === 'Dig deeper' || name === 'Colony orders' || name === 'Build' || name === 'Your ants and queen' || ((name === 'The Anthill' || name === 'The Great Colony') && S.tier >= 4));
         h2.className = 'fold';
         h2.tabIndex = 0;
         h2.setAttribute('role', 'button');
@@ -4274,6 +4878,7 @@ function goTab(t) {
     tab = t;
     cv.classList.toggle('tunmode', t === 'tun');
     cv.classList.toggle('nestmode', t !== 'tun');
+    document.body.classList.toggle('tt', t === 'tun');
     try {
         localStorage.setItem('thecolony_tab', t);
     }
@@ -4343,11 +4948,11 @@ function colony(dt) {
         if (n > 0) {
             S.food -= n * eggCost();
             for (i = 0; i < n; i++)
-                S.eggs.push({ t: 18 * (1 - .06 * S.classLevel[0]) * (S.tier >= 2 ? .85 : 1) * (.9 + Math.random() * .3), b: performance.now(), c: rollClass() });
+                S.eggs.push({ t: 18 * (1 - .06 * S.classLevel[0]) * (S.tier >= 2 ? .85 : 1) * (1 - .1 * S.bld.hatch) * (.9 + Math.random() * .3), b: performance.now(), c: rollClass() });
             S.layTimer = layGap();
             pulse = 1;
             SFX.lay();
-            fx.push({ x: QX - 34, y: QY + 2, vx: -20, vy: -20, l: .9, t: '\ud83e\udd5a', f: 10, g: 140 });
+            var qr = qRear(); fx.push({ x: qr.x, y: qr.y - 2, vx: Q.fx * -20, vy: -20, l: .9, t: '@egg', f: 10, g: 140 });
         }
         else
             S.layTimer = 0;
@@ -4476,6 +5081,8 @@ function frame(n) {
         save();
     }
     pulse = Math.max(0, pulse - dt * 5);
+    queenWalk(dt);
+    fallenTick(dt);
     if (shake > 0) {
         shake = Math.max(0, shake - dt);
         var s = shake * 14;
@@ -4510,7 +5117,59 @@ function frame(n) {
     requestAnimationFrame(frame);
 }
 
-function drawT(now) { drawWorld(now); drawTrails(now); drawRooms(now); drawHill(now); drawFood(now); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawSel(now); deco(now); }
+function drawDeadQueen() {
+    if (S.tier > 0 || !cav)
+        return;
+    var cvn = cav(), sdw = QX < W * .5 ? -1 : 1, x = QX - sdw * 92, y = QY + 30, ex = (x - cvn.x) / (cvn.rx - 16), ey = (y - cvn.y) / (cvn.ry - 14), r2 = ex * ex + ey * ey, k = Math.max(.35, Math.min(1, S.food / 40 + .3));
+    if (r2 > 1) {
+        x = cvn.x + (x - cvn.x) / Math.sqrt(r2);
+        y = cvn.y + (y - cvn.y) / Math.sqrt(r2);
+    }
+    cx.save();
+    cx.translate(x, y - cam);
+    cx.rotate(sdw * .18);
+    cx.scale(sdw * k, k);
+    cx.globalAlpha = .9;
+    cx.fillStyle = 'rgba(0,0,0,.28)';
+    cx.beginPath();
+    cx.ellipse(0, 6, 17, 4.5, 0, 0, 7);
+    cx.fill();
+    cx.strokeStyle = '#4a3a2c';
+    cx.lineWidth = 1;
+    for (var l = 0; l < 3; l++) {
+        cx.beginPath();
+        cx.moveTo(-1 + l * 3, 2);
+        cx.quadraticCurveTo(-3 + l * 3, -6 - l, 1 + l * 3, -7);
+        cx.stroke();
+        cx.beginPath();
+        cx.moveTo(-1 + l * 3, 4);
+        cx.quadraticCurveTo(-6 + l * 3, 9, -3 + l * 3, 11);
+        cx.stroke();
+    }
+    cx.fillStyle = '#5b4637';
+    cx.beginPath();
+    cx.ellipse(-9, 3, 9, 5.5, 0, 0, 7);
+    cx.fill();
+    cx.fillStyle = '#6b5443';
+    cx.beginPath();
+    cx.ellipse(3, 2.5, 4.5, 3.6, 0, 0, 7);
+    cx.fill();
+    cx.fillStyle = '#5b4637';
+    cx.beginPath();
+    cx.ellipse(11, 3.5, 3.6, 3, .2, 0, 7);
+    cx.fill();
+    cx.strokeStyle = 'rgba(200,190,170,.35)';
+    cx.lineWidth = .8;
+    cx.beginPath();
+    cx.moveTo(1, 0);
+    cx.lineTo(-7, -4);
+    cx.moveTo(2, 0);
+    cx.lineTo(-4, -6);
+    cx.stroke();
+    cx.restore();
+}
+
+function drawT(now) { drawWorld(now); drawTrails(now); drawRooms(now); drawHill(now); drawFood(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawSel(now); deco(now); }
 
 /* ======================================================================
    17. OFFLINE PROGRESS (THE COLONY KEEPS WORKING WHILE YOU ARE AWAY)
@@ -4594,17 +5253,17 @@ function awayText(r) {
         parts.push(n + ' ' + CN[c].toLowerCase() + (n > 1 ? 's' : ''));
     } });
     var s = '<h3>While you were away</h3><p class="mute" style="margin-top:-4px">' + dur + (r.capped ? ' (your ants work for up to 8 hours)' : '') + '</p>';
-    s += '<p>🍃 Your foragers gathered <b>' + fmt(Math.round(r.got)) + ' food</b>.</p>';
-    s += total ? '<p>🥚 The queen raised <b>' + total + ' new ant' + (total > 1 ? 's' : '') + '</b>: ' + parts.join(', ') + '.</p>' : '';
+    s += '<p>Your foragers gathered <b>' + fmt(Math.round(r.got)) + ' food</b>.</p>';
+    s += total ? '<p>The queen raised <b>' + total + ' new ant' + (total > 1 ? 's' : '') + '</b>: ' + parts.join(', ') + '.</p>' : '';
     if (r.gold)
-        s += '<p>✦ A golden egg hatched a <b>Super Major</b>! +' + 10 * r.gold + ' jelly.</p>';
+        s += '<p>A golden egg hatched a <b>Super Major</b>! +' + 10 * r.gold + ' jelly.</p>';
     if (r.dg0 < 1 && S.dug >= 1)
-        s += '<p>⛏️ Your workers <b>broke through to the surface</b>. Invaders will come soon.</p>';
+        s += '<p>Your workers <b>broke through to the surface</b>. Invaders will come soon.</p>';
     else if (S.dug > r.dg0 + .005)
-        s += '<p>⛏️ Your workers dug the tunnel <b>' + Math.round((S.dug - r.dg0) * 100) + '%</b> further.</p>';
+        s += '<p>Your workers dug the tunnel <b>' + Math.round((S.dug - r.dg0) * 100) + '%</b> further.</p>';
     if (r.healed)
-        s += '<p>✚ Nurses healed <b>' + r.healed + ' injured ant' + (r.healed > 1 ? 's' : '') + '</b>.</p>';
-    s += '<p>👑 The queen is rested and the food spots have grown back.</p>';
+        s += '<p>Nurses healed <b>' + r.healed + ' injured ant' + (r.healed > 1 ? 's' : '') + '</b>.</p>';
+    s += '<p>The queen is rested and the food spots have grown back.</p>';
     if (r.full)
         s += '<p class="mute">The nest filled up. Dig a bigger nest to keep growing.</p>';
     else if (r.hungry)
@@ -4658,9 +5317,14 @@ var MEL = [
     [['A4', 2], ['A4', 1], ['A4', 2], ['B4', 1]], [['C5', 2], ['B4', 1], ['C5', 2], ['A4', 1]], [['G4', 3], [null, 2], ['E4', 1]], [['G4', 3], [null, 2], ['E4', 1]],
     [['A4', 2], ['A4', 1], ['A4', 2], ['B4', 1]], [['C5', 2], ['B4', 1], ['C5', 2], ['D5', 1]], [['E5', 3], [null, 2], ['C5', 1]], [['E5', 3], [null, 2], ['C5', 1]],
     [['E5', 2], ['E5', 1], ['E5', 2], ['C5', 1]], [['D5', 2], ['D5', 1], ['D5', 2], ['B4', 1]], [['C5', 2], ['C5', 1], ['C5', 2], ['A4', 1]], [['B4', 2], ['B4', 1], ['B4', 2], ['G#4', 1]],
-    [['A4', 2], ['B4', 1], ['C5', 2], ['D5', 1]], [['E5', 2], ['D5', 1], ['C5', 2], ['B4', 1]], [['C5', 2], ['B4', 1], ['G#4', 2], ['B4', 1]], [['A4', 3], [null, 2], ['E4', 1]]
+    [['A4', 2], ['B4', 1], ['C5', 2], ['D5', 1]], [['E5', 2], ['D5', 1], ['C5', 2], ['B4', 1]], [['C5', 2], ['B4', 1], ['G#4', 2], ['B4', 1]], [['A4', 3], [null, 2], ['E4', 1]],
+    /* Verse B: the same marching rhythm lifted into C major, then home to A minor. Our own tune. */
+    [['E5', 2], ['E5', 1], ['E5', 2], ['G5', 1]], [['G5', 2], ['F5', 1], ['G5', 2], ['E5', 1]], [['F5', 3], [null, 2], ['C5', 1]], [['E5', 3], [null, 2], ['C5', 1]],
+    [['E5', 2], ['E5', 1], ['E5', 2], ['G5', 1]], [['G5', 2], ['E5', 1], ['G5', 2], ['A5', 1]], [['G5', 3], [null, 2], ['D5', 1]], [['D5', 3], [null, 2], ['B4', 1]],
+    [['F5', 2], ['F5', 1], ['F5', 2], ['E5', 1]], [['E5', 2], ['E5', 1], ['E5', 2], ['C5', 1]], [['D5', 2], ['D5', 1], ['D5', 2], ['B4', 1]], [['D5', 2], ['E5', 1], ['D5', 2], ['B4', 1]],
+    [['F5', 2], ['E5', 1], ['D5', 2], ['C5', 1]], [['B4', 2], ['C5', 1], ['D5', 2], ['G5', 1]], [['E5', 2], ['D5', 1], ['B4', 2], ['G#4', 1]], [['A4', 3], [null, 2], ['E4', 1]]
 ];
-var MCH = ['Am', 'Am', 'C', 'Am', 'Am', 'Am', 'C', 'C', 'C', 'G', 'Am', 'E', 'Am', 'G', 'E', 'Am'];
+var MCH = ['Am', 'Am', 'C', 'Am', 'Am', 'Am', 'C', 'C', 'C', 'G', 'Am', 'E', 'Am', 'G', 'E', 'Am', 'C', 'C', 'F', 'C', 'C', 'Am', 'G', 'G', 'F', 'C', 'G', 'G', 'Dm', 'G', 'E', 'Am'];
 var CHN = { Am: ['A', 'C', 'E'], G: ['G', 'B', 'D'], F: ['F', 'A', 'C'], C: ['C', 'E', 'G'], Dm: ['D', 'F', 'A'], E: ['E', 'G#', 'B'] };
 
 function noteF(n) {
@@ -4683,8 +5347,15 @@ function musicEngine(ctx, out) {
     conv.buffer = ir;
     dry.gain.value = 1;
     wet.gain.value = .04;
-    bus.connect(dry);
-    bus.connect(conv);
+    /* Soften the top end: pulse waves are very bright, so roll off the highs and add a gentle low-mid warmth. */
+    var tone = lp(2600, .4), shelf = ctx.createBiquadFilter();
+    shelf.type = 'highshelf';
+    shelf.frequency.value = 1400;
+    shelf.gain.value = -5;
+    bus.connect(tone);
+    tone.connect(shelf);
+    shelf.connect(dry);
+    shelf.connect(conv);
     conv.connect(wet);
     dry.connect(comp);
     wet.connect(comp);
@@ -4743,10 +5414,10 @@ function musicEngine(ctx, out) {
         g.connect(bus);
     };
     E.snare = function (t, v) {
-        var s = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), g = vca(t, .001, v * .8, .003, .07);
+        var s = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), g = vca(t, .001, v * .6, .003, .07);
         s.buffer = nb;
         hp.type = 'highpass';
-        hp.frequency.value = 2200;
+        hp.frequency.value = 1100;
         s.connect(hp);
         hp.connect(g);
         g.connect(bus);
@@ -4760,7 +5431,7 @@ function musicEngine(ctx, out) {
         g.connect(bus);
     };
     E.play = function (t, step, L, sd) {
-        var s = step % 96, bar = Math.floor(s / 6), pos = s % 6, cyc = Math.floor(step / 96), quiet = cyc % 4 === 3 && bar < 8 && !L.battle, ch = CHN[MCH[bar]], root = ch[0], k, at = 0, ev = null;
+        var s = step % 192, bar = Math.floor(s / 6), pos = s % 6, cyc = Math.floor(step / 192), quiet = (cyc % 4 === 3 && bar < 8 || L.night) && !L.battle, ch = CHN[MCH[bar]], root = ch[0], k, at = 0, ev = null;
         for (k = 0; k < MEL[bar].length; k++) {
             if (at === pos)
                 ev = MEL[bar][k];
@@ -4778,7 +5449,7 @@ function musicEngine(ctx, out) {
                 E.snare(t, sv * (pos === 0 ? 1 : .85));
             else if (pos === 2 || pos === 5)
                 E.snare(t, sv * .35);
-            if (L.battle && (bar === 7 || bar === 15) && pos >= 3)
+            if (L.battle && bar % 8 === 7 && pos >= 3)
                 for (k = 0; k < 3; k++)
                     E.snare(t + k * sd / 3, sv * (.5 + k * .15));
         }
@@ -4787,7 +5458,7 @@ function musicEngine(ctx, out) {
             E.clar(f, t, dur * .92, quiet ? .05 : .085);
             if (L.strings && bar >= 8)
                 E.str([f], t, dur * .95, .06);
-            if (L.battle && bar < 8)
+            if (L.battle && bar % 16 < 8)
                 E.brass(f / 2, t, dur * .8, .035);
             if (L.glock && pos === 0)
                 E.glock(f * 2, t, .05);
@@ -4809,9 +5480,9 @@ function musicEngine(ctx, out) {
     return E;
 }
 
-function musicLayers() { var p = popn(); return { strings: p >= 15, brass: p >= 40, glock: S.tier >= 2, battle: foes.length > 0 || !!RAID, boss: foes.some(function (f) { return f.boss; }) }; }
+function musicLayers() { var p = popn(); return { strings: p >= 15, brass: p >= 40, glock: S.tier >= 2, battle: foes.length > 0 || !!RAID, night: (function () { var h = new Date().getHours(); return h >= 21 || h < 6; })(), boss: foes.some(function (f) { return f.boss; }) }; }
 
-function musicStepDur(L) { return L.battle ? .2 : .25; }
+function musicStepDur(L) { return L.battle ? .2 : L.night ? .29 : .25; }
 
 function musicTick() {
     if (!MUS.eng || !AC || AC.state !== 'running')
@@ -4830,7 +5501,7 @@ function musicTick() {
 function musicSync() {
     if (!MUS.gain || !AC)
         return;
-    var want = MUS.on && !mut && !document.hidden ? .2 : 0;
+    var want = MUS.on && !mut && !document.hidden ? .17 : 0;
     MUS.gain.gain.setTargetAtTime(want, AC.currentTime, .25);
     var b = $('mus');
     if (b)
@@ -4963,7 +5634,7 @@ function openSettings() {
         el.id = 'settings';
         el.setAttribute('role', 'dialog');
         el.setAttribute('aria-modal', 'true');
-        el.innerHTML = '<div class="icard"><h3>Settings</h3>' +
+        el.innerHTML = '<div class="icard"><h3>Menu</h3><div class="irow" id="setquick" style="margin-bottom:10px;flex-wrap:wrap"></div>' +
             '<p class="mute" style="margin-top:-4px">Your colony saves itself on this device every second, and keeps a backup copy. You can also keep your own backup.</p>' +
             '<div class="irow" style="flex-wrap:wrap"><button class="card" id="setdl">Download backup file</button><button class="card" id="setcp">Copy save code</button></div>' +
             '<p style="margin:12px 0 4px"><b>Load a backup</b></p>' +
@@ -4974,6 +5645,8 @@ function openSettings() {
             '<p id="setnote" class="mute" style="min-height:1.4em;margin:10px 0" aria-live="polite"></p>' +
             '<div class="irow"><button class="card dig" id="setok">Done</button></div></div>';
         document.body.appendChild(el);
+        ['snd', 'mus', 'help'].forEach(function (id) { var b = $(id); b.className = 'card'; b.style.cssText = 'margin:0;justify-content:center;flex:1;min-width:90px'; $('setquick').appendChild(b); });
+        $('help').addEventListener('click', function () { el.classList.remove('on'); });
         $('setdl').onclick = downloadSave;
         $('setcp').onclick = copySave;
         $('setload').onclick = function () { tryLoadSave($('setcode').value); };
@@ -4995,7 +5668,10 @@ var BDEF = [
     { id: 'store', n: 'Food store', d: 'Holds 25% more food per level.', t: 1, c: 150 },
     { id: 'nest', n: 'Extra nursery', d: 'One more egg in every clutch, per level.', t: 1, c: 220 },
     { id: 'farm', n: 'Fungus farm', d: 'Grows food slowly. Needs nurses to tend it.', t: 2, c: 300 },
-    { id: 'rax', n: 'Barracks wing', d: 'Soldiers deal 12% more damage per level and break beetle armour.', t: 2, c: 260 }
+    { id: 'rax', n: 'Barracks wing', d: 'Soldiers deal 12% more damage per level and break beetle armour.', t: 2, c: 260 },
+    { id: 'archive', n: 'Archive', d: 'Metropolis district. Keepers of old finds slowly make royal jelly.', t: 4, c: 1500, g: 1.75 },
+    { id: 'hatch', n: 'Grand hatchery', d: 'Metropolis district. Eggs hatch 10% faster per level.', t: 4, c: 1500, g: 1.75 },
+    { id: 'tower', n: 'Watchtower', d: 'Metropolis district. Invaders hit 8% weaker per level.', t: 4, c: 1500, g: 1.75 }
 ];
 var ODEF = [
     { k: 'wk', n: 'Workers', o: ['Dig tunnels', 'Balanced', 'Build and maintain'], d: 'Maintaining builds faster, clears debris, and limits flood damage.' },
@@ -5007,7 +5683,7 @@ var THR = null, thT = 100, ordKey = '', mitesT = 7;
 
 function setOrd(k, v) { S.orders[k] = v; ordKey = ''; ordersUi(); }
 
-function bCost(i) { var b = BDEF[i]; return Math.round(b.c * (1 + S.tier * .9) * Math.pow(2.8, S.bld[b.id]) * (b.id === 'farm' && S.spores ? .75 : 1)); }
+function bCost(i) { var b = BDEF[i]; return Math.round(b.c * (1 + S.tier * .9) * Math.pow(b.g || 2.8, S.bld[b.id]) * (b.id === 'farm' && S.spores ? .75 : 1)); }
 
 function startBuild(i) {
     var b = BDEF[i], lv = S.bld[b.id];
@@ -5023,8 +5699,23 @@ function startBuild(i) {
 
 function buildTick(dt) {
     var pj = S.proj;
-    if (!pj)
-        return;
+    if (pj)
+        projTick(dt, pj);
+    if (S.bld.archive) {
+        S.archT = (S.archT || 0) + dt;
+        if (S.archT >= 240 / S.bld.archive) {
+            S.archT = 0;
+            gainJelly(1);
+        }
+    }
+    if (S.bld.farm) {
+        var g = S.bld.farm * (.12 + .04 * S.tier) * (1 + .25 * springCount()) * (S.spores ? 1.25 : 1) * Math.min(1, healthy(0) / (S.bld.farm * 4)) * dt;
+        S.food = Math.min(foodCap(), S.food + g);
+        earnAcc += g;
+    }
+}
+
+function projTick(dt, pj) {
     var rate = (1 + Math.min(S.workers, 18) / 6) * (S.orders.wk === 2 ? 1.8 : S.orders.wk === 0 ? .6 : 1);
     pj.left -= dt * rate;
     if (pj.left <= 0) {
@@ -5035,11 +5726,6 @@ function buildTick(dt) {
         SFX.win();
         burst(W * .5, WH - 20, 24, ['#ffd23f', '#fff', '#a07a4a'], 90);
         ordKey = '';
-    }
-    if (S.bld.farm) {
-        var g = S.bld.farm * (.12 + .04 * S.tier) * (1 + .25 * springCount()) * (S.spores ? 1.25 : 1) * Math.min(1, healthy(0) / (S.bld.farm * 4)) * dt;
-        S.food = Math.min(foodCap(), S.food + g);
-        earnAcc += g;
     }
 }
 
@@ -5076,7 +5762,7 @@ function ordersUi() {
 function drawBuild(now) {
     var bx = W * .5, by = WH - 12;
     BDEF.forEach(function (b, i) {
-        var lv = S.bld[b.id], x = bx + (i - 1.5) * 38;
+        var lv = S.bld[b.id], x = bx + (i - 3) * 34;
         for (var j = 0; j < lv; j++) {
             var ox = x + (j % 2) * 6 - 3, oy = by - Math.floor(j / 2) * 5;
             if (i === 0) {
@@ -5098,22 +5784,64 @@ function drawBuild(now) {
                 cx.fill();
                 cx.fillRect(ox - .7, oy - 2, 1.4, 3);
             }
-            else {
+            else if (i === 3) {
                 cx.fillStyle = '#c7ccd1';
                 cx.fillRect(ox - .6, oy - 7, 1.2, 8);
+            }
+            else if (i === 4) {
+                cx.fillStyle = '#b8a07a';
+                cx.fillRect(ox - 3.5, oy - 2.4, 7, 2.4);
+                cx.fillStyle = '#6a5436';
+                cx.fillRect(ox - 3.5, oy - .4, 7, .5);
+            }
+            else if (i === 5) {
+                cx.fillStyle = '#efe3c0';
+                cx.beginPath();
+                cx.ellipse(ox, oy - 2.4, 2.4, 3.2, 0, 0, 7);
+                cx.fill();
+                cx.strokeStyle = '#d9a82e';
+                cx.lineWidth = .7;
+                cx.stroke();
+            }
+            else {
+                cx.fillStyle = '#6a4a2a';
+                cx.fillRect(ox - .8, oy - 9, 1.6, 9);
+                cx.fillStyle = 'rgba(255,200,90,' + (.7 + .3 * Math.sin(now * .01 + j)) + ')';
+                cx.beginPath();
+                cx.arc(ox, oy - 10, 1.6, 0, 7);
+                cx.fill();
             }
         }
     });
     if (S.proj) {
         var a = Math.sin(now * .004) * .5 + .5;
         cx.fillStyle = 'rgba(255,220,140,' + (.25 + a * .3) + ')';
-        cx.fillRect(bx - 66, by - 12, 132, 2);
+        cx.fillRect(bx - 120, by - 12, 240, 2);
     }
 }
 
 function blockChance() {
     var patrol = (1 - S.orders.gd / 100) * Math.min(1, S.soldiers / 15) * .85;
     return 1 - (1 - patrol) * (1 - (S.orders.fg === 3 ? .5 : 0));
+}
+
+/* Where the spider is lurking: at the food spot it is guarding, or near the middle of the tunnel. */
+function lairPos() {
+    var sp = S.foodSpots.filter(function (x) { return x.lair > 0; })[0], a = at(sp ? sp.p : .5);
+    return { x: a.x + a.nx * (sp ? sp.side * 5 : 0), y: a.y + a.ny * (sp ? sp.side * 5 : 0), ang: a.ang, p: sp ? sp.p : .5 };
+}
+
+function scareForagers(lp) { marchers.forEach(function (m) { if (m.k === 1 && !m.inj && m.sf == null && Math.abs(m.p - lp.p) < .14)
+    m.pan = 3; }); }
+
+function drawLurker(now) {
+    if (!THR || THR.k !== 'spider' || S.dug < .2)
+        return;
+    var lp = lairPos();
+    cx.save();
+    cx.translate(0, -cam);
+    drawFoe(lp.x, lp.y, lp.ang + Math.sin(now * .002) * .3, 4.2 + S.tier * .4, 1, now * .006);
+    cx.restore();
 }
 
 function threatText(m) { var t = $('thr'); if (t) t.textContent = m || ''; }
@@ -5193,23 +5921,27 @@ function threatTick(dt) {
         T2.a = 4;
         T2.n = (T2.n || 0) + 1;
         if (Math.random() < blockChance()) {
-            fx.push({ x: QX, y: QY - 20, vx: 0, vy: -20, l: 1.2, t: 'driven off', f: 12, c: '#7ee08a', g: 0 });
+            var lq = lairPos();
+            fx.push({ x: lq.x, y: lq.y - 8, vx: 0, vy: -20, l: 1.3, t: 'driven off', f: 12, c: '#7ee08a', g: 0 });
             if (Math.random() < .5)
                 THR = null;
         }
         else if (T2.k === 'spider') {
             if (healthy(1) > 0) {
+                var lp = lairPos();
+                scareForagers(lp);
                 if (S.orders.nu < 75 && S.foragers > 4 && Math.random() < .25) {
                     addc(1, -1);
                     sync();
                     SFX.hit();
-                    fx.push({ x: QX, y: QY - 20, vx: 0, vy: -20, l: 1.2, t: 'forager lost!', f: 12, c: '#ff8a7a', g: 0 });
+                    fallen.push({ x: lp.x, y: lp.y, ang: Math.random() * 6, k: 1, t: 5, s: Math.random() * 2 - 1 });
+                    fx.push({ x: lp.x, y: lp.y - 8, vx: 0, vy: -20, l: 1.4, t: 'forager lost!', f: 12, c: '#ff8a7a', g: 0 });
                 }
                 else {
                     S.injured[1]++;
                     sync();
                     SFX.hit();
-                    fx.push({ x: QX, y: QY - 20, vx: 0, vy: -20, l: 1.2, t: 'forager ambushed!', f: 12, c: '#ff8a7a', g: 0 });
+                    fx.push({ x: lp.x, y: lp.y - 8, vx: 0, vy: -20, l: 1.4, t: 'ambushed!', f: 12, c: '#ff8a7a', g: 0 });
                 }
             }
         }
@@ -5425,9 +6157,9 @@ catch (e) { }
 /* ======================================================================
    STARTUP
    ====================================================================== */
-IP = ['<h3>Welcome to Antropolis</h3><p>You are the queen of a brand new ant colony. Your job is to grow it from a handful of ants into a thriving nest.</p><p>Every <b>30 seconds</b> you lay an egg on your own. Tap the queen on the <b>Nest</b> tab to hurry the next one.</p>',
+IP = ['<h3>Welcome to Antropolis</h3><p>You are a queen ant and you have burrowed deep beneath the ground. You have found an abandoned egg chamber, and in it lies a dead queen. You take your chance to start your own colony, and her remains are your first food.</p><p>Every <b>30 seconds</b> you lay an egg on your own. Tap the queen on the <b>Nest</b> tab to hurry the next one.</p>',
     '<h3>Five kinds of ant</h3><p>Every egg hatches into one of five kinds of ant. It is a random roll, so you get a mix.</p><p>' + chipRow([6, 0, 1, 2, 3]) + '</p><p><b>Workers</b> dig every tunnel and chamber, and only they can dig. <b>Nurses</b> heal hurt ants and tend eggs. <b>Foragers</b> bring food. <b>Soldiers</b> defend the tunnel. <b>Scouts</b> explore, find treasure and warn you about waves.</p><p>About 1 egg in 5,000 is a <b>golden egg</b> that hatches a mighty Super Major. The odds are shown on the Nest tab.</p>',
-    '<h3>Food keeps everything going</h3><p>Early on, workers discover food spots while they dig, and foragers harvest them. Spots slowly grow back. Once you break through to the surface, foragers also pick leaves and scavenge dead bugs. Food is shown at the top right.</p><p>Eggs, upgrades and digging deeper all cost food, and every ant eats a little. With no food, ants starve, so make sure you have foragers.</p>',
+    '<h3>Food keeps everything going</h3><p>You begin with what is left of the dead queen. Soon workers discover food spots while they dig, and foragers harvest them once the tunnel is long enough to walk. Spots slowly grow back. Once you break through to the surface, foragers also pick leaves and scavenge dead bugs. Food is shown at the top right.</p><p>Eggs, upgrades and digging deeper all cost food, and every ant eats a little. With no food, ants starve, so make sure you have foragers.</p>',
     '<h3>Defend your nest</h3><p>Once your tunnel breaks through to the surface, invaders come down it in waves. Wood lice are slow and may kill a few ants, but they are no real threat. Your soldiers fight them. Hurt ants limp to the infirmary and nurses heal them.</p><p>If invaders reach the queen and her health runs out, the colony falls. Open the <b>Tunnel</b> tab to watch the fights, and use the Surface, Front line and Nest buttons to look around.</p>',
     '<h3>Grow and upgrade</h3><p>On the <b>Colony</b> tab, dig a bigger nest once you have enough ants and food. Each stage fits more ants, unlocks a named chamber with a bonus and zooms the map out.</p><p><b>Royal jelly</b> comes from cleared waves, bosses and scout finds. Tap an ant class or the queen on the Colony tab to level them up. The <b>Goal</b> card above the nest always tells you what to do next. Tap any ant to follow it and see what it is doing. Once the nest is fully dug you can build an anthill on the surface, but raiders will come for it.</p>'];
 $('inext').onclick = function () { if (ii >= IP.length - 1)
@@ -5503,7 +6235,7 @@ catch (e) {
     $('thelp').onclick = function () { go(); setTimeout(introOpen, 300); };
 })();
 if (S.totalHatched === 0 && S.dug === 0)
-    toast('Your first worker is digging up from deep underground. Tap the queen to hurry the next egg.');
+    toast('An old egg chamber, and a dead queen. Her remains feed your first brood. Tap the queen to hurry an egg.');
 window.addEventListener('resize', sizeT);
 cv.classList.toggle('tunmode', tab === 'tun');
 cv.classList.toggle('nestmode', tab !== 'tun');
