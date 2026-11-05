@@ -564,6 +564,10 @@ cv.addEventListener('pointerup', function (e) {
     tdn = null;
     if (moved > 8 || dtp > 450)
         return;
+    if (tab !== 'tun') {
+        sel = null;
+        return;
+    }
     var r = cv.getBoundingClientRect(), sc = K * uz, wx = camX + (e.clientX - r.left) / sc, wy = cam + (e.clientY - r.top) / sc, best = null, bd = 12 + 8 / uz;
     marchers.forEach(function (m) { if (m.wx == null)
         return; var d = Math.hypot(m.wx - wx, m.wy - wy); if (d < bd) {
@@ -1320,11 +1324,44 @@ function genPebs() {
 
 function viewH() { return Math.max(400, Math.min(640, Math.round((document.documentElement.clientHeight - 300) / 20) * 20)); }
 
+/* Render quality: phones have very dense screens, so drawing every pixel is slow. Start at a sensible cap,
+   and step down automatically if the game cannot keep up (remembered for next time). */
+var rqStep = 0, RQ = [2, 1.5, 1.2, 1, .8], rqAcc = 0, rqN = 0, rqWarm = 45;
+try { rqStep = Math.min(RQ.length - 1, Math.max(0, parseInt(localStorage.getItem('thecolony_rq'), 10) || 0)); }
+catch (e) { }
+if (!rqStep && window.matchMedia && window.matchMedia('(pointer:coarse)').matches)
+    rqStep = 1;
+
+function rqDpr() { return Math.min(window.devicePixelRatio || 1, RQ[rqStep]); }
+
+function rqTick(dt) {
+    if (rqWarm > 0) {
+        rqWarm--;
+        return;
+    }
+    if (dt >= .1 || dt <= 0)
+        return;
+    rqAcc += dt;
+    if (++rqN < 45)
+        return;
+    var avg = rqAcc / rqN;
+    rqAcc = rqN = 0;
+    if (avg > .027 && rqStep < RQ.length - 1 && rqDpr() > RQ[RQ.length - 1]) {
+        rqStep++;
+        try { localStorage.setItem('thecolony_rq', String(rqStep)); }
+        catch (e) { }
+        dpr = rqDpr();
+        cv.width = Math.round((sizeT.cw || cv.clientWidth) * dpr);
+        cv.height = Math.round((parseFloat(cv.style.height) || cv.clientHeight) * dpr);
+        rqWarm = 30;
+    }
+}
+
 function sizeT() {
     layoutV++;
     var oW = W, oWH = WH;
     K = 1.1 * ZM[S.tier];
-    dpr = window.devicePixelRatio || 1;
+    dpr = rqDpr();
     var cw = cv.clientWidth || sizeT.cw || 320;
     if (cv.clientWidth)
         sizeT.cw = cv.clientWidth;
@@ -6003,6 +6040,8 @@ function frame(n) {
     }
     var dt = Math.min((n - lt) / 1000, .1);
     lt = n;
+    if (tab !== 'col' && !battery)
+        rqTick(dt);
     if (!dead) {
         S.days = (S.days || 0) + dt / 180;
         if (!foes.length)
