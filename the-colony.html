@@ -27,6 +27,12 @@ h2::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradi
 .mute{color:var(--mute)}
 .scene{position:relative;border-radius:26px;overflow:hidden;background:#2a1d13;touch-action:manipulation;box-shadow:0 18px 40px -16px rgba(0,0,0,.8),0 0 0 1px var(--accent),0 0 22px -6px rgba(232,110,40,.45)}
 canvas{display:block;width:100%;height:400px;touch-action:manipulation}
+#tov{display:none}body.tt #tov{display:block}
+#tov>*{position:absolute;z-index:3}#tov .card{margin:0;padding:6px 10px;font-size:13px;line-height:1.15;justify-content:center;border-radius:14px;background:rgba(30,20,10,.66);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#tstw{top:8px;left:8px;max-width:calc(100% - 130px);background:rgba(30,20,10,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:12px;padding:5px 9px;font-size:12px;line-height:1.3;color:#fff4df;cursor:pointer}#tstw p,#tinfo p{margin:0}#tstw::after{content:" \24D8";opacity:.6}
+#tinfo{display:none;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.15)}#tinfo.on{display:block}
+#tzoom{top:44px;right:8px;display:flex;flex-direction:column;gap:6px;width:52px}#tzoom .card{width:52px;font-size:12px;padding:8px 0}#zin,#zout{font-size:22px!important;padding:4px 0!important}
+#tbot{left:8px;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px;pointer-events:none}#tbot .card,#tbot #abil,#tbot #wrow{pointer-events:auto}#tbot .card{flex:1}#tbot .card span{display:block}#tbot .card small,#tbot .card .mute{font-size:11px}
 canvas.zin{animation:zin 1.1s ease-out}
 @keyframes zin{from{transform:scale(1.7)}to{transform:scale(1)}}
 .pn{display:none}.pn.on{display:block;animation:fin .3s ease both}
@@ -66,7 +72,7 @@ canvas.zin{animation:zin 1.1s ease-out}
 .hud{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;z-index:2}.hchip{background:rgba(30,20,10,.58);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff4df;border-radius:16px;padding:6px 13px;box-shadow:0 4px 14px -6px rgba(0,0,0,.6)}.hchip.r{text-align:right}.hchip b{font:400 30px/1 var(--fh);letter-spacing:.03em;color:#fff4df}.hchip small{display:block;font:600 11px var(--ff);opacity:.82;margin-top:2px}.hchip small b{font:700 11px var(--ff)}
 /* Tunnel tab: the map gets the room. Header and goal card hide, and the ant count shrinks to a tiny chip top right. */
 body.tt .brand,body.tt .top,body.tt .tpw,body.tt #goals,body.tt #goal,body.tt .hchip.r{display:none}
-body.tt main{padding-top:10px}
+body.tt main{padding-top:10px;padding-bottom:0}body.tt{overflow:hidden}
 body.tt .hud{justify-content:flex-end;top:8px;right:8px}
 body.tt .hchip{display:flex;align-items:baseline;gap:5px;padding:3px 9px;border-radius:12px}
 body.tt .hchip b{font-size:15px;letter-spacing:.02em}
@@ -129,7 +135,11 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 <div class="top"><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
 <div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
 <div id="goals"></div><p id="goal" class="gline"></p>
-<div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food · <b id="jel">0</b> jelly</small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas></div>
+<div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food · <b id="jel">0</b> jelly</small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
+ <div id="tzoom"><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
+ <div id="tbot"><div id="abil" style="display:none;gap:6px"><button class="card" id="abR">Rally</button><button class="card" id="abA">Sound the alarm</button></div>
+ <div id="wrow" style="display:none;gap:6px"><button class="card" id="jw">&#9664; West</button><button class="card" id="jh">Home</button><button class="card" id="je">East &#9654;</button></div>
+ <div style="display:flex;gap:6px"><button class="card" id="j0">Surface</button><button class="card" id="j1">Front line</button><button class="card" id="j2">Nest</button></div></div></div></div>
 
 <div class="pn on" id="p-nest">
  <div class="row"><b>Queen’s health</b><span id="hpt"></span></div><div class="bar"><i id="hpb" style="background:#c0452d"></i></div>
@@ -137,21 +147,25 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
  <div class="mute" style="margin-top:12px">Egg chances</div><div class="chips" id="chance"></div>
  <p class="mute" id="hint"></p>
 </div>
-<div class="pn" id="p-tun"><p id="tst" style="margin:12px 0 4px"></p><p class="mute" id="tdf" style="margin:0 0 4px"></p><p class="mute" id="tin" style="margin:0"></p>
- <div style="display:flex;gap:6px;margin-top:6px"><button class="card" id="j0" style="margin:0;justify-content:center">Surface</button><button class="card" id="j1" style="margin:0;justify-content:center">Front line</button><button class="card" id="j2" style="margin:0;justify-content:center">Nest</button></div><div id="wrow" style="display:none;gap:6px;margin-top:6px"><button class="card" id="jw" style="margin:0;justify-content:center">&#9664; West</button><button class="card" id="jh" style="margin:0;justify-content:center">Home</button><button class="card" id="je" style="margin:0;justify-content:center">East &#9654;</button></div><div style="display:flex;gap:6px;margin-top:6px"><button class="card" id="zin" aria-label="Zoom in" style="margin:0;justify-content:center;flex:0 0 52px;width:52px;font-size:22px;padding:8px 0">+</button><button class="card" id="zout" aria-label="Zoom out" style="margin:0;justify-content:center;flex:0 0 52px;width:52px;font-size:22px;padding:8px 0">−</button><button class="card" id="zfit" style="margin:0;justify-content:center">Reset</button><button class="card" id="zfol" style="margin:0;justify-content:center">Follow an ant</button></div></div>
+<div class="pn" id="p-tun"></div>
 <div class="pn" id="p-col">
- <h2>Dig deeper</h2><div id="tier"></div>
- <h2>Chambers</h2><p class="mute" id="rooms" style="margin:0 0 4px"></p><h2>The Anthill</h2><p class="mute" id="hilltx" style="margin:0 0 6px"></p><button class="card dig" id="hillbtn" style="margin:0 0 10px">Build</button><h2>Your ants and queen</h2><p class="mute" style="margin:0 0 4px">Tap a card to level it up with royal jelly. Jelly comes from cleared waves, bosses, scout finds, milestones and golden eggs.</p><div id="bl"></div>
+ <div id="daily"></div>
+ <div id="nextup"></div>
+ <h2>Next nest</h2><div id="tier"></div>
+ <h2>Build and upgrade</h2><div id="rooms" style="margin:0 0 4px"></div><div id="build"></div>
+ <h2>Quests</h2><div id="quests"></div>
+ <h2>Shop</h2><div id="shop"></div>
+ <h2>Your ants and queen</h2><p class="mute" style="margin:0 0 4px">Tap a card to level up with royal jelly. Earn jelly from waves, bosses, finds and daily tasks.</p><div id="bl"></div>
+ <h2>The Anthill</h2><p class="mute" id="hilltx" style="margin:0 0 6px"></p><button class="card dig" id="hillbtn" style="margin:0 0 10px">Build</button>
  <h2>The Great Colony</h2><div id="great"></div>
  <h2>Colony orders</h2><div id="orders"></div><p class="mute" id="thr" style="margin:6px 0 0"></p>
- <h2>Build</h2><div id="build"></div>
- <h2>Upgrades</h2><div id="ul"></div>
  <h2>Achievements</h2><div id="ach" style="margin:0 0 8px"></div><h2>Royal flight</h2><p class="mute" id="prinfo" style="margin:0"></p><div id="pr"></div>
  <button class="link" id="reset">Erase everything</button>
 </div>
+<div class="pn" id="p-store"><div id="store"></div></div>
 </main>
-<nav class="nav"><button data-t="nest" class="on"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkN"><rect width="96" height="96" fill="#fff"/><path d="M36 84V68C36 55 60 55 60 68V84Z" fill="#000"/></mask></defs><g mask="url(#mkN)"><path d="M10 84H86" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M15 84C15 56 29 32 48 32S81 56 81 84Z"/></g><path d="M68 30q2-9 9-12M72 31q7-5 13-3" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span>Nest</button><button data-t="tun"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkT"><rect width="96" height="96" fill="#fff"/><path d="M42 12V46C42 60 56 58 56 72V90M42 46H30" stroke="#000" stroke-width="11" fill="none"/><circle cx="25" cy="46" r="9" fill="#000"/></mask></defs><g mask="url(#mkT)"><rect x="12" y="14" width="72" height="72" rx="14"/></g></svg></span>Tunnel</button><button data-t="col"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkC"><rect width="96" height="96" fill="#fff"/><circle cx="30" cy="30" r="6" fill="#000"/><circle cx="66" cy="30" r="6" fill="#000"/><circle cx="48" cy="70" r="7.5" fill="#000"/></mask></defs><path d="M30 30H66M30 30L48 70M66 30L48 70" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/><g mask="url(#mkC)"><circle cx="30" cy="30" r="14"/><circle cx="66" cy="30" r="14"/><circle cx="48" cy="70" r="16"/></g></svg></span>Colony</button></nav>
-<div class="over" id="gen" style="background:radial-gradient(ellipse at center,rgba(70,50,10,.9),rgba(8,4,2,.96))"><div style="font-size:13px;letter-spacing:.2em;color:#e8b04a">A NEW AGE</div><h2 id="gent" style="font-size:38px;margin:0;color:#ffd23f"></h2><div id="genp" style="max-width:330px;text-align:left;font-size:15px;line-height:1.35"></div><button class="card dig" id="gencont" style="max-width:340px"><b>Begin the new generation</b></button></div>
+<nav class="nav"><button data-t="nest" class="on"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkN"><rect width="96" height="96" fill="#fff"/><path d="M36 84V68C36 55 60 55 60 68V84Z" fill="#000"/></mask></defs><g mask="url(#mkN)"><path d="M10 84H86" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M15 84C15 56 29 32 48 32S81 56 81 84Z"/></g><path d="M68 30q2-9 9-12M72 31q7-5 13-3" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span>Nest</button><button data-t="tun"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkT"><rect width="96" height="96" fill="#fff"/><path d="M42 12V46C42 60 56 58 56 72V90M42 46H30" stroke="#000" stroke-width="11" fill="none"/><circle cx="25" cy="46" r="9" fill="#000"/></mask></defs><g mask="url(#mkT)"><rect x="12" y="14" width="72" height="72" rx="14"/></g></svg></span>Tunnel</button><button data-t="col"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkC"><rect width="96" height="96" fill="#fff"/><circle cx="30" cy="30" r="6" fill="#000"/><circle cx="66" cy="30" r="6" fill="#000"/><circle cx="48" cy="70" r="7.5" fill="#000"/></mask></defs><path d="M30 30H66M30 30L48 70M66 30L48 70" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/><g mask="url(#mkC)"><circle cx="30" cy="30" r="14"/><circle cx="66" cy="30" r="14"/><circle cx="48" cy="70" r="16"/></g></svg></span>Colony</button><button data-t="store"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><path d="M12 72L8 28L30 46L48 18L66 46L88 28L84 72Z"/><rect x="12" y="78" width="72" height="9" rx="3"/></svg></span>Store</button></nav>
+<div class="over" id="gen" style="background:radial-gradient(ellipse at center,rgba(70,50,10,.9),rgba(8,4,2,.96))"><div style="font-size:13px;letter-spacing:.2em;color:#e8b04a">A NEW AGE</div><h2 id="gent" style="font-size:38px;margin:0;color:#ffd23f"></h2><div id="genp" style="max-width:330px;max-height:62vh;overflow-y:auto;text-align:left;font-size:15px;line-height:1.35"></div><button class="card dig" id="gencont" style="max-width:340px"><b>Begin the new generation</b></button></div>
 <div class="over" id="adov" style="z-index:30;background:rgba(8,4,2,.94)"><div style="font-size:12px;letter-spacing:.2em;color:#e8b04a">REWARDED AD</div><h2 id="adt" style="font-size:26px;margin:0"></h2><p id="adp" style="max-width:320px;margin:0"></p><button class="card dig" id="adgo" style="max-width:340px" disabled><b id="adgot">Please wait...</b></button><button class="card" id="adno" style="max-width:340px;justify-content:center">No thanks</button></div>
 <div class="over" id="evt" style="z-index:25;background:rgba(8,4,2,.9)"><div style="font-size:12px;letter-spacing:.2em;color:#e8b04a">SOMETHING HAPPENED</div><h2 id="evtt" style="font-size:26px;margin:0"></h2><p id="evtp" style="max-width:330px;margin:0"></p><button class="card dig" id="evta" style="max-width:340px"></button><button class="card dig" id="evtb" style="max-width:340px"></button></div>
 <div class="over" id="over"><h2 style="font-size:32px;margin:0">The nest has fallen</h2><p id="overp" style="max-width:320px"></p><button class="card dig" id="adrev" style="max-width:340px"><b>Watch an ad to save the queen</b></button><button class="card dig" id="again"><b>Found a new colony</b></button></div>
@@ -162,7 +176,7 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 <div class="toast" id="toast"></div>
 
 <script>
-/* Safety: a canvas ellipse with a negative radius throws and would stop the frame, so clamp radii at zero. */
+// safety: a canvas ellipse with a negative radius throws and would stop the frame, so clamp radii at zero
 (function () { var E = CanvasRenderingContext2D.prototype.ellipse; CanvasRenderingContext2D.prototype.ellipse = function (x, y, rx, ry, r, a0, a1, ccw) { if (!(rx >= 0))
     rx = rx < 0 ? -rx : 0; if (!(ry >= 0))
     ry = ry < 0 ? -ry : 0; return E.call(this, x, y, rx, ry, r, a0, a1, ccw); }; })();
@@ -196,9 +210,7 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 
    Functions are hoisted, so their order in the file does not affect how the game runs. */
 
-/* ======================================================================
-   0. GAME DATA AND STATE
-   ====================================================================== */
+// ---- game data and state ----
 /* ----------------------------------------------------------------------
    GLOSSARY: what the saved colony (S) holds
      tier          nest stage, 0 = Dirt hole ... 4 = Supercolony
@@ -232,7 +244,8 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
    Worker ants live in 'crewA': st is their job step (dig, out, drop, back, or t... for upkeep).
    ---------------------------------------------------------------------- */
 var $ = function (i) { return document.getElementById(i); };
-window.onerror = function (m, s, l) { var d = document.createElement('div'); d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99;background:#7a1f12;color:#fff;padding:8px 12px;font:13px system-ui'; d.textContent = 'The Colony hit an error: ' + m + ' (line ' + l + '). Please screenshot this and send it to the developer.'; document.body.appendChild(d); };
+window.onerror = function (m, s, l) { if (!l && /^Script error\.?$/.test(m))
+    return true; /* no details: comes from the browser or an extension, not the game */ var d = document.createElement('div'); d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99;background:#7a1f12;color:#fff;padding:8px 12px;font:13px system-ui'; d.textContent = 'The Colony hit an error: ' + m + ' (line ' + l + '). Please screenshot this and send it to the developer.'; document.body.appendChild(d); };
 var T = [{ n: 'Dirt hole', c: 0 }, { n: 'Burrow', c: 1500 }, { n: 'Colony', c: 20000 }, { n: 'Anthill', c: 200000 }, { n: 'Supercolony', c: 1000000 }];
 var U = [];
 var LG = [
@@ -263,6 +276,8 @@ var SFX = {
 };
 card($('tier'), 'tierbtn', function () { dig(); }).classList.add('dig');
 var fly = card($('pr'), 'fly', function () { royal(); });
+$('abR').onclick = rallyGo;
+$('abA').onclick = alarmGo;
 $('gencont').onclick = function () { $('gen').classList.remove('on'); };
 fly.classList.add('dig');
 LG.forEach(function (l) { card($('pr'), 'l-' + l.id, function () { perk(l); }); });
@@ -369,7 +384,7 @@ $('snd').onclick = function () { mut = !mut; this.textContent = mut ? 'Sound off
 var tab = 'nest', camT = 0;
 document.querySelectorAll('.nav button').forEach(function (b) { b.onclick = function () { go(b.dataset.t); }; });
 var cv = $('cv'), cx = cv.getContext('2d'), W = 320, H = 267, WH = 534, K = 1.1, dpr = 1, cam = 0, PT = [], CUM = [], LEN = 0, pebs = [], marchers = [], fx = [], foes = [], wvi = { n: 0 }, nf = 0, QX = 160, QY = 480, pulse = 0, shake = 0, lastP = 0, dtip = 0;
-/* The queen wanders slowly around her chamber and goes back to her bed now and then. Offsets are from the chamber centre. */
+// the queen wanders slowly around her chamber and goes back to her bed now and then
 var Q = { ox: 7, oy: -3, tx: 7, ty: -3, fx: 1, tf: 1, ph: 0, wait: 4, tilt: 0, n: 0, sv: 0 };
 function qPos() { return { x: QX + Q.ox, y: QY + Q.oy }; }
 function qRear() { var s = 17 / Math.sqrt(ZM[S.tier]); return { x: QX + Q.ox - Q.fx * s * 2.3, y: QY + Q.oy + 5 }; }
@@ -431,8 +446,8 @@ cv.addEventListener('pointerdown', function (e) {
     SFX.lay();
     fx.push({ x: QX + Q.ox + Math.random() * 50 - 25, y: QY + Q.oy - 31, vx: 0, vy: -40, l: .9, t: '-' + cut.toFixed(1) + 's', f: 13, c: '#ffe9a8', g: 0 });
 });
-var FARM = [], FARMP = [], BRN = [], BP = [], MP = [], MAIN = null, nbt = 25, ltx = performance.now(), follow = 0, dy0 = null;
-/* Speed trick: skip re-setting innerHTML when the text has not changed (the HUD updates every frame). */
+var DEEP = [], DEEPP = [], FARM = [], FARMP = [], BRN = [], BP = [], MP = [], MAIN = null, nbt = 25, ltx = performance.now(), follow = 0, dy0 = null;
+// speed trick: skip re-setting innerHTML when the text has not changed (the HUD updates every frame)
 try {
     (function () { var d = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML'); Object.defineProperty(Element.prototype, 'innerHTML', { get: d.get, set: function (v) { if (this._h === v)
             return; this._h = v; d.set.call(this, v); }, configurable: true }); })();
@@ -458,8 +473,6 @@ U = [{ id: 'dig', n: 'Strong mandibles', d: 'Your ants dig twice as fast.', c: 1
     { id: 'twin', n: 'Twin eggs', d: 'The queen lays two eggs at a time.', c: 250, t: 'clutch', m: 2 },
     { id: 'guard', n: 'Royal guard', d: 'The queen takes half damage.', c: 300, t: 'guard', m: .5 },
     { id: 'leaf2', n: 'Fungus gardens', d: 'Foragers carry twice as much again.', c: 600, t: 'forager', m: 2 }];
-$('ul').textContent = '';
-U.forEach(function (u) { card($('ul'), 'u-' + u.id, function () { upg(u); }); });
 var GOLD = 1 / 5000, ORD = [6, 0, 1, 2, 3], CW = [22, 28, 26, 14, 10], CN = ['Nurse', 'Forager', 'Soldier', 'Scout', 'Super Major'], CC = ['#f2a6c1', '#6fbf4a', '#d9452b', '#4aa8d8', '#b5382a'], KD = [4, 5, 1, 6, 7], SZ = [3.4, 3.6, 4.8, 3.6, 14.4];
 CN[6] = 'Worker';
 CC[6] = '#c9962f';
@@ -569,6 +582,8 @@ cv.addEventListener('pointerup', function (e) {
         return;
     }
     var r = cv.getBoundingClientRect(), sc = K * uz, wx = camX + (e.clientX - r.left) / sc, wy = cam + (e.clientY - r.top) / sc, best = null, bd = 12 + 8 / uz;
+    if (goldTap(wx, wy))
+        return;
     marchers.forEach(function (m) { if (m.wx == null)
         return; var d = Math.hypot(m.wx - wx, m.wy - wy); if (d < bd) {
         bd = d;
@@ -587,9 +602,7 @@ cv.addEventListener('pointerup', function (e) {
     }
 });
 
-/* ======================================================================
-   1. HELPERS
-   ====================================================================== */
+// ---- helpers ----
 
 function pk(i) { return P.perks[i] || 0; }
 
@@ -637,9 +650,7 @@ function toastNext() {
 
 function card(par, id, fn) { var b = document.createElement('button'); b.className = 'card'; b.id = id; b.onclick = fn; par.appendChild(b); return b; }
 
-/* ======================================================================
-   2. AUDIO AND HAPTICS
-   ====================================================================== */
+// ---- audio and haptics ----
 
 function au() { if (!AC) {
     try {
@@ -676,9 +687,7 @@ catch (e) { } }
 
 function seq(fs, gap, ty, v) { fs.forEach(function (f, i) { setTimeout(function () { tn(f, .18, ty || 'triangle', v || .12); }, i * gap); }); }
 
-/* ======================================================================
-   3. SAVING, LOADING AND STARTING A NEW COLONY
-   ====================================================================== */
+// ---- saving, loading and starting a new colony ----
 
 function fresh() { return { totalHatched: 0, upgrades: {}, tier: 0, dug: 0, food: 14, queenHp: 100, wave: 0, savedAt: Date.now(), seed: (Math.random() * 4e9) >>> 0, sideTunnels: 0, sideDug: [], nurses: 1, foragers: 2, soldiers: 1, scouts: 1, superMajors: 0, workers: 1, injured: [0, 0, 0, 0, 0, 0, 0], eggs: [], layTimer: 8, killTimer: 5, injuryTimer: 2, healProgress: 0, classLevel: [0, 0, 0, 0, 0, 0, 0], queenLevel: 0, jelly: 0, foodSpots: [], goalIndex: 0, goalV: 3, queenTaps: 0, deliveries: 0, deepFirst: 1, orders: { wk: 1, fg: 0, gd: 50, nu: 50 }, bld: { store: 0, nest: 0, farm: 0, rax: 0, archive: 0, hatch: 0, tower: 0 }, proj: null, rare: {}, spores: 0 }; }
 
@@ -745,7 +754,7 @@ function load() {
             if (!d.S.goalV && S.goalIndex >= 9)
                 S.goalIndex = 99;
             else if (d.S.goalV === 2 && S.goalIndex < 99) {
-                /* Three stepping-stone goals were added: move saved colonies along so none repeats or is skipped. */
+                // three stepping-stone goals were added: move saved colonies along so none repeats or is skipped
                 if (S.goalIndex >= 16)
                     S.goalIndex += 3;
                 else if (S.goalIndex >= 14)
@@ -814,14 +823,34 @@ function genShow(g, hatched) {
     lines.push('The Hall of Queens in your nest now holds ' + Math.min(P.gen, 8) + ' statue' + (P.gen > 1 ? 's' : '') + '.');
     $('gent').textContent = 'Generation ' + genName(n);
     $('genp').innerHTML = '<p class="mute" style="margin:0 0 6px">The old queen is honoured. A new queen takes the throne.</p>' + lines.map(function (l) { return '<p style="margin:5px 0">' + l + '</p>'; }).join('');
+    biomePick();
     $('gen').classList.add('on');
+}
+
+function biomePick() {
+    var el = document.createElement('div');
+    el.innerHTML = '<p style="margin:10px 0 4px"><b>Choose your new colony</b></p>' + BIOMES.map(function (b, i) {
+        var ok = (P.gen || 0) >= b.gen || owns('map' + i);
+        return '<button class="card" data-bi="' + i + '" style="margin:4px 0;' + (ok ? '' : 'opacity:.45') + '"' + (ok ? '' : ' disabled') + '><span><b>' + b.n + '</b><span class="mute">' + (ok ? b.d : (b.gen > 50 ? 'Buy this map in the Store.' : 'Unlocks after ' + b.gen + ' royal flight' + (b.gen > 1 ? 's' : '') + ', or buy it in the Store.')) + '</span></span></button>';
+    }).join('');
+    function mark() {
+        [].forEach.call(el.querySelectorAll('button'), function (b) { b.style.outline = +b.getAttribute('data-bi') === (S.biome || 0) ? '2px solid #ffd23f' : 'none'; });
+    }
+    [].forEach.call(el.querySelectorAll('button'), function (b) {
+        b.onclick = function () {
+            S.biome = +b.getAttribute('data-bi');
+            save();
+            mark();
+            SFX.buy && SFX.buy();
+        };
+    });
+    mark();
+    $('genp').appendChild(el);
 }
 
 function gain() { return S.tier >= 3 ? Math.floor(Math.sqrt(S.totalHatched / 40) * (1 + .1 * (P.gen || 0))) + 4 + 2 * (P.gen || 0) : 0; }
 
-/* ======================================================================
-   4. COUNTING ANTS
-   ====================================================================== */
+// ---- counting ants ----
 
 function cnt(c) { return [S.nurses, S.foragers, S.soldiers, S.scouts, S.superMajors, 0, S.workers][c]; }
 
@@ -844,21 +873,19 @@ function healthy(c) { return Math.max(0, cnt(c) - S.injured[c]); }
 
 function injN() { return S.injured[0] + S.injured[1] + S.injured[2] + S.injured[3] + S.injured[4]; }
 
-/* ======================================================================
-   5. ECONOMY: EGGS, FOOD AND REWARDS
-   ====================================================================== */
+// ---- economy: eggs, food and rewards ----
 
-function layGap() { return 30 * (1 - .04 * S.queenLevel) * (S.tier >= 4 ? 1 - .1 * (1 + .2 * rl(3)) : 1); }
+function layGap() { return (bio().eg || 1) * 30 * (1 - .04 * S.queenLevel) * (S.tier >= 4 ? 1 - .1 * (1 + .2 * rl(3)) : 1); }
 
 function eggCost() { return Math.max(1, Math.ceil((1 + S.tier) * (1 - .15 * pk('fat')))); }
 
-function foodCap() { return Math.round(400 * Math.pow(2.2, S.tier + 1) * (1 + .25 * S.bld.store)); }
+function foodCap() { return Math.round(400 * Math.pow(2.2, S.tier + 1) * (1 + .25 * S.bld.store) * (1 + .08 * (S.deep || 0))); }
 
-function leaf() { return 2 * (1 + .15 * S.tier) * (S.tier === 0 ? 3.2 : S.tier === 1 ? 2.2 : S.tier === 2 ? 1.3 : 1) * (1 + .05 * P.legacyEver) * (1 + .2 * S.classLevel[1]); }
+function leaf() { return (bio().fd || 1) * 2 * (1 + .15 * S.tier) * (S.tier === 0 ? 3.2 : S.tier === 1 ? 2.2 : S.tier === 2 ? 1.3 : 1) * (1 + .05 * P.legacyEver) * (1 + .2 * S.classLevel[1]) * ((S.hillLevel || 0) >= 4 ? 1.1 : 1); }
 
 function capN() { return CAPS[S.tier] + (S.tier >= 4 ? 250 * (S.hillLevel || 0) : 0) + (S.cavLevel || 0) * Math.round(CAPS[S.tier] * .2); }
 
-/* Chamber levels: each of the four rooms can be upgraded to make its bonus stronger. The main nest cavern can be upgraded for more room. */
+// chamber levels: each of the four rooms can be upgraded to make its bonus stronger
 var ROOMB = [.3, .15, .15, .1], ROOMT = ['the colony eats %s less food', 'eggs hatch %s faster', 'soldiers deal %s more damage', 'the queen lays %s sooner'];
 function rl(i) { return (S.roomLv && S.roomLv[i]) || 0; }
 function roomCost(i) { var lv = rl(i); return { f: Math.round(260 * Math.pow(2.2, lv) * (1 + S.tier * .5)), j: 3 + 3 * lv }; }
@@ -964,7 +991,7 @@ function spotMax() { return Math.min(10, 3 + S.tier * 2); }
 
 function spotsTick(dt) { S.foodSpots.forEach(function (s) { s.stock = Math.min(s.cap, s.stock + s.rg * dt); }); }
 
-/* Until the first tunnel is dug far enough to move about in, everyone stays in the nest. */
+// until the first tunnel is dug far enough to move about in, everyone stays in the nest
 function tunOK() { return S.dug >= .1; }
 
 function pickTarget(m) {
@@ -1110,7 +1137,7 @@ function forageStep(m, dt, sp) {
     m.ph += dt * 8 * m.v;
 }
 
-function gainJelly(n) { S.jelly += n; fx.push({ x: QX, y: QY - 48, vx: 0, vy: -18, l: 1.4, t: '+' + n + ' jelly', f: 13, c: '#ffd23f', g: 0 }); }
+function gainJelly(n) { var jx = n * (bio().jl || 1); n = Math.floor(jx) + (Math.random() < jx % 1 ? 1 : 0); S.jelly += n; fx.push({ x: QX, y: QY - 48, vx: 0, vy: -18, l: 1.4, t: '+' + n + ' jelly', f: 13, c: '#ffd23f', g: 0 }); }
 
 function gj1() { var n = performance.now(); if (n > (gj1.t || 0)) {
     gj1.t = n + 6000;
@@ -1120,9 +1147,7 @@ function gj1() { var n = performance.now(); if (n > (gj1.t || 0)) {
 
 function haul() { var c = S.classLevel[1] >= 8 ? .2 : S.classLevel[1] >= 4 ? .1 : 0; return c && Math.random() < c ? 3 : 1; }
 
-/* ======================================================================
-   6. UPGRADES, MASTERIES AND JELLY
-   ====================================================================== */
+// ---- upgrades, masteries and jelly ----
 
 function perk(l) { var lv = pk(l.id), c = (lv + 1) * 2; if (lv >= 5 || P.legacy < c || (P.gen || 0) < (l.gen || 0))
     return; P.legacy -= c; P.perks[l.id] = lv + 1; SFX.buy(); }
@@ -1144,9 +1169,7 @@ else
 
 function masteryFx(i, l) { var q = i === 5; toast('Mastery unlocked: ' + (q ? 'The Queen' : CN[i]) + ' - ' + MST[i][l === 4 ? 0 : 1] + '!'); flash = .8; shake = .5; pulseRing('255,255,255'); pulseRing(q ? '255,210,60' : null); SFX.win(); burst(QX, QY, 50, [q ? '#ffd23f' : CC[i], '#fff', '#ffd23f'], 140); }
 
-/* ======================================================================
-   7. WORLD LAYOUT, PATHS AND CAMERA
-   ====================================================================== */
+// ---- world layout, paths and camera ----
 
 function gen() {
     var r = rng(S.seed);
@@ -1306,7 +1329,7 @@ function gen() {
             continue;
         for (var fs = 1; fs < fpts.length; fs++)
             fall.push([fpts[fs - 1][0], fpts[fs - 1][1] * YS, fpts[fs][0], fpts[fs][1] * YS, 300 + fi, 1]);
-        FARM.push({ pts: fpts, par: sc.r, ch: !snapped && fq() < .4 });
+        FARM.push({ pts: fpts, par: sc.r, pi: pf ? FARM.indexOf(pf) : -1, ch: !snapped && fq() < .4 });
     }
 }
 
@@ -1315,14 +1338,20 @@ function mk(pts) { var P2 = pts.map(function (p) { return [p[0] * W, p[1] * WH];
     C.push(L);
 } return { PT: P2, CUM: C, LEN: L }; }
 
-/* How tall the map is: as much of the screen as fits, between 400 and 640 pixels. */
+// how tall the map is: as much of the screen as fits, between 400 and 640 pixels
 function genPebs() {
     pebs = [];
-    for (var k = 0; k < 260 * (1 + (S.reach || 0) * 2); k++)
-        pebs.push([wideL() + Math.random() * (wideR() - wideL()), 24 + Math.random() * WH, 1 + Math.random() * 2, Math.random()]);
+    for (var k = 0, tot = 260 * (1 + (S.reach || 0) * 2) * WHX() / WH; k < tot; k++)
+        pebs.push([wideL() + Math.random() * (wideR() - wideL()), 24 + Math.random() * (WHX() - 24), 1 + Math.random() * 2, Math.random()]);
 }
 
-function viewH() { return Math.max(400, Math.min(640, Math.round((document.documentElement.clientHeight - 300) / 20) * 20)); }
+function viewH() {
+    if (document.body.classList.contains('tt')) {
+        var nv = document.querySelector('.nav'), nt = nv ? nv.getBoundingClientRect().top : document.documentElement.clientHeight - 100;
+        return Math.max(340, Math.round(nt - 28));
+    }
+    return Math.max(400, Math.min(640, Math.round((document.documentElement.clientHeight - 300) / 20) * 20));
+}
 
 /* Render quality: phones have very dense screens, so drawing every pixel is slow. Start at a sensible cap,
    and step down automatically if the game cannot keep up (remembered for next time). */
@@ -1380,9 +1409,14 @@ function sizeT() {
     CUM = MAIN.CUM;
     LEN = MAIN.LEN;
     BP = BRN.map(mk);
-    FARMP = FARM.map(function (f) { return { q: mk(f.pts), par: f.par, ch: f.ch }; });
+    FARMP = FARM.map(function (f) {
+        var lo = 9, hi = -9;
+        f.pts.forEach(function (p) { lo = Math.min(lo, p[0]); hi = Math.max(hi, p[0]); });
+        return { q: mk(f.pts), par: f.par, pi: f.pi, ch: f.ch, lo: lo, hi: hi };
+    });
     QX = PT[8][0];
     QY = PT[8][1];
+    genDeep();
     genPebs();
     camT = tab === 'tun' ? (S.dug < 1 ? camClamp(at(1 - S.dug).y - H / 2) : -SK) : WH - H;
     cam = camT;
@@ -1400,13 +1434,222 @@ function at(p, q) {
     return { x: a[0] + dx * t, y: a[1] + dy * t, nx: -dy / l, ny: dx / l, ang: Math.atan2(dy, dx) };
 }
 
+// deep layers: soil below the queen's cavern
+function LH() { return Math.round(H * .7); }
+function deepTop() { var c = cav(); return c.y + c.ry + 28; }
+function WHX() { return S.deep ? deepTop() + S.deep * LH() : WH; }
+var DLAY = [
+    { n: 'Clay', a: '#2f1d10', b: '#3b2412', c: '#6e4426' },
+    { n: 'Stone', a: '#2a2018', b: '#27231f', c: '#6a625a' },
+    { n: 'Deep dark', a: '#1d1815', b: '#15151b', c: '#4d6a9a' },
+    { n: 'Bedrock', a: '#1b1a1b', b: '#111113', c: '#c98a2f' }
+];
+
+function genDeep() {
+    DEEP = [];
+    DEEPP = [];
+    var top = deepTop(), lh = LH(), c = cav(), r = rng(S.seed + 91000), L, i, k, trunk = [], amix = .25 + rng(S.seed + 778)() * .65, segsD = [], byL = [[], [], [], []];
+    function addSegs(pts) { for (var j = 1; j < pts.length; j++) segsD.push([pts[j - 1][0] * W, pts[j - 1][1] * WH, pts[j][0] * W, pts[j][1] * WH]); }
+    function dseg(px, py, g) {
+        var dx = g[2] - g[0], dy = g[3] - g[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - g[0]) * dx + (py - g[1]) * dy) / l2)), x = g[0] + dx * t, y = g[1] + dy * t;
+        return [x, y, Math.hypot(px - x, py - y)];
+    }
+    var px = .5, py = c.y + c.ry - 8;
+    for (L = 0; L < 4; L++) {
+        var by = top + (L + 1) * lh - lh * .22, pts = [[px, py / WH]], n = 4;
+        for (i = 1; i <= n; i++) {
+            px = Math.max(.3, Math.min(.7, px + (r() - .5) * .3));
+            pts.push([px, (py + (by - py) * i / n) / WH]);
+        }
+        py = by;
+        DEEP.push({ pts: pts, L: L, pi: L ? L - 1 : -1, t: 1, ch: 2 });
+        byL[L].push(DEEP.length - 1);
+        addSegs(pts);
+    }
+    for (L = 0; L < 4; L++) {
+        var yA = top + L * lh + 10, yB = top + (L + 1) * lh - 10, made = 0, fi;
+        for (fi = 0; fi < 700 && made < 48; fi++) {
+            var fq = rng(S.seed + 92000 + L * 7919 + fi * 331), srcI = byL[L][Math.floor(fq() * byL[L].length)], src = DEEP[srcI], sg = Math.floor(fq() * (src.pts.length - 1)), ft = .15 + .7 * fq(),
+                fx = (src.pts[sg][0] + (src.pts[sg + 1][0] - src.pts[sg][0]) * ft) * W, fy = (src.pts[sg][1] + (src.pts[sg + 1][1] - src.pts[sg][1]) * ft) * WH,
+                ang = fq() < amix, vert = fq() < .5, th = (fq() - .5) * 6.28, fm = 5 + Math.floor(fq() * 7), fpts = [[fx / W, fy / WH]], snapped = false, st, at, got, nx, ny;
+            if (fy < yA || fy > yB)
+                continue;
+            for (st = 0; st < fm && !snapped; st++) {
+                got = false;
+                for (at = 0; at < 6 && !got; at++) {
+                    var u = (.06 + fq() * (ang ? .11 : .08)) * W, ddx, ddy;
+                    if (ang) {
+                        if (st > 0 && fq() < .75)
+                            vert = !vert;
+                        var sg2 = fq() < .5 ? 1 : -1;
+                        ddx = vert ? (fq() - .5) * u * .5 : sg2 * u;
+                        ddy = vert ? sg2 * u : (fq() - .5) * u * .4;
+                    }
+                    else {
+                        th += (fq() - .5) * 1.3;
+                        ddx = Math.cos(th) * u;
+                        ddy = Math.sin(th) * u;
+                    }
+                    nx = made < 32 ? Math.max(.04 * W, Math.min(.96 * W, fx + ddx)) : Math.max(-1.95 * W, Math.min(2.95 * W, fx + ddx));
+                    ny = Math.max(yA, Math.min(yB, fy + ddy));
+                    if (Math.hypot(nx - fx, ny - fy) < 8)
+                        continue;
+                    got = true;
+                    var best = null, gu;
+                    for (gu = 0; gu < segsD.length; gu++) {
+                        var gg = segsD[gu];
+                        if (dseg(fx, fy, gg)[2] < 4)
+                            continue;
+                        var np = dseg(nx, ny, gg);
+                        if (np[2] < (st === 0 ? 10 : 15) && (!best || np[2] < best[2]))
+                            best = np;
+                    }
+                    if (best) {
+                        if (st === 0)
+                            got = false;
+                        else {
+                            nx = best[0];
+                            ny = best[1];
+                            snapped = true;
+                        }
+                    }
+                }
+                if (!got)
+                    break;
+                fx = nx;
+                fy = ny;
+                fpts.push([fx / W, fy / WH]);
+            }
+            if (fpts.length < 2)
+                continue;
+            addSegs(fpts);
+            DEEP.push({ pts: fpts, L: L, pi: srcI, t: 0, ch: !snapped && fq() < .4 ? 1 : 0 });
+            byL[L].push(DEEP.length - 1);
+            made++;
+        }
+    }
+    DEEPP = DEEP.map(function (f) {
+        var lo = 9, hi = -9;
+        f.pts.forEach(function (p) { lo = Math.min(lo, p[0]); hi = Math.max(hi, p[0]); });
+        return { q: mk(f.pts), L: f.L, pi: f.pi, t: f.t, ch: f.ch, lo: lo, hi: hi };
+    });
+}
+
+function deepList() {
+    var o = [], cnt = [0, 0, 0, 0], inc = [], rc = S.reach || 0, i, e, pr, at = S.deepAt || [];
+    if (!S.deep)
+        return o;
+    for (i = 0; i < DEEPP.length; i++) {
+        e = DEEPP[i];
+        if (e.L >= S.deep || e.lo < -rc + .015 || e.hi > 1 + rc - .015 || (e.pi >= 0 && !inc[e.pi]))
+            continue;
+        inc[i] = 1;
+        pr = Math.min(1, (S.totalHatched - (at[e.L] || 0)) / 14 - cnt[e.L]++);
+        if (pr > 0)
+            o.push({ f: e, pr: pr, i: i });
+    }
+    return o;
+}
+
+function deepCost() { var lv = S.deep || 0; return { f: Math.round(foodCap() * (.5 + .3 * lv)), j: 25 + 20 * lv }; }
+var DEEPT = ['Clay below the cavern. The colony starts digging down, and the food stores grow.', 'Cold stone layer. More room for stores, and ants are exploring below.', 'The deep dark. Faint crystals glow far below.', 'Bedrock. You have dug to the very bottom of the world.'];
+function upDeep() {
+    var lv = S.deep || 0, c = deepCost();
+    if (lv >= 4 || S.tier < (lv < 2 ? 3 : 4) || S.food < c.f || S.jelly < c.j)
+        return;
+    S.food -= c.f;
+    S.jelly -= c.j;
+    S.deepAt = S.deepAt || [];
+    S.deepAt[lv] = S.totalHatched;
+    S.deep = lv + 1;
+    layoutV++;
+    genDeep();
+    genPebs();
+    SFX.buy();
+    flash = .6;
+    shake = .4;
+    pulseRing('255,210,60');
+    toast(DEEPT[lv]);
+}
+
+function drawDeepBg(now) {
+    var top = deepTop(), lh = LH(), x0 = wideL() - 20, ww = wideR() - wideL() + 40, v0 = cam - 10, v1 = cam + H / uz + 10, L, i, g, r, a;
+    g = cx.createLinearGradient(0, WH - 2, 0, top);
+    g.addColorStop(0, '#241710');
+    g.addColorStop(1, DLAY[0].a);
+    cx.fillStyle = g;
+    cx.fillRect(x0, WH - 2, ww, top - WH + 4);
+    for (L = 0; L < S.deep; L++) {
+        var y0 = top + L * lh, y1 = y0 + lh;
+        g = cx.createLinearGradient(0, y0, 0, y1);
+        g.addColorStop(0, DLAY[L].a);
+        g.addColorStop(1, DLAY[L].b);
+        cx.fillStyle = g;
+        cx.fillRect(x0, y0, ww, lh + 1);
+        cx.strokeStyle = 'rgba(0,0,0,.35)';
+        cx.lineWidth = 3;
+        cx.beginPath();
+        for (i = 0; i <= ww; i += 16)
+            cx.lineTo(x0 + i, y0 + Math.sin((x0 + i) * .03 + L * 2) * 3);
+        cx.stroke();
+        if (y1 < v0 || y0 > v1)
+            continue;
+        r = rng(S.seed + 5000 + L * 97);
+        var n = Math.round(ww * lh / 2600);
+        for (i = 0; i < n; i++) {
+            var rx = x0 + r() * ww, ry = y0 + 6 + r() * (lh - 12), rs = 1.5 + r() * (L === 1 ? 6 : 3.5), kd = r();
+            if (ry < v0 - 10 || ry > v1 + 10)
+                continue;
+            if (L === 1 || (L === 0 && kd < .3) || L === 3) {
+                cx.fillStyle = L === 0 ? '#5a3a20' : L === 1 ? '#4d4740' : '#2c2c30';
+                cx.beginPath();
+                cx.ellipse(rx, ry, rs * 1.4, rs, 0, 0, 7);
+                cx.fill();
+                cx.fillStyle = 'rgba(255,255,255,.1)';
+                cx.beginPath();
+                cx.ellipse(rx - rs * .3, ry - rs * .3, rs * .8, rs * .4, 0, 0, 7);
+                cx.fill();
+            }
+            else if (L === 2 && kd > .86) {
+                a = .5 + .3 * Math.sin(now * .002 + rx);
+                cx.fillStyle = 'rgba(120,170,255,' + a + ')';
+                cx.beginPath();
+                cx.moveTo(rx, ry - rs * 2.2);
+                cx.lineTo(rx + rs * .8, ry);
+                cx.lineTo(rx - rs * .8, ry);
+                cx.fill();
+                cx.save();
+                cx.globalCompositeOperation = 'lighter';
+                glow(rx, ry - rs, 14, '110,160,255', .12 * a);
+                cx.restore();
+            }
+            else if (L === 3 && kd > .8) {
+                a = .4 + .3 * Math.sin(now * .0016 + ry);
+                cx.strokeStyle = 'rgba(230,150,50,' + a + ')';
+                cx.lineWidth = 1.2;
+                cx.beginPath();
+                cx.moveTo(rx - 8, ry);
+                cx.lineTo(rx, ry + rs);
+                cx.lineTo(rx + 9, ry - rs * .5);
+                cx.stroke();
+            }
+            else {
+                cx.fillStyle = 'rgba(0,0,0,.18)';
+                cx.fillRect(rx, ry, 2, 1.4);
+            }
+        }
+    }
+}
+
 function farmOpen(par) { return par < 0 ? S.dug >= 1 : (par < S.sideTunnels && S.sideDug[par] >= 1); }
 
 function farmList() {
-    var o = [], i, pr, n = 0;
+    var o = [], i, pr, n = 0, inc = [], rc = S.reach || 0;
     for (i = 0; i < FARMP.length; i++) {
-        if (!farmOpen(FARMP[i].par))
+        // only inside the part of the map that is unlocked, and only if the tunnel it grows from is there too
+        if (!farmOpen(FARMP[i].par) || FARMP[i].lo < -rc + .015 || FARMP[i].hi > 1 + rc - .015 || (FARMP[i].pi >= 0 && !inc[FARMP[i].pi]))
             continue;
+        inc[i] = 1;
         pr = Math.min(1, S.totalHatched / 24 - n++);
         if (pr <= 0)
             break;
@@ -1455,7 +1698,7 @@ function strokeTun(tw) {
 }
 
 function drawFarmAnts(now, x0, x1, y0, y1) {
-    farmList().forEach(function (o, n) {
+    farmList().concat(deepList()).forEach(function (o, n) {
         var q = o.f.q, len = q.LEN * o.pr, cnt, c, k;
         if (len < 24)
             return;
@@ -1540,7 +1783,7 @@ function wideL() { return -(S.reach || 0) * W; }
 function wideR() { return W + (S.reach || 0) * W; }
 function camXc(v) { return Math.max(wideL(), Math.min(wideR() - W / uz, v)); }
 
-function camClamp(v) { return Math.max(-SK, Math.min(WH - H / uz, v)); }
+function camClamp(v) { return Math.max(-SK, Math.min(WHX() - H / uz, v)); }
 
 function setZoom(z) { var o = uz; z = Math.max(1, Math.min(4, z)); if (z === o)
     return; var cwx = camX + W / (2 * o), cwy = camT + H / (2 * o); uz = z; camX = camXc(cwx - W / (2 * z)); camT = camClamp(cwy - H / (2 * z)); follow = performance.now() + 5000; }
@@ -1553,9 +1796,7 @@ function pend(e) { delete ptrs[e.pointerId]; pd0 = 0; }
 
 function cav() { var top = QY - (36 + S.tier * 2) - 14, cy = WH + 34; return { x: W / 2, y: cy, rx: W / 2 - 5, ry: cy - top }; }
 
-/* ======================================================================
-   8. DIGGING: WORKERS, CREWS AND EXPLORERS
-   ====================================================================== */
+// ---- digging: workers, crews and explorers ----
 
 function digCap() { return S.dug >= 1 || (S.tier >= 2 && popn() >= 40) ? 1 : .8; }
 
@@ -1589,7 +1830,7 @@ function routeAt(rt, d) { var i = 0; while (i < rt.length - 1 && d > rt[i].n) {
 } return rt[i].f(Math.max(0, Math.min(1, d / rt[i].n))); }
 
 function breakthrough() {
-    toast('Your tunnel breaks through to the surface! Foragers can now pick leaves and scavenge. Expect visitors soon.');
+    toast('You reached the surface! Foragers can now gather leaves. Expect visitors.');
     SFX.win();
     flash = .8;
     shake = .5;
@@ -1694,7 +1935,7 @@ function tendRoute(H, tg) {
 
 function homeAnchor(h) { return h.c ? { t: 'c', c: h.c } : h.b != null ? { t: 'b', b: h.b, s: h.s } : { t: 'm', m: h.m }; }
 
-/* Walking route between two work-site homes through the real tunnels (no teleporting). */
+// walking route between two work-site homes through the real tunnels (no teleporting)
 function siteRoute(A, B) {
     var r = [], mp;
     if (A.c) {
@@ -1914,7 +2155,7 @@ function crewTick(dt) {
         var s = a.kind ? byKind[a.kind] : null;
         a.noPick = ss.length > 0;
         if (a.noPick && !s && !a.then && (a.st === 'tgo' || a.st === 'twork')) {
-            /* A digging job opened up: finish the walk home first, then take it. */
+            // a digging job opened up: finish the walk home first, then take it
             if (a.pile)
                 a.pile.res = Math.max(0, (a.pile.res || 1) - 1);
             a.pile = null;
@@ -1924,7 +2165,7 @@ function crewTick(dt) {
         if (s)
             a.hm = homeAnchor(s.home);
         else if (a.kind && a.hm && !a.then) {
-            /* Their job vanished (tunnel finished): walk on from where they are, no popping. */
+            // their job vanished (tunnel finished): walk on from where they are, no popping
             rehome(a, a.hm);
             a.hm = null;
         }
@@ -1933,7 +2174,7 @@ function crewTick(dt) {
                 a.pile.res = Math.max(0, (a.pile.res || 1) - 1);
             var s0 = leastBusy();
             cnt[s0.kind]++;
-            /* Walk to the new face through the tunnels instead of popping up there. */
+            // Walk to the new face through the tunnels instead of popping up there
             startTravel(a, tendRoute(tendHome(), s0.home), s0.home, s0.kind);
         }
         if (!s) {
@@ -2126,9 +2367,7 @@ function carcTick(dt) { for (var i = carc.length - 1; i >= 0; i--) {
     }
 } }
 
-/* ======================================================================
-   9. ANT BEHAVIOUR: EGGS, INJURIES AND MOVEMENT
-   ====================================================================== */
+// ---- ant behaviour: eggs, injuries and movement ----
 
 function eggPos(i) { var sd = QX < W * .5 ? 1 : -1; return { x: QX + sd * (72 + S.tier * 5 + (i % 6) * 9), y: QY + 14 + Math.floor(i / 6) * 9 }; }
 
@@ -2189,7 +2428,7 @@ function kill() {
     sync();
 }
 
-/* Ants that fall in battle lie curled on their backs for a few seconds, then fade. */
+// ants that fall in battle lie curled on their backs for a few seconds, then fade
 var fallen = [];
 
 function fallenTick(dt) { for (var i = fallen.length - 1; i >= 0; i--) {
@@ -2514,7 +2753,7 @@ function moveArmy(dt, t) {
                 m.tend = 1;
                 m.act = 'Tending an egg';
                 m.face = ep;
-                /* Some nurses now and then fetch an egg from the queen and carry it to the pile. */
+                // some nurses now and then fetch an egg from the queen and carry it to the pile
                 if (!m.cst) {
                     m.cwt = (m.cwt == null ? 5 + m.u * 20 : m.cwt) - dt;
                     if (m.cwt <= 0 && trait(m, 2) > .35)
@@ -2599,7 +2838,7 @@ function moveArmy(dt, t) {
                     ty = m.py;
                 }
                 else if (foes.length && trait(m, 7) > .3) {
-                    /* Danger in the tunnel: the nurses huddle close to the queen. */
+                    // danger in the tunnel: the nurses huddle close to the queen
                     tx = QX + Math.cos(th * 3) * (14 + trait(m, 8) * 26);
                     ty = QY + 24 + Math.sin(th * 3) * 10;
                     m.act = 'Sheltering near the queen';
@@ -2701,15 +2940,13 @@ function moveArmy(dt, t) {
     });
 }
 
-/* ======================================================================
-   10. COMBAT: WAVES, INVADERS AND LOOT
-   ====================================================================== */
+// ---- combat: waves, invaders and loot ----
 
 function foeSz(f) { return (8 + S.tier * 1.5) * (f.boss ? 1.9 : 1); }
 
-function dps() { return (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax); }
+function dps() { return (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax); }
 
-function majorDps() { return healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax); }
+function majorDps() { return (rallyT > 0 ? 1.5 : 1) * healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax); }
 
 function wave() {
     S.wave++;
@@ -2718,7 +2955,7 @@ function wave() {
         ty.push(1);
     if (S.tier >= 3)
         ty.push(2);
-    var tp = ty[Math.floor(Math.random() * ty.length)], base = 30 * Math.pow(1 + S.totalHatched / 150, .5), prep = 0;
+    var tp = ty[Math.floor(Math.random() * ty.length)], base = (bio().en || 1) * 30 * Math.pow(1 + S.totalHatched / 150, .5), prep = 0;
     if (boss) {
         bossWarned = false;
         prep = (S.food >= foodCap() * .4 ? 1 : 0) + (S.orders.gd >= 60 ? 1 : 0) + (S.bld.rax >= 1 ? 1 : 0);
@@ -2785,9 +3022,7 @@ function discover(k) {
 
 function dType(k) { return Math.floor(rng(S.seed + k * 131 + 5)() * 4); }
 
-/* ======================================================================
-   11. ANTHILL AND RAIDERS
-   ====================================================================== */
+// ---- anthill and raiders ----
 
 function hhMax() { return 200 + 100 * (S.hillLevel || 0); }
 
@@ -2880,9 +3115,7 @@ function raidTick(dt) {
     }
 }
 
-/* ======================================================================
-   12. DRAWING THE WORLD AND THE NEST
-   ====================================================================== */
+// ---- drawing the world and the nest ----
 
 function soilTex() {
     if (!soilP) {
@@ -2938,7 +3171,7 @@ function chamber(x, y, rx, ry, ic) {
     chamberIn(x, y, rx, ry, ic);
 }
 
-/* An irregular cave outline instead of a neat oval. The same k always gives the same shape. */
+// an irregular cave outline instead of a neat oval. The same k always gives the same shape
 function caveP(x, y, rx, ry, k, amp) {
     var n = 11, pts = [], i, a, h, r, p0, p1;
     amp = amp || .2;
@@ -2970,7 +3203,7 @@ function chamberRim(x, y, rx, ry) {
     cx.fill();
 }
 
-/* Faceted crystal prism, pointing up. x is the centre, b the base, w half width, h height. */
+// faceted crystal prism, pointing up. x is the centre, b the base, w half width, h height
 var CRY = [['#9fe3ff', '#55abdc', '#e4f8ff'], ['#8ed6f7', '#4a9bd0', '#d4f1ff'], ['#b2ecff', '#62b6e4', '#f0fbff']];
 function prism(x, b, w, h, k) {
     var c = CRY[k % 3], sh = h * .26;
@@ -3011,7 +3244,7 @@ function prism(x, b, w, h, k) {
     cx.stroke();
 }
 
-/* Small mushroom: stem, domed cap with a shaded underside and a couple of spots. */
+// small mushroom: stem, domed cap with a shaded underside and a couple of spots
 var SHCAP = [['#d9a066', '#b97a45'], ['#e6c58c', '#c39a58'], ['#b9d3b6', '#84a88a']];
 function shroom(x, y, h, w, k, sd) {
     var c = SHCAP[k % 3];
@@ -3055,7 +3288,7 @@ function shroom(x, y, h, w, k, sd) {
     cx.fill();
 }
 
-/* Small hand-drawn symbols (no emoji): egg, skull, leaf and the underground finds. */
+// small hand-drawn symbols (no emoji): egg, skull, leaf and the underground finds
 function glyph(n, x, y, sz) {
     var u = sz / 16;
     cx.save();
@@ -3186,18 +3419,27 @@ function drawWorld(now) {
     cx.save();
     cx.translate(0, -cam);
     var g = cx.createLinearGradient(0, 0, 0, WH);
-    g.addColorStop(0, '#4a3322');
-    g.addColorStop(1, '#241710');
+    var bp = bio(), th = THM[P.theme];
+    if (th)
+        bp = { top: th.top, bot: th.bot, tint: th.tint, sky: bp.sky };
+    g.addColorStop(0, bp.top || '#4a3322');
+    g.addColorStop(1, bp.bot || '#241710');
     cx.fillStyle = g;
     cx.fillRect(wideL() - 20, 0, wideR() - wideL() + 40, WH);
+    if (S.deep)
+        drawDeepBg(now);
     soilTex();
     pebs.forEach(function (p) { cx.fillStyle = p[3] > .5 ? '#6a4c36' : '#1e130c'; cx.globalAlpha = .6; cx.beginPath(); cx.arc(p[0], p[1], p[2], 0, 7); cx.fill(); });
     cx.globalAlpha = 1;
     drawSoil(now);
+    if (bp.tint) {
+        cx.fillStyle = bp.tint;
+        cx.fillRect(wideL() - 20, 20, wideR() - wideL() + 40, WH - 20);
+    }
     var sg = cx.createLinearGradient(0, -SK, 0, 24);
-    sg.addColorStop(0, '#5fa6d0');
-    sg.addColorStop(.7, '#a9d3df');
-    sg.addColorStop(1, '#d3e8da');
+    sg.addColorStop(0, bp.sky ? bp.sky[0] : '#5fa6d0');
+    sg.addColorStop(.7, bp.sky ? bp.sky[1] : '#a9d3df');
+    sg.addColorStop(1, bp.sky ? bp.sky[2] : '#d3e8da');
     cx.fillStyle = sg;
     cx.fillRect(wideL() - 20, -SK - 4, wideR() - wideL() + 40, 24 + SK + 4);
     var dn = dayState();
@@ -3220,10 +3462,10 @@ function drawWorld(now) {
         cx.ellipse(cxx - 9, cyy - 2, 9, 4, 0, 0, 7);
         cx.fill();
     }
-    cx.fillStyle = '#5b8f3a';
+    cx.fillStyle = bp.grass || '#5b8f3a';
     cx.fillRect(wideL() - 20, 20, wideR() - wideL() + 40, 6);
     var e = PT[0], mr = 28 + S.tier * 8;
-    cx.fillStyle = '#7a5636';
+    cx.fillStyle = bp.hill || '#7a5636';
     cx.beginPath();
     cx.ellipse(e[0], 24, mr, mr * .5 + S.tier * 2 + (S.hillGrowth || 0), 0, Math.PI, 0);
     cx.fill();
@@ -3240,6 +3482,12 @@ function drawWorld(now) {
             var en = BP[i].PT[BP[i].PT.length - 1];
             rooms.push({ x: en[0], y: en[1], rx: 12 * feat().sx[4 + i % 4], ry: 8 * feat().sy[4 + i % 4], ic: DI[dType(i)] });
         }
+    deepList().forEach(function (o) {
+        if (o.pr >= 1 && o.f.ch) {
+            var de = o.f.q.PT[o.f.q.PT.length - 1];
+            rooms.push({ x: de[0], y: de[1], rx: o.f.ch === 2 ? 17 : 7 + (de[0] * 7 % 4), ry: o.f.ch === 2 ? 10 : 5 + (de[1] * 3 % 3), ic: null });
+        }
+    });
     farmList().forEach(function (o) {
         if (o.pr >= 1 && o.f.ch) {
             var fe = o.f.q.PT[o.f.q.PT.length - 1];
@@ -3262,6 +3510,27 @@ function drawWorld(now) {
             cx.lineTo(e2.x, e2.y);
         });
         strokeTun(tw * .42);
+    }
+    var deepL = deepList();
+    if (deepL.length) {
+        [0, 1].forEach(function (trk) {
+            var any = false;
+            cx.beginPath();
+            deepL.forEach(function (o) {
+                if (!!o.f.t !== !!trk)
+                    return;
+                any = true;
+                var q = o.f.q, d = o.pr * q.LEN, e2, u;
+                cx.moveTo(q.PT[0][0], q.PT[0][1]);
+                for (u = 1; u < q.PT.length; u++)
+                    if (q.CUM[u] < d)
+                        cx.lineTo(q.PT[u][0], q.PT[u][1]);
+                e2 = at(o.pr, q);
+                cx.lineTo(e2.x, e2.y);
+            });
+            if (any)
+                strokeTun(tw * (trk ? .8 : .42));
+        });
     }
     if (S.dug > .003) {
         tpath();
@@ -3478,15 +3747,58 @@ function drawRooms(now) {
     cx.restore();
 }
 
-function cavernRim() {
-    var c = cav();
-    cx.fillStyle = '#150c07';
+var CAVP = { k: -1, b: [], p: [] };
+function cavParams() {
+    if (CAVP.k === S.seed)
+        return CAVP;
+    var r = rng(S.seed + 4242), i;
+    CAVP.k = S.seed;
+    CAVP.p = [r() * 6.28, r() * 6.28, r() * 6.28];
+    CAVP.b = [];
+    for (i = 0; i < 5; i++)
+        CAVP.b.push({ a: Math.PI * (1.08 + .84 * (i + .2 + r() * .6) / 5), w: .09 + r() * .08, h: .025 + r() * .03 });
+    return CAVP;
+}
+// how far the cave wall bulges out past the plain oval at angle a
+function cavM(a) {
+    var P2 = cavParams(), up = Math.max(0, -Math.sin(a)), m = 0, i, d;
+    m += .012 * (1 + Math.sin(3 * a + P2.p[0])) + .012 * (1 + Math.sin(7 * a + P2.p[1])) + .007 * (1 + Math.sin(13 * a + P2.p[2]));
+    for (i = 0; i < P2.b.length; i++) {
+        d = (a - P2.b[i].a) / P2.b[i].w;
+        m += P2.b[i].h * Math.exp(-d * d);
+    }
+    return 1 + m * (.25 + .75 * up);
+}
+function cavPath(grow) {
+    var c = cav(), n = 120, i, a, m;
     cx.beginPath();
-    cx.ellipse(c.x, c.y, c.rx + 4, c.ry + 4, 0, 0, 7);
+    for (i = 0; i <= n; i++) {
+        a = Math.PI * 2 * i / n;
+        m = cavM(a);
+        var x = c.x + Math.cos(a) * (c.rx * m + grow), y = c.y + Math.sin(a) * (c.ry * m + grow);
+        if (i)
+            cx.lineTo(x, y);
+        else
+            cx.moveTo(x, y);
+    }
+    cx.closePath();
+}
+// ceiling height at world x, matching the lumpy outline
+function cavTop(x) {
+    var c = cav(), u = Math.max(-.98, Math.min(.98, (x - c.x) / c.rx)), a = -Math.acos(u), i, m = cavM(a);
+    for (i = 0; i < 3; i++) {
+        a = Math.atan2(-Math.sqrt(Math.max(0, 1 - (u / m) * (u / m))), u / m);
+        m = cavM(a);
+    }
+    return c.y + Math.sin(a) * c.ry * m;
+}
+
+function cavernRim() {
+    cx.fillStyle = '#150c07';
+    cavPath(4);
     cx.fill();
     cx.fillStyle = '#5a3d26';
-    cx.beginPath();
-    cx.ellipse(c.x, c.y, c.rx + 1.5, c.ry + 1.5, 0, 0, 7);
+    cavPath(1.5);
     cx.fill();
 }
 
@@ -3497,16 +3809,22 @@ function cavernIn() {
     g.addColorStop(.6, '#85613c');
     g.addColorStop(1, '#5e4127');
     cx.fillStyle = g;
-    cx.beginPath();
-    cx.ellipse(c.x, c.y, c.rx, c.ry, 0, 0, 7);
+    cavPath(0);
     cx.fill();
-    cx.strokeStyle = 'rgba(20,10,4,.45)';
-    cx.lineWidth = 2;
-    cx.beginPath();
-    cx.ellipse(c.x, c.y, c.rx - 1, c.ry - 1, 0, Math.PI + .1, 2 * Math.PI - .1);
+    // shadow along the ceiling and walls so the room has depth
+    cx.save();
+    cavPath(0);
+    cx.clip();
+    cx.strokeStyle = 'rgba(20,10,4,.38)';
+    cx.lineWidth = 9;
+    cavPath(2);
     cx.stroke();
-    var r = rng(S.seed + 77);
-    for (i = 0; i < 18; i++) {
+    cx.strokeStyle = 'rgba(20,10,4,.3)';
+    cx.lineWidth = 4;
+    cavPath(-3);
+    cx.stroke();
+    var r = rng(S.seed + 77), cl = rng(S.seed + 5150);
+    for (i = 0; i < 26; i++) {
         var px = W * .06 + r() * W * .88, py = QY + 30 + r() * (WH - QY - 36), pr = 1 + r() * 2.2;
         cx.fillStyle = 'rgba(60,36,20,.45)';
         cx.beginPath();
@@ -3515,6 +3833,67 @@ function cavernIn() {
         cx.fillStyle = 'rgba(255,230,190,.12)';
         cx.beginPath();
         cx.ellipse(px - .5, py - .5, pr, pr * .5, 0, 0, 7);
+        cx.fill();
+    }
+    // pebbles and rocks set into the walls near the ceiling
+    for (i = 0; i < 22; i++) {
+        var ux = (cl() * 1.8 - .9) * c.rx, tx = c.x + ux, ty = cavTop(tx) + 3 + cl() * 22, rr = 1.6 + cl() * 3.2;
+        cx.fillStyle = 'rgba(40,26,16,.7)';
+        cx.beginPath();
+        cx.ellipse(tx, ty + .8, rr * 1.3, rr, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = ['#8a7a68', '#7a6a58', '#9a8a74'][i % 3];
+        cx.beginPath();
+        cx.ellipse(tx, ty, rr * 1.2, rr * .85, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = 'rgba(255,245,225,.28)';
+        cx.beginPath();
+        cx.ellipse(tx - rr * .3, ty - rr * .3, rr * .55, rr * .3, 0, 0, 7);
+        cx.fill();
+    }
+    // hanging roots from the ceiling
+    for (i = 0; i < 12; i++) {
+        var rx0 = c.x + (cl() * 1.7 - .85) * c.rx, ry0 = cavTop(rx0) + 1, ln = 10 + cl() * 28, sw = (cl() - .5) * 14;
+        cx.strokeStyle = i % 3 ? 'rgba(92,62,34,.9)' : 'rgba(130,98,60,.85)';
+        cx.lineWidth = .8 + cl() * 1.1;
+        cx.beginPath();
+        cx.moveTo(rx0, ry0);
+        cx.quadraticCurveTo(rx0 + sw * .3, ry0 + ln * .5, rx0 + sw, ry0 + ln);
+        cx.stroke();
+        cx.beginPath();
+        cx.moveTo(rx0 + sw * .55, ry0 + ln * .6);
+        cx.quadraticCurveTo(rx0 + sw * .9, ry0 + ln * .7, rx0 + sw * 1.4, ry0 + ln * .85);
+        cx.lineWidth = .6;
+        cx.stroke();
+    }
+    // dripping stalactites
+    for (i = 0; i < 9; i++) {
+        var sx = c.x + (cl() * 1.7 - .85) * c.rx, sy = cavTop(sx), sl = 4 + cl() * 8;
+        cx.fillStyle = 'rgba(70,46,28,.95)';
+        cx.beginPath();
+        cx.moveTo(sx - 2.2, sy - 1);
+        cx.lineTo(sx + 2.2, sy - 1);
+        cx.lineTo(sx + .3, sy + sl);
+        cx.closePath();
+        cx.fill();
+    }
+    cx.restore();
+    // glowing fungus clumps on the wall
+    var tn = performance.now();
+    cx.save();
+    cx.globalCompositeOperation = 'lighter';
+    for (i = 0; i < 7; i++) {
+        var fx0 = c.x + (cl() * 1.7 - .85) * c.rx, fy0 = cavTop(fx0) + 10 + cl() * 26;
+        glow(fx0, fy0, 11, i % 2 ? '120,230,170' : '170,200,255', .16 + .05 * Math.sin(tn * .002 + i * 1.7));
+    }
+    cx.restore();
+    for (i = 0; i < 7; i++) {
+        var gx0 = c.x + (cl() * 1.7 - .85) * c.rx, gy0 = cavTop(gx0) + 12 + cl() * 24;
+        cx.fillStyle = i % 2 ? '#7fe3b0' : '#a9c8ff';
+        cx.beginPath();
+        cx.arc(gx0, gy0, 1.3, 0, 7);
+        cx.arc(gx0 + 2.6, gy0 + 1.1, 1, 0, 7);
+        cx.arc(gx0 - 2.2, gy0 + .8, .9, 0, 7);
         cx.fill();
     }
 }
@@ -3541,13 +3920,13 @@ function drawCushion(now) {
     for (i = 0; i < 9; i++) {
         u = -.82 + i * .205;
         x = c.x + u * c.rx;
-        yt = c.y - c.ry * Math.sqrt(1 - u * u) + 3;
+        yt = cavTop(x) + 3;
         cx.beginPath();
         cx.moveTo(x, yt);
         cx.quadraticCurveTo(x + 3, yt + 9, x - 1, yt + 13 + (i % 3) * 5);
         cx.stroke();
     }
-    /* Clay lamps at the edges of the cavern. */
+    // clay lamps at the edges of the cavern
     [[-.84, 0], [.84, 1]].forEach(function (q) {
         var x0 = c.x + q[0] * c.rx, y0 = WH - 16, k = q[1], fl = .8 + .2 * Math.sin(now * .011 + k * 2.4) + .08 * Math.sin(now * .027 + k);
         cx.save();
@@ -3581,7 +3960,7 @@ function drawCushion(now) {
         cx.ellipse(x0, y0 - 4.5, 1, 2.2 * fl, 0, 0, 7);
         cx.fill();
     });
-    /* The nest bed: a woven ring of straw and twigs, lined with moss. */
+    // the nest bed: a woven ring of straw and twigs, lined with moss
     cx.fillStyle = 'rgba(0,0,0,.28)';
     cx.beginPath();
     cx.ellipse(cxc + 2, cyc + 5, ex * 1.04, ey * 1.06, 0, 0, 7);
@@ -3647,11 +4026,19 @@ function drawFood(now) {
     cx.save();
     cx.translate(0, -cam);
     if (worm) {
-        for (var j = 11; j >= 0; j--) {
-            var wx = worm.x - j * 5, wy = worm.y + Math.sin(worm.t * 3 - j * .6) * 4;
-            cx.fillStyle = j === 0 ? '#e7a3a3' : j % 2 ? '#d98b8b' : '#c97a7a';
+        for (var j = 15; j >= 0; j--) {
+            var wx = worm.x - worm.d * j * 5.2, wy = worm.y + Math.sin(worm.t * 3 - j * .55) * 5, wr = j === 0 ? 4 : 3.6 - Math.min(j, 15) * .03;
+            cx.fillStyle = 'rgba(0,0,0,.25)';
             cx.beginPath();
-            cx.arc(wx, wy, j === 0 ? 3 : 2.7, 0, 7);
+            cx.arc(wx + .5, wy + 1.6, wr, 0, 7);
+            cx.fill();
+            cx.fillStyle = j === 0 ? '#e9a6a2' : (j >= 4 && j <= 6) ? '#e8b3a8' : j % 2 ? '#d98782' : '#cd7a76';
+            cx.beginPath();
+            cx.arc(wx, wy, wr, 0, 7);
+            cx.fill();
+            cx.fillStyle = 'rgba(255,225,215,.35)';
+            cx.beginPath();
+            cx.arc(wx - .6, wy - 1.1, wr * .45, 0, 7);
             cx.fill();
         }
     }
@@ -3991,7 +4378,7 @@ function lighting(now) {
     var dnn = dayState().night;
     if (dnn > .02) {
         cx.fillStyle = 'rgba(6,10,44,' + dnn * .2 + ')';
-        cx.fillRect(wideL() - 20, 24, wideR() - wideL() + 40, WH + 40);
+        cx.fillRect(wideL() - 20, 24, wideR() - wideL() + 40, WHX() - WH + WH + 40);
     }
     rings = rings.filter(function (r) { r.l -= .016; r.r += 3.2; return r.l > 0; });
     rings.forEach(function (r) { cx.strokeStyle = 'rgba(' + r.c + ',' + r.l * .8 + ')'; cx.lineWidth = 3 * r.l + 1; cx.beginPath(); cx.arc(r.x, r.y, r.r, 0, 7); cx.stroke(); });
@@ -4070,9 +4457,7 @@ function deco(now) {
     cx.restore();
 }
 
-/* ======================================================================
-   13. DRAWING ANTS AND INVADERS
-   ====================================================================== */
+// ---- drawing ants and invaders ----
 
 function drawBits(u, n) { var BITPOS = [[.2, 0], [-.9, -.55], [-.9, .55]]; for (var j = 0; j < n && j < 3; j++) {
     var x = BITPOS[j][0] * u, y = BITPOS[j][1] * u;
@@ -4164,7 +4549,7 @@ function drawCrowd(now, ex) {
     cx.globalAlpha = 1;
 }
 
-/* Normal ants are drawn from small cached pictures when there are lots of them, which is much faster. */
+// normal ants are drawn from small cached pictures when there are lots of them, which is much faster
 function antDraw(x, y, ang, sz, leaf, ph, kd, fast) {
     if (!fast || kd === 3 || kd === 7 || sz > 8) {
         drawAnt(x, y, ang, sz, leaf, ph, kd);
@@ -4208,35 +4593,37 @@ function drawAnt(x, y, ang, sz, leaf, ph, kd) {
     cx.ellipse(sz * .3, 0, sz * .9, sz * .42, 0, 0, 7);
     cx.fill();
     cx.translate(0, Math.sin(ph * 1.7) * sz * .04);
-    if (K < .68) {
-        var u2 = sz / 3.6 * .72;
-        if (kd === 7) {
-            cx.strokeStyle = '#f1e6cf';
-            cx.lineWidth = u2 * .5;
-            cx.beginPath();
-            cx.moveTo(u2 * 1.5, -u2 * .3);
-            cx.quadraticCurveTo(u2 * 3.2, -u2 * 1.5, u2 * 3.8, -u2 * .2);
-            cx.moveTo(u2 * 1.5, u2 * .3);
-            cx.quadraticCurveTo(u2 * 3.2, u2 * 1.5, u2 * 3.8, u2 * .2);
-            cx.stroke();
-        }
-        cx.fillStyle = AB[kd] || '#2b1509';
+    if (K * uz < .68) {
+        var u2 = sz / 3.6 * .72, sk = kd === 7 ? '#3a0f0a' : skinCol();
+        cx.strokeStyle = '#120a05';
+        cx.lineWidth = Math.max(.3, u2 * .4);
+        cx.lineCap = 'round';
         cx.beginPath();
-        cx.arc(-u2 * .9, 0, u2 * .95, 0, 7);
-        cx.fill();
-        cx.fillStyle = kd === 7 ? '#3a0f0a' : '#2b1509';
-        cx.beginPath();
-        cx.arc(u2 * .9, 0, u2 * .7, 0, 7);
-        cx.fill();
-        if (K >= .5) {
-            cx.fillStyle = '#fff';
-            cx.fillRect(u2 * 1.2, -u2 * .4, .5, .5);
-            cx.fillRect(u2 * 1.2, u2 * .1, .5, .5);
+        for (var j2 = -1; j2 <= 1; j2++) {
+            var s2 = Math.sin(ph + j2 * 2.1) * u2 * .4, b2 = j2 * u2 * .55 + u2 * .1;
+            cx.moveTo(b2, 0);
+            cx.lineTo(b2 + u2 * .6 + s2, u2 * 1.5);
+            cx.moveTo(b2, 0);
+            cx.lineTo(b2 + u2 * .6 - s2, -u2 * 1.5);
         }
+        cx.moveTo(u2 * 1.5, -u2 * .3);
+        cx.lineTo(u2 * 2.7, -u2 * .8);
+        cx.moveTo(u2 * 1.5, u2 * .3);
+        cx.lineTo(u2 * 2.7, u2 * .8);
+        cx.stroke();
+        cx.fillStyle = AB[kd] || sk;
+        cx.beginPath();
+        cx.ellipse(-u2 * 1.35, 0, u2 * .9, u2 * .75, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = sk;
+        cx.beginPath();
+        cx.ellipse(0, 0, u2 * .62, u2 * .46, 0, 0, 7);
+        cx.ellipse(u2 * 1.2, 0, u2 * .7, u2 * .6, 0, 0, 7);
+        cx.fill();
         cx.restore();
         return;
     }
-    var u = sz / 3.6 * .72, sc = kd === 6, so = kd === 1 || kd === 7, ab = { 1: '#b8341a', 4: '#e48cab', 5: '#5f9a2e', 6: '#2f86cc', 7: '#6b1d14', 8: '#e2a52e' }[kd] || '#2b1509', L = sc ? 1.5 : 1.2, j, s;
+    var u = sz / 3.6 * .72, sc = kd === 6, so = kd === 1 || kd === 7, ab = { 1: '#b8341a', 4: '#e48cab', 5: '#5f9a2e', 6: '#2f86cc', 7: '#6b1d14', 8: '#e2a52e' }[kd] || skinCol(), L = sc ? 1.5 : 1.2, j, s;
     cx.fillStyle = 'rgba(0,0,0,.22)';
     cx.beginPath();
     cx.ellipse(-u * .3, u * .55, u * 2.3, u * .9, 0, 0, 7);
@@ -4299,7 +4686,7 @@ function drawAnt(x, y, ang, sz, leaf, ph, kd) {
             cx.fill();
         }
     }
-    cx.fillStyle = kd === 7 ? '#3a0f0a' : '#2b1509';
+    cx.fillStyle = kd === 7 ? '#3a0f0a' : skinCol();
     cx.beginPath();
     cx.ellipse(0, 0, u * .62, u * .46, 0, 0, 7);
     cx.fill();
@@ -4307,7 +4694,7 @@ function drawAnt(x, y, ang, sz, leaf, ph, kd) {
     cx.beginPath();
     cx.ellipse(-u * .1, -u * .18, u * .35, u * .14, 0, 0, 7);
     cx.fill();
-    cx.fillStyle = so ? '#3a0f08' : '#2b1509';
+    cx.fillStyle = so ? '#3a0f08' : skinCol();
     cx.beginPath();
     cx.ellipse(u * 1.2, 0, u * (kd === 7 ? 1.15 : kd === 8 ? .8 : so ? .9 : .65), u * (kd === 7 ? 1.05 : kd === 8 ? .7 : so ? .78 : .58), 0, 0, 7);
     cx.fill();
@@ -4452,7 +4839,7 @@ function queen(s, ph) {
     cx.rotate(Math.sin(ph) * .035 * wk + idl);
     cx.lineJoin = 'round';
     cx.lineCap = 'round';
-    /* Legs: thigh, knee, shin and a little claw, dark and glossy. */
+    // legs: thigh, knee, shin and a little claw, dark and glossy
     for (j = -1; j <= 1; j++) {
         var w = Math.sin(ph + j * 2) * s * (.04 + .13 * wk) + Math.sin(tm * 2.2 + j * 1.7) * s * .02, x0 = s * .3 + j * s * .32;
         [1, -1].forEach(function (d, n) {
@@ -4487,7 +4874,7 @@ function queen(s, ph) {
             cx.stroke();
         });
     }
-    /* Gaster: a pointed teardrop of dark glossy plates with amber edges. */
+    // gaster: a pointed teardrop of dark glossy plates with amber edges
     cx.save();
     cx.translate(-s * .1, 0);
     cx.rotate(Math.sin(tm * .9) * .035 + Math.sin(ph + 1.2) * .05 * wk);
@@ -4535,12 +4922,12 @@ function queen(s, ph) {
         cx.fill();
     }
     cx.restore();
-    /* Wing scars: the queen shed her wings, only pale stubs remain. */
+    // wing scars: the queen shed her wings, only pale stubs remain
     cx.fillStyle = 'rgba(232,212,165,.2)';
     cx.strokeStyle = 'rgba(210,180,120,.4)';
     cx.lineWidth = s * .03;
     [1, -1].forEach(function (d) { cx.beginPath(); cx.ellipse(-s * .4, d * s * .5, s * .8, s * .2, d * .2, 0, 7); cx.fill(); cx.stroke(); });
-    /* Waist: a narrow stalk with a small node. */
+    // waist: a narrow stalk with a small node
     cx.fillStyle = '#2a140a';
     cx.beginPath();
     cx.ellipse(-s * .4, 0, s * .34, s * .1, 0, 0, 7);
@@ -4549,7 +4936,7 @@ function queen(s, ph) {
     cx.beginPath();
     cx.ellipse(-s * .5, 0, s * .1, s * .19, 0, 0, 7);
     cx.fill();
-    /* Thorax: three plated lobes, rusty red. */
+    // thorax: three plated lobes, rusty red
     var th = [[-.12, .26, .26], [.24, .4, .35], [.62, .27, .34]];
     th.forEach(function (t, n) {
         cx.fillStyle = glossy(s * (t[0] - .1), -s * t[2] * .5, s * .04, s * t[0], 0, s * .62, '#bd5a2a', '#7c3014', '#321206');
@@ -4564,7 +4951,7 @@ function queen(s, ph) {
         cx.ellipse(s * (t[0] - .03), -s * t[2] * .5, s * t[1] * .55, s * t[2] * .14, 0, 0, 7);
         cx.fill();
     });
-    /* Head: wider, with big eyes, hooked jaws and bent antennae. */
+    // head: wider, with big eyes, hooked jaws and bent antennae
     cx.save();
     cx.translate(s * .95, 0);
     cx.rotate(Math.sin(tm * .8) * .1 + Math.sin(tm * 2.1) * .035 + Math.sin(ph * 2) * .03 * wk);
@@ -4587,7 +4974,7 @@ function queen(s, ph) {
     cx.fill();
     [1, -1].forEach(function (d) {
         var aw = Math.sin(tm * 2.3 + d * 1.9) * s * .1 + Math.sin(tm * .7 + d) * s * .06 + Math.sin(ph * .9 + d) * s * .06 * wk, ex = s * 1.9, ey = d * s * (.62 + .06) + aw;
-        /* mandibles */
+        // mandibles
         cx.fillStyle = '#26120a';
         cx.beginPath();
         cx.moveTo(s * 1.68, d * s * .08);
@@ -4599,7 +4986,7 @@ function queen(s, ph) {
         cx.beginPath();
         cx.arc(s * 2.0, -d * s * .1, s * .035, 0, 7);
         cx.fill();
-        /* antennae: scape, elbow, then a segmented tip */
+        // antennae: scape, elbow, then a segmented tip
         cx.strokeStyle = '#1c0e06';
         cx.lineWidth = s * .075;
         cx.beginPath();
@@ -4613,7 +5000,7 @@ function queen(s, ph) {
         cx.arc(s * 1.9, d * s * .55 + aw * .5, s * .06, 0, 7);
         cx.arc(s * 2.58, d * s * .74 + aw * 1.4, s * .08, 0, 7);
         cx.fill();
-        /* compound eye */
+        // compound eye
         cx.fillStyle = '#0c0504';
         cx.beginPath();
         cx.ellipse(s * 1.42, d * s * .33, s * .17, s * .15, d * .5, 0, 7);
@@ -5284,9 +5671,7 @@ function eggs(now) {
     cx.restore();
 }
 
-/* ======================================================================
-   14. EFFECTS
-   ====================================================================== */
+// ---- effects ----
 
 function burst(x, y, n, cols, sp) { for (var i = 0; i < n; i++) {
     var a = Math.random() * 6.28, v = sp * (.4 + Math.random() * .6);
@@ -5302,9 +5687,7 @@ function goldFanfare() { var g = $('gold'); g.classList.remove('on'); void g.off
 }
 catch (e) { } }
 
-/* ======================================================================
-   15. HUD, SCREENS AND TUTORIAL
-   ====================================================================== */
+// ---- hud, screens and tutorial ----
 
 function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); var n = performance.now(), dt = Math.min(.1, (n - ltx) / 1000); ltx = n; extra(dt); }
 
@@ -5337,12 +5720,13 @@ function hudColony() {
         tb.innerHTML = '<span><b>Fully dug</b><span class="mute">Take a royal flight to start stronger.</span></span>';
         tb.disabled = true;
     }
-    U.forEach(function (u) { var el = $('u-' + u.id); if (S.upgrades[u.id]) {
-        el.style.display = 'none';
-        return;
-    } el.style.display = ''; el.innerHTML = '<span><b>' + u.n + '</b><span class="mute">' + u.d + '</span></span><span class="r">' + u.c + ' food</span>'; el.disabled = S.food < u.c; });
     if (!hudColony.at || performance.now() - hudColony.at > 2000) {
         hudColony.at = performance.now();
+        nextUpUi();
+        dailyUi();
+        questsUi();
+        shopUi();
+        storeUi();
         $('ach').innerHTML = achHtml();
     }
     var g = gain();
@@ -5352,28 +5736,89 @@ function hudColony() {
     LG.forEach(function (l) { var el = $('l-' + l.id), lv = pk(l.id), c = (lv + 1) * 2, lk = (P.gen || 0) < (l.gen || 0); el.innerHTML = '<span><b>' + l.n + ' ' + lv + '/5</b><span class="mute">' + (lk ? 'Unlocks in ' + l.gl + '.' : l.d) + '</span></span><span class="r">' + (lk ? 'Locked' : lv >= 5 ? 'Maxed' : c + ' legacy') + '</span>'; el.disabled = lk || lv >= 5 || P.legacy < c; });
 }
 
+// the "Next up" card: one clear suggestion, so the player does not have to read every list
+function nextUp() {
+    var pop = popn(), c = [], nt = T[S.tier + 1], i, f = S.food, j = S.jelly;
+    function add(k, name, ok, f1, j1, to, extra) { c.push({ k: k, n: name, ok: ok, f: f1 || 0, j: j1 || 0, to: to, pf: Math.min(1, f1 ? f / f1 : 1, j1 ? j / j1 : 1), x: extra }); }
+    if (nt)
+        c.push({ k: 'nest', n: 'Dig a ' + nt.n, ok: pop >= TP[S.tier + 1] && f >= TF[S.tier + 1], f: TF[S.tier + 1], j: 0, to: 'tier', pf: Math.min(1, pop / TP[S.tier + 1], f / TF[S.tier + 1]), x: 'Needs ' + TP[S.tier + 1] + ' ants and ' + fmt(TF[S.tier + 1]) + ' food.' });
+    [6, 0, 1, 2, 3, 4, 5].forEach(function (ri) {
+        var q = ri === 5, lv = q ? S.queenLevel : S.classLevel[ri];
+        if (lv < 8 && (ri !== 4 || S.superMajors > 0 || S.tier >= 3))
+            add('cl' + ri, (q ? 'The Queen' : CN[ri] + 's') + ' to level ' + (lv + 1), j >= clCost(ri), 0, clCost(ri), 'bl', 'Costs ' + clCost(ri) + ' jelly.');
+    });
+    BDEF.forEach(function (b, bi) {
+        var lv = S.bld[b.id];
+        if (!S.proj && lv < 4 && S.tier >= b.t)
+            add('b' + bi, b.n + ' level ' + (lv + 1), f >= bCost(bi), bCost(bi), 0, 'build', 'Costs ' + fmt(bCost(bi)) + ' food.');
+    });
+    for (i = 0; i < 4; i++)
+        if (S.tier > i && rl(i) < 4)
+            add('r' + i, ROOMS[i].n + ' level ' + (rl(i) + 2), f >= roomCost(i).f && j >= roomCost(i).j, roomCost(i).f, roomCost(i).j, 'rooms', 'Costs ' + fmt(roomCost(i).f) + ' food, ' + roomCost(i).j + ' jelly.');
+    if (S.tier >= 2 && (S.cavLevel || 0) < 10 && !((S.cavLevel || 0) >= 5 && S.tier < 4))
+        add('cav', 'Nest cavern level ' + ((S.cavLevel || 0) + 2), f >= cavCost().f && j >= cavCost().j, cavCost().f, cavCost().j, 'rooms', 'More room for ants. Costs ' + fmt(cavCost().f) + ' food, ' + cavCost().j + ' jelly.');
+    if (S.tier >= 3 && (S.reach || 0) < 2 && S.tier >= 3 + (S.reach || 0))
+        add('rch', 'Dig sideways', f >= reachCost().f && j >= reachCost().j, reachCost().f, reachCost().j, 'rooms', 'New ground to explore. Costs ' + fmt(reachCost().f) + ' food, ' + reachCost().j + ' jelly.');
+    if (S.tier >= 3 && (S.deep || 0) < 4 && S.tier >= ((S.deep || 0) < 2 ? 3 : 4))
+        add('dp', 'Dig deeper', f >= deepCost().f && j >= deepCost().j, deepCost().f, deepCost().j, 'rooms', 'A new soil layer below the queen. Costs ' + fmt(deepCost().f) + ' food, ' + deepCost().j + ' jelly.');
+    var ready = c.filter(function (x) { return x.ok; });
+    if (ready.length)
+        return { t: ready[0].n, d: ready[0].x, ready: true, more: ready.length - 1, to: ready[0].to };
+    c.sort(function (a, b) { return b.pf - a.pf; });
+    if (!c.length)
+        return { t: 'Everything is built', d: 'Take a royal flight to start a stronger colony.', ready: false, more: 0, to: null };
+    return { t: 'Saving up: ' + c[0].n, d: Math.round(c[0].pf * 100) + '% there. ' + (c[0].x || ''), ready: false, more: 0, to: c[0].to };
+}
+
+function nextUpUi() {
+    var el = $('nextup'), nu = nextUp(), h;
+    if (!el)
+        return;
+    h = '<button class="card' + (nu.ready ? ' dig' : '') + '" style="margin:0 0 10px;display:block;width:100%;text-align:left" ' + (nu.to ? 'onclick="nextGo(\'' + nu.to + '\')"' : '') + '><span><span class="mute" style="font-size:12px;letter-spacing:.12em">' + (nu.ready ? 'READY NOW' : 'NEXT UP') + '</span><br><b>' + nu.t + '</b><span class="mute">' + nu.d + (nu.more ? ' ' + nu.more + ' more thing' + (nu.more > 1 ? 's' : '') + ' ready too.' : '') + '</span></span></button>';
+    if (el.getAttribute('data-h') !== h) {
+        el.setAttribute('data-h', h);
+        el.innerHTML = h;
+    }
+}
+
+function nextGo(to) {
+    var t = $(to === 'rooms' ? 'rooms' : to === 'build' ? 'build' : to === 'bl' ? 'bl' : 'tier');
+    if (!t)
+        return;
+    var sec = t.closest ? t.closest('.sec') : null;
+    if (sec && sec.style.display === 'none' && sec.previousSibling)
+        sec.previousSibling.click();
+    t.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 function hudClasses() {
     var pop = popn(), ij = injN(), i;
-    var rt = '';
+    var rt = '<div class="ol" style="margin:4px 0 6px">Nest chambers</div>';
     for (i = 0; i < 4; i++) {
         if (S.tier <= i) {
-            rt += '<div class="mute" style="margin:0 0 6px">Locked: ' + ROOMS[i].n + ': ' + ROOMS[i].b + '</div>';
+            rt += '<div class="mute" style="margin:0 0 6px">' + ico(RICO[i]) + 'Locked: ' + ROOMS[i].n + ', ' + ROOMS[i].b + '</div>';
             continue;
         }
         var lv = rl(i), c = roomCost(i), bt = ROOMT[i].replace('%s', Math.round(ROOMB[i] * (1 + .2 * lv) * 100) + '%');
-        rt += '<button class="card dig" ' + (lv >= 4 || S.food < c.f || S.jelly < c.j ? 'disabled ' : '') + 'onclick="upRoom(' + i + ')" style="margin:0 0 6px"><span><b>' + ROOMS[i].n + ' level ' + (lv + 1) + ' of 5</b><span class="mute">Bonus: ' + bt + '</span></span><span class="r">' + (lv >= 4 ? 'Maxed' : fmt(c.f) + ' food, ' + c.j + ' jelly') + '</span></button>';
+        rt += '<button class="card dig" ' + (lv >= 4 || S.food < c.f || S.jelly < c.j ? 'disabled ' : '') + 'onclick="upRoom(' + i + ')" style="margin:0 0 6px"><span><b>' + ico(RICO[i]) + ROOMS[i].n + ' ' + (lv + 1) + '/5</b><span class="mute">Bonus: ' + bt + '</span></span><span class="r">' + (lv >= 4 ? 'Maxed' : fmt(c.f) + ' food, ' + c.j + ' jelly') + '</span></button>';
     }
     if (S.tier >= 2) {
         var cl = S.cavLevel || 0, cc = cavCost(), clk = cl >= 5 && S.tier < 4;
-        rt += '<button class="card dig" ' + (cl >= 10 || clk || S.food < cc.f || S.jelly < cc.j ? 'disabled ' : '') + 'onclick="upCav()" style="margin:0 0 6px"><span><b>Nest cavern level ' + (cl + 1) + ' of 11</b><span class="mute">' + (clk ? 'Needs ' + T[4].n + ' for more levels' : 'Each level adds room for ' + Math.round(CAPS[S.tier] * .2) + ' more ants') + '</span></span><span class="r">' + (cl >= 10 ? 'Maxed' : fmt(cc.f) + ' food, ' + cc.j + ' jelly') + '</span></button>';
+        rt += '<button class="card dig" ' + (cl >= 10 || clk || S.food < cc.f || S.jelly < cc.j ? 'disabled ' : '') + 'onclick="upCav()" style="margin:0 0 6px"><span><b>' + ico('cave') + 'Nest cavern ' + (cl + 1) + '/11</b><span class="mute">' + (clk ? 'Needs ' + T[4].n + ' for more levels' : 'Room for ' + Math.round(CAPS[S.tier] * .2) + ' more ants per level') + '</span></span><span class="r">' + (cl >= 10 ? 'Maxed' : fmt(cc.f) + ' food, ' + cc.j + ' jelly') + '</span></button>';
     }
+    if (S.tier >= 3)
+        rt += '<div class="ol" style="margin:12px 0 6px">Expand and boost</div>';
     if (S.tier >= 3) {
         var bq = banqReady(), bc = banqCost();
-        rt += '<button class="card dig" ' + (!bq || S.food < bc ? 'disabled ' : '') + 'onclick="upBanq()" style="margin:0 0 6px"><span><b>Royal banquet</b><span class="mute">Turn spare food into ' + banqYield() + ' royal jelly. ' + (bq ? 'Ready.' : 'The colony needs time to gather more.') + '</span></span><span class="r">' + fmt(bc) + ' food</span></button>';
+        rt += '<button class="card dig" ' + (!bq || S.food < bc ? 'disabled ' : '') + 'onclick="upBanq()" style="margin:0 0 6px"><span><b>' + ico('jelly') + 'Royal banquet</b><span class="mute">Turn spare food into ' + banqYield() + ' royal jelly. ' + (bq ? 'Ready.' : 'Needs more food.') + '</span></span><span class="r">' + fmt(bc) + ' food</span></button>';
     }
     if (S.tier >= 3 || S.reach) {
         var rc = S.reach || 0, rcc = reachCost(), lockedR = S.tier < 3 + rc;
-        rt += '<button class="card dig" ' + (rc >= 2 || lockedR || S.food < rcc.f || S.jelly < rcc.j ? 'disabled ' : '') + 'onclick="upReach()" style="margin:0 0 6px"><span><b>Dig sideways ' + (rc + 1) + ' of 2</b><span class="mute">' + (rc >= 2 ? 'The whole underground is open' : lockedR ? 'Needs ' + T[3 + rc].n : 'Opens new ground to the west and east, with 4 more side tunnels') + '</span></span><span class="r">' + (rc >= 2 ? 'Maxed' : fmt(rcc.f) + ' food, ' + rcc.j + ' jelly') + '</span></button>';
+        rt += '<button class="card dig" ' + (rc >= 2 || lockedR || S.food < rcc.f || S.jelly < rcc.j ? 'disabled ' : '') + 'onclick="upReach()" style="margin:0 0 6px"><span><b>' + ico('reach') + 'Dig sideways ' + (rc + 1) + ' of 2</b><span class="mute">' + (rc >= 2 ? 'The whole underground is open' : lockedR ? 'Needs ' + T[3 + rc].n : 'Opens new ground west and east') + '</span></span><span class="r">' + (rc >= 2 ? 'Maxed' : fmt(rcc.f) + ' food, ' + rcc.j + ' jelly') + '</span></button>';
+    }
+    if (S.tier >= 3 || S.deep) {
+        var dl2 = S.deep || 0, dcc = deepCost(), lockedD = S.tier < (dl2 < 2 ? 3 : 4);
+        rt += '<button class="card dig" ' + (dl2 >= 4 || lockedD || S.food < dcc.f || S.jelly < dcc.j ? 'disabled ' : '') + 'onclick="upDeep()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Dig deeper ' + Math.min(4, dl2 + 1) + ' of 4' + (dl2 < 4 ? ': ' + DLAY[dl2].n : '') + '</b><span class="mute">' + (dl2 >= 4 ? 'You have reached bedrock' : lockedD ? 'Needs ' + T[4].n : 'A new soil layer below the queen, with 8% more food storage') + '</span></span><span class="r">' + (dl2 >= 4 ? 'Maxed' : fmt(dcc.f) + ' food, ' + dcc.j + ' jelly') + '</span></button>';
     }
     if (S.tier >= 1) {
         var abr = Ads.ready('boost', 15);
@@ -5435,7 +5880,7 @@ function greatUi() {
     el.innerHTML = h + '</div>';
 }
 
-/* The Queen's Gift: one reward each calendar day, with a 7-day streak. P.gift = { last: 'YYYY-M-D', streak }. */
+// the Queen's Gift: one reward each calendar day, with a 7-day streak
 function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
 
 function giftState() {
@@ -5533,7 +5978,7 @@ function renderGoals() {
     document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('nudge', !!G.tab && b.dataset.t === G.tab && tab !== G.tab); });
 }
 
-/* Ant energy: it drains while an ant works. A tired ant goes home and rests; more nurses make rest faster. */
+// ant energy: it drains while an ant works
 var NAMES = ['Dave', 'Bella', 'Hugo', 'Maisie', 'Stan', 'Ruby', 'Otis', 'Pip', 'Nell', 'Gus', 'Mabel', 'Fred', 'Daisy', 'Walt', 'Ivy', 'Barney', 'Poppy', 'Clive', 'Elsie', 'Rex', 'Tilly', 'Alfie', 'Nora', 'Bert', 'Hattie', 'Monty', 'Edie', 'Ned', 'Wren', 'Duke', 'Cora', 'Sid', 'Flo', 'Arlo', 'Dot', 'Mo', 'Pearl', 'Ziggy', 'Hazel', 'Colin', 'Queenie', 'Ralph', 'Mina', 'Tom', 'Olive', 'Jasper', 'Peggy', 'Ozzy', 'Lottie', 'Boris'];
 var ROLES = ['Nest nurse', 'Food gatherer', 'Tunnel guard', 'Explorer', 'Elite defender', 'Tunnel digger'];
 
@@ -5721,19 +6166,533 @@ function greetTick(dt) {
     }
 }
 
+// colony types, chosen when a Royal Flight founds a new colony
+var BIOMES = [
+    { n: 'Meadow', d: 'Balanced. The classic colony.', gen: 0 },
+    { n: 'Dunes', d: 'Eggs hatch 12% faster. Food is 15% scarcer.', gen: 1, cr: 6, eg: .88, fd: .85, tint: 'rgba(222,150,50,.2)', top: '#6a4a24', bot: '#3a2812', sky: ['#e39b4f', '#f2cf94', '#f6e6c0'], grass: '#b79a4c', hill: '#a8793f' },
+    { n: 'Jungle', d: 'Food is 20% richer. Invaders are 20% stronger.', gen: 2, cr: 8, en: 1.2, fd: 1.2, tint: 'rgba(30,130,60,.2)', top: '#2f3b24', bot: '#18200f', sky: ['#3f8f8a', '#8bc9a5', '#c7e6b8'], grass: '#2f7a2f', hill: '#4a6a34' },
+    { n: 'Frostlands', d: 'Royal jelly is 25% richer. Eggs hatch 12% slower.', gen: 3, cr: 10, eg: 1.12, jl: 1.25, tint: 'rgba(150,200,255,.22)', top: '#4a5560', bot: '#222a33', sky: ['#7da6cc', '#bcd6ea', '#eaf3f8'], grass: '#cfe3e8', hill: '#8a96a2' },
+    { n: 'Autumn Grove', d: 'Food is 10% richer. Eggs hatch 6% faster.', gen: 99, cr: 12, eg: .94, fd: 1.1, tint: 'rgba(200,90,30,.18)', top: '#4a2c1a', bot: '#25140c', sky: ['#c8683a', '#f0b074', '#f7dcae'], grass: '#b5622a', hill: '#8a4a28' }
+];
+function bio() { return BIOMES[S.biome || 0] || BIOMES[0]; }
+
+// daily tasks: three each day, picked by the date
+var DTASKS = [
+    { id: 'hatch', t: function () { return 'Hatch ' + dTarget('hatch') + ' ants'; }, cur: function () { return S.totalHatched; } },
+    { id: 'wave', t: function () { return 'Beat ' + dTarget('wave') + ' invader waves'; }, cur: function () { return S.wave; } },
+    { id: 'gold', t: function () { return 'Catch a golden beetle'; }, cur: function () { return S.goldN || 0; } },
+    { id: 'quest', t: function () { return 'Finish an expedition'; }, cur: function () { return S.questN || 0; } },
+    { id: 'taps', t: function () { return 'Tap the queen ' + dTarget('taps') + ' times'; }, cur: function () { return S.queenTaps || 0; } }
+];
+function dTarget(id) { return id === 'hatch' ? 40 * (1 + 2 * S.tier) : id === 'wave' ? 3 : id === 'gold' || id === 'quest' ? 1 : 40; }
+function dReward() { return 2 + Math.floor(S.tier / 2); }
+function dailyState() {
+    var k = dayKey(), D = P.daily;
+    if (!D || D.day !== k) {
+        var n = Math.floor(Date.now() / 864e5), ids = DTASKS.map(function (t) { return t.id; }), pick = [];
+        while (pick.length < 3)
+            pick.push(ids.splice((n + pick.length * 2) % ids.length, 1)[0]);
+        D = P.daily = { day: k, ids: pick, base: {}, done: {}, all: 0 };
+        DTASKS.forEach(function (t) { D.base[t.id] = t.cur(); });
+        save();
+    }
+    return D;
+}
+function dailyTick() {
+    var D = dailyState(), any = false;
+    D.ids.forEach(function (id) {
+        var t = DTASKS.filter(function (x) { return x.id === id; })[0], c = t.cur();
+        if (c < D.base[id])
+            D.base[id] = 0;
+        if (!D.done[id] && c - D.base[id] >= dTarget(id)) {
+            D.done[id] = 1;
+            any = true;
+            gainJelly(dReward());
+            toast('Daily task done: ' + t.t() + '. +' + dReward() + ' jelly.');
+            SFX.win();
+        }
+    });
+    if (!D.all && D.ids.every(function (id) { return D.done[id]; })) {
+        D.all = 1;
+        any = true;
+        gainJelly(3);
+        toast('All of today\u2019s tasks done! +3 bonus jelly.');
+    }
+    if (any)
+        save();
+}
+function dailyUi() {
+    var D = dailyState(), el = $('daily');
+    if (!el)
+        return;
+    var done = D.ids.filter(function (id) { return D.done[id]; }).length;
+    el.innerHTML = '<div style="border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin:0 0 10px"><b>Today\u2019s tasks</b> <span class="mute">' + done + ' / 3 &middot; all three give +3 bonus jelly</span>' + D.ids.map(function (id) {
+        var t = DTASKS.filter(function (x) { return x.id === id; })[0], c = Math.max(0, Math.min(dTarget(id), t.cur() - D.base[id]));
+        return '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:6px;' + (D.done[id] ? 'opacity:.55' : '') + '"><span>' + (D.done[id] ? '\u2713 ' : '') + t.t() + '</span><span class="mute">' + (D.done[id] ? 'done' : c + ' / ' + dTarget(id) + ' &middot; +' + dReward()) + '</span></div>';
+    }).join('') + '</div>';
+}
+var dlyT = 0;
+
+/* Quests: send a party out for a set time and collect the haul when it is back. The clock is a real timestamp, so it keeps running while the game is closed. S.quest = { k, end, done }. */
+var QDEF = [
+    { id: 'scout', n: 'Scout the meadow', d: 'A few scouts roam above ground.', t: 0, dur: 120, cost: .03, rf: .07, rj: 0 },
+    { id: 'raid', n: 'Raid a rival nest', d: 'Soldiers sneak out to steal supplies.', t: 1, dur: 900, cost: .08, rf: .16, rj: 1 },
+    { id: 'trek', n: 'Long expedition', d: 'A big party heads far from the nest.', t: 2, dur: 7200, cost: .15, rf: .32, rj: 3 }
+];
+var QSTORY = ['They came back dusty and proud.', 'A few ants carried home something shiny.', 'The party marched home singing.', 'They found a quiet patch of seeds.', 'One scout swears it saw a giant.'];
+function qDur(d) { return d >= 3600 ? Math.round(d / 360) / 10 + ' hr' : Math.round(d / 60) + ' min'; }
+function qJelly(q) { return q.rj ? q.rj + Math.floor(S.tier / 2) : 0; }
+function qFood(q) { return Math.round(foodCap() * q.rf * (1 + Math.min(.5, S.scouts * .01))); }
+function questStart(id) {
+    var q = QDEF.filter(function (x) { return x.id === id; })[0], c = Math.round(foodCap() * q.cost);
+    if (S.quest || S.tier < q.t || S.food < c)
+        return;
+    S.food -= c;
+    S.quest = { k: id, end: Date.now() + q.dur * 1000, done: 0 };
+    SFX.buy();
+    toast('The party sets off: ' + q.n + '.');
+    save();
+    questsUi(true);
+}
+function questCollect() {
+    var Q = S.quest;
+    if (!Q || Date.now() < Q.end)
+        return;
+    var q = QDEF.filter(function (x) { return x.id === Q.k; })[0], f = qFood(q), j = qJelly(q);
+    S.food = Math.min(foodCap(), S.food + f);
+    if (j)
+        gainJelly(j);
+    S.quest = null;
+    S.questN = (S.questN || 0) + 1;
+    burst(QX, QY, 22, ['#ffd23f', '#fff3b0', '#e8b04a'], 90);
+    SFX.win();
+    toast(QSTORY[Math.floor(Math.random() * QSTORY.length)] + ' +' + fmt(f) + ' food' + (j ? ', +' + j + ' jelly' : '') + '.');
+    save();
+    questsUi(true);
+}
+var qKey = '';
+function questsUi(force) {
+    var el = $('quests');
+    if (!el)
+        return;
+    if (S.dug < 1) {
+        el.innerHTML = '<p class="mute" style="margin:0">Dig your first tunnel to the surface to send out parties.</p>';
+        return;
+    }
+    var Q = S.quest, h = '', left = Q ? Math.max(0, Math.ceil((Q.end - Date.now()) / 1000)) : 0, key = JSON.stringify([Q && Q.k, left > 0 ? Math.floor(left / 2) : -1, S.tier, Math.floor(S.food / 20)]);
+    if (!force && key === qKey)
+        return;
+    qKey = key;
+    QDEF.forEach(function (q) {
+        var c = Math.round(foodCap() * q.cost), mine = Q && Q.k === q.id, lock = S.tier < q.t, j = qJelly(q);
+        if (mine) {
+            if (left <= 0)
+                h += '<button class="card dig" onclick="questCollect()" style="margin:0 0 6px;outline:2px solid #ffd23f"><span><b>' + q.n + '</b><span class="mute">The party is back. Tap to collect.</span></span><span class="r">Collect</span></button>';
+            else
+                h += '<div class="card" style="margin:0 0 6px;opacity:.9"><span><b>' + q.n + '</b><span class="mute">Away. Back in ' + (left >= 3600 ? Math.floor(left / 3600) + 'h ' + Math.floor(left % 3600 / 60) + 'm' : left >= 60 ? Math.floor(left / 60) + 'm ' + left % 60 + 's' : left + 's') + '</span></span><span class="r">Out</span></div>';
+            return;
+        }
+        h += '<button class="card dig" ' + (Q || lock || S.food < c ? 'disabled ' : '') + 'onclick="questStart(\'' + q.id + '\')" style="margin:0 0 6px"><span><b>' + q.n + ' (' + qDur(q.dur) + ')</b><span class="mute">' + (lock ? 'Needs ' + T[q.t].n : q.d + ' Wins about ' + fmt(qFood(q)) + ' food' + (j ? ' and ' + j + ' jelly' : '')) + '</span></span><span class="r">' + fmt(c) + ' food</span></button>';
+    });
+    el.innerHTML = h;
+}
+
+/* Shop: spend jelly on small boosts. */
+var SDEF = [
+    { id: 'lure', n: 'Golden beetle lure', d: 'Brings a golden beetle to the tunnels right now.', j: 2 },
+    { id: 'recharge', n: 'Fresh orders', d: 'Rally and Sound the alarm are ready again.', j: 1 },
+    { id: 'feast', n: 'Seed feast', d: 'A huge store of seeds: a quarter of your food cap.', j: 3 }
+];
+function shopBuy(id) {
+    var it = SDEF.filter(function (x) { return x.id === id; })[0];
+    if (!it || S.jelly < it.j)
+        return;
+    if (id === 'lure') {
+        if (gold) {
+            toast('A golden beetle is already out there.');
+            return;
+        }
+        if (popn() < 8) {
+            toast('The colony needs at least 8 ants first.');
+            return;
+        }
+        goldNext = 0;
+        gold = null;
+        S.jelly -= it.j;
+        goldTick(.1);
+        if (!gold) {
+            goldNext = 0;
+            goldTick(.1);
+        }
+        toast('The beetle lure is out. Watch the Tunnel tab!');
+    }
+    else if (id === 'recharge') {
+        if (rallyCd <= 0 && alarmCd <= 0) {
+            toast('Both are ready already.');
+            return;
+        }
+        S.jelly -= it.j;
+        rallyCd = 0;
+        alarmCd = 0;
+        toast('Orders refreshed.');
+    }
+    else {
+        S.jelly -= it.j;
+        S.food = Math.min(foodCap(), S.food + Math.round(foodCap() * .25));
+        toast('The seed feast fills the stores.');
+    }
+    SFX.buy();
+    save();
+    shopUi(true);
+}
+var shKey = '';
+function shopUi(force) {
+    var el = $('shop');
+    if (!el)
+        return;
+    var key = S.jelly + ':' + (gold ? 1 : 0);
+    if (!force && key === shKey)
+        return;
+    shKey = key;
+    el.innerHTML = '<p class="mute" style="margin:0 0 6px">Spend royal jelly on small boosts.</p>' + SDEF.map(function (it) {
+        return '<button class="card dig" ' + (S.jelly < it.j ? 'disabled ' : '') + 'onclick="shopBuy(\'' + it.id + '\')" style="margin:0 0 6px"><span><b>' + it.n + '</b><span class="mute">' + it.d + '</span></span><span class="r">' + it.j + ' jelly</span></button>';
+    }).join('');
+}
+
+/* Store: jelly turns into crowns, crowns buy looks, maps and boosts. Crowns and purchases live in P so they survive royal flights. */
+var CROWN_RATE = 10;
+var SKIN_DEF = [
+    { id: 'classic', n: 'Classic black', c: '#2b1509', cr: 0 },
+    { id: 'ember', n: 'Ember', c: '#8c2f16', cr: 4 },
+    { id: 'dusk', n: 'Dusk blue', c: '#27396b', cr: 5 },
+    { id: 'moss', n: 'Moss green', c: '#35692c', cr: 5 },
+    { id: 'gilt', n: 'Gilded', c: '#b98a1e', cr: 8 }
+];
+var SKM = {};
+SKIN_DEF.forEach(function (k) { SKM[k.id] = k.c; });
+function skinCol() { return SKM[P.skin] || '#2b1509'; }
+var THEME_DEF = [
+    { id: 'meadow', n: 'Meadow soil', cr: 0 },
+    { id: 'obsidian', n: 'Obsidian', cr: 5, top: '#2a2a33', bot: '#111117', tint: 'rgba(120,120,200,.12)' },
+    { id: 'clay', n: 'Red clay', cr: 5, top: '#7a3d28', bot: '#401e12', tint: 'rgba(220,100,60,.15)' },
+    { id: 'mossy', n: 'Mossy dark', cr: 5, top: '#2c4129', bot: '#14200f', tint: 'rgba(80,170,80,.14)' }
+];
+var THM = {};
+THEME_DEF.forEach(function (k) { if (k.top)
+    THM[k.id] = k; });
+var BOOST_DEF = [
+    { id: 'pantry', n: 'Full pantry', d: 'Fills your food store to the top.', cr: 2 },
+    { id: 'beetle', n: 'Golden beetle', d: 'Sends a golden beetle into the tunnels now.', cr: 1 }
+];
+function owns(k) { return !!(P.own && P.own[k]); }
+function crownBuy(n) {
+    var c = n * CROWN_RATE;
+    if (S.jelly < c)
+        return;
+    S.jelly -= c;
+    P.crowns = (P.crowns || 0) + n;
+    SFX.buy();
+    toast('+' + n + ' crown' + (n > 1 ? 's' : '') + '.');
+    save();
+    storeUi(true);
+}
+function storeBuy(kind, id) {
+    var list = kind === 'skin' ? SKIN_DEF : kind === 'theme' ? THEME_DEF : kind === 'map' ? null : BOOST_DEF, it, key = kind + id;
+    if (kind === 'map') {
+        var b = BIOMES[+id];
+        it = { cr: b.cr, n: b.n };
+        key = 'map' + id;
+    }
+    else
+        it = list.filter(function (x) { return x.id === id; })[0];
+    if (!it)
+        return;
+    var have = it.cr === 0 || owns(key);
+    if (kind === 'boost') {
+        if (crowns0() < it.cr)
+            return;
+        if (id === 'beetle') {
+            if (gold) {
+                toast('A golden beetle is already out there.');
+                return;
+            }
+            if (popn() < 8) {
+                toast('The colony needs at least 8 ants first.');
+                return;
+            }
+            goldNext = 0;
+            gold = null;
+            goldTick(.1);
+            if (!gold) {
+                goldNext = 0;
+                goldTick(.1);
+            }
+            toast('A golden beetle is on its way. Watch the Tunnel tab!');
+        }
+        else {
+            if (S.food >= foodCap() - 1) {
+                toast('The pantry is already full.');
+                return;
+            }
+            S.food = foodCap();
+            toast('The pantry is full to the brim.');
+        }
+        P.crowns -= it.cr;
+    }
+    else if (have) {
+        if (kind === 'skin')
+            P.skin = id;
+        else if (kind === 'theme')
+            P.theme = id;
+        else
+            return;
+        toast(it.n + ' equipped.');
+    }
+    else {
+        if (crowns0() < it.cr)
+            return;
+        P.crowns -= it.cr;
+        P.own = P.own || {};
+        P.own[key] = 1;
+        if (kind === 'skin')
+            P.skin = id;
+        else if (kind === 'theme')
+            P.theme = id;
+        toast(kind === 'map' ? it.n + ' unlocked. Pick it on your next royal flight.' : it.n + ' bought and equipped.');
+    }
+    SFX.buy();
+    save();
+    storeUi(true);
+}
+function crowns0() { return P.crowns || 0; }
+var stKey = '';
+function storeUi(force) {
+    var el = $('store');
+    if (!el)
+        return;
+    var key = [S.jelly, P.crowns, P.skin, P.theme, JSON.stringify(P.own), S.food > foodCap() - 1, !!gold].join('|');
+    if (!force && key === stKey)
+        return;
+    stKey = key;
+    var cr = crowns0();
+    function card(kind, id, name, desc, price, state, extra) {
+        var dis = state === 'on' || (state === 'own' && kind === 'map') || (state === 'buy' && cr < price);
+        return '<button class="card dig" ' + (dis ? 'disabled ' : '') + 'onclick="storeBuy(\'' + kind + '\',\'' + id + '\')" style="margin:0 0 6px;' + (state === 'on' ? 'outline:2px solid #ffd23f' : '') + '"><span><b>' + (extra || '') + name + '</b><span class="mute">' + desc + '</span></span><span class="r">' + (state === 'on' ? 'Equipped' : state === 'own' ? (kind === 'map' ? 'Owned' : 'Equip') : price + ' crown' + (price > 1 ? 's' : '')) + '</span></button>';
+    }
+    function dot(c) { return '<i style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + c + ';margin-right:6px;vertical-align:-1px;border:1px solid rgba(255,255,255,.4)"></i>'; }
+    var h = '<div style="border:1px solid var(--line);border-radius:16px;padding:12px;margin:10px 0 6px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b style="font-size:22px">' + cr + ' crown' + (cr === 1 ? '' : 's') + '</b><br><span class="mute">You have ' + fmt(S.jelly) + ' royal jelly.</span></span></div>';
+    h += '<p class="mute" style="margin:0 0 6px">Turn royal jelly into crowns. ' + CROWN_RATE + ' jelly makes 1 crown.</p><div style="display:flex;gap:6px;margin-bottom:6px"><button class="card dig" ' + (S.jelly < CROWN_RATE ? 'disabled ' : '') + 'onclick="crownBuy(1)" style="margin:0;justify-content:center"><b>1 crown</b> <span class="r">' + CROWN_RATE + ' jelly</span></button><button class="card dig" ' + (S.jelly < CROWN_RATE * 5 ? 'disabled ' : '') + 'onclick="crownBuy(5)" style="margin:0;justify-content:center"><b>5 crowns</b> <span class="r">' + CROWN_RATE * 5 + ' jelly</span></button></div>';
+    h += '<h2>Ant skins</h2>' + SKIN_DEF.map(function (k) {
+        var own = k.cr === 0 || owns('skin' + k.id), on = (P.skin || 'classic') === k.id;
+        return card('skin', k.id, k.n, 'Changes the colour of your ants.', k.cr, on ? 'on' : own ? 'own' : 'buy', dot(k.c));
+    }).join('');
+    h += '<h2>Maps</h2><p class="mute" style="margin:0 0 6px">Unlock a colony type early. You choose it when you take a royal flight.</p>' + BIOMES.map(function (b, i) {
+        if (!b.cr)
+            return '';
+        var own = owns('map' + i) || (P.gen || 0) >= b.gen;
+        return card('map', i, b.n, b.d, b.cr, own ? 'own' : 'buy');
+    }).join('');
+    h += '<h2>Nest themes</h2>' + THEME_DEF.map(function (k) {
+        var own = k.cr === 0 || owns('theme' + k.id), on = (P.theme || 'meadow') === k.id;
+        return card('theme', k.id, k.n, 'Changes the colour of the soil around your nest.', k.cr, on ? 'on' : own ? 'own' : 'buy', dot(k.top || '#4a3322'));
+    }).join('');
+    h += '<h2>Boosts</h2>' + BOOST_DEF.map(function (k) { return card('boost', k.id, k.n, k.d, k.cr, 'buy'); }).join('');
+    el.innerHTML = h;
+}
+
+// active abilities for fights
+var rallyT = 0, rallyCd = 0, alarmCd = 0, abT = 0;
+function fighting() { return !!(foes.length || RAID || (typeof trm !== 'undefined' && trm.length)); }
+function rallyGo() {
+    if (rallyCd > 0 || rallyT > 0)
+        return;
+    if (!fighting()) {
+        toast('No enemies right now. Save Rally for a fight.');
+        return;
+    }
+    if (healthy(2) + healthy(4) < 1) {
+        toast('You need soldiers to rally.');
+        return;
+    }
+    rallyT = 10;
+    rallyCd = 40;
+    pulseRing('255,150,60');
+    flash = .35;
+    SFX.win();
+    toast('Rally! Soldiers hit 50% harder for 10 seconds.');
+    abilityUi(true);
+}
+function alarmGo() {
+    if (alarmCd > 0)
+        return;
+    if (injN() < 1) {
+        toast('Nobody is hurt right now.');
+        return;
+    }
+    var n = 0;
+    while (n < 15 && healOne())
+        n++;
+    alarmCd = 50;
+    pulseRing('120,230,140');
+    SFX.buy();
+    toast('Alarm! Nurses rushed ' + n + ' ant' + (n === 1 ? '' : 's') + ' back to health.');
+    abilityUi(true);
+}
+function abilityTick(dt) {
+    if (rallyT > 0)
+        rallyT = Math.max(0, rallyT - dt);
+    if (rallyCd > 0)
+        rallyCd = Math.max(0, rallyCd - dt);
+    if (alarmCd > 0)
+        alarmCd = Math.max(0, alarmCd - dt);
+    if (!S.rallyTip && S.tier >= 1 && foes.length) {
+        S.rallyTip = 1;
+        toast('Tip: on the Tunnel tab, tap Rally to hit harder in a fight.');
+    }
+    abT -= dt;
+    if (abT <= 0) {
+        abT = .25;
+        abilityUi(false);
+    }
+}
+function abilityUi(force) {
+    var r = $('abR'), a = $('abA'), box = $('abil');
+    if (!r || !box)
+        return;
+    var show = S.tier >= 1 && S.dug >= 1 && !dead;
+    box.style.display = show ? 'flex' : 'none';
+    if (!show)
+        return;
+    var rt = rallyT > 0 ? 'Rallying ' + Math.ceil(rallyT) + 's' : rallyCd > 0 ? 'Ready in ' + Math.ceil(rallyCd) + 's' : fighting() ? 'Tap to rally!' : 'Ready for a fight', at = alarmCd > 0 ? 'Ready in ' + Math.ceil(alarmCd) + 's' : injN() > 0 ? injN() + ' hurt. Tap to heal!' : 'Ready';
+    r.innerHTML = '<span><b>Rally</b><span class="mute">' + rt + '</span></span>';
+    a.innerHTML = '<span><b>Sound the alarm</b><span class="mute">' + at + '</span></span>';
+    r.style.opacity = rallyCd > 0 || rallyT > 0 ? .55 : 1;
+    a.style.opacity = alarmCd > 0 ? .55 : 1;
+    r.style.outline = fighting() && rallyCd <= 0 ? '2px solid #ffd23f' : 'none';
+    a.style.outline = injN() > 0 && alarmCd <= 0 ? '2px solid #7ee08a' : 'none';
+}
+
+// golden beetle: a rare shiny visitor that scuttles across the soil
+var gold = null, goldNext = 150;
+function goldTick(dt) {
+    if (!gold) {
+        if (popn() < 8)
+            return;
+        goldNext -= dt;
+        if (goldNext > 0)
+            return;
+        var gd = Math.random() < .5 ? 1 : -1;
+        gold = { x: gd > 0 ? wideL() - 20 : wideR() + 20, y: Math.max(90, Math.min(QY - 160, H * (.2 + Math.random() * .55))), d: gd, t: 0, ph: Math.random() * 6 };
+        if (!S.goldSeen) {
+            S.goldSeen = 1;
+            toast('A golden beetle! Tap it on the Tunnel tab before it gets away.');
+        }
+        return;
+    }
+    gold.t += dt;
+    gold.x += 24 * gold.d * dt;
+    if (gold.x > wideR() + 30 || gold.x < wideL() - 30 || gold.t > 60) {
+        gold = null;
+        goldNext = 240 + Math.random() * 240;
+    }
+}
+function goldTap(wx, wy) {
+    if (!gold || Math.hypot(gold.x - wx, gold.y + Math.sin(gold.t * 2 + gold.ph) * 3 - wy) > 24 + 10 / uz)
+        return false;
+    var r = Math.random(), f = Math.max(20, Math.round(foodCap() * .04)), j = 1 + Math.floor(S.tier / 2), msg;
+    if (r < .55) {
+        S.food = Math.min(foodCap(), S.food + f);
+        msg = '+' + fmt(f) + ' food';
+    }
+    else if (r < .9) {
+        gainJelly(j);
+        msg = '+' + j + ' royal jelly';
+    }
+    else {
+        S.food = Math.min(foodCap(), S.food + f);
+        gainJelly(j);
+        msg = '+' + fmt(f) + ' food and +' + j + ' jelly';
+    }
+    S.goldN = (S.goldN || 0) + 1;
+    burst(gold.x, gold.y, 26, ['#ffd23f', '#fff3b0', '#ffb300'], 90);
+    toast('Caught the golden beetle! ' + msg);
+    SFX.win();
+    gold = null;
+    goldNext = 240 + Math.random() * 240;
+    return true;
+}
+function drawGold(now) {
+    if (!gold)
+        return;
+    var t = now * .001, y = gold.y + Math.sin(gold.t * 2 + gold.ph) * 3, k, a;
+    cx.save();
+    cx.translate(0, -cam);
+    cx.save();
+    cx.globalCompositeOperation = 'lighter';
+    glow(gold.x, y, 26, '255,200,70', .45 + .15 * Math.sin(t * 6));
+    cx.restore();
+    cx.translate(gold.x, y);
+    cx.scale(gold.d, 1);
+    cx.strokeStyle = '#6a4a10';
+    cx.lineWidth = 1;
+    for (k = -1; k <= 1; k++) {
+        a = Math.sin(t * 18 + k * 2) * 2;
+        cx.beginPath();
+        cx.moveTo(k * 3, 2);
+        cx.lineTo(k * 3 + a - 2, 7);
+        cx.moveTo(k * 3, -2);
+        cx.lineTo(k * 3 + a - 2, -7);
+        cx.stroke();
+    }
+    cx.fillStyle = '#c98a10';
+    cx.beginPath();
+    cx.ellipse(0, 0, 8, 5.5, 0, 0, 7);
+    cx.fill();
+    cx.fillStyle = '#ffd23f';
+    cx.beginPath();
+    cx.ellipse(-.5, -.6, 7, 4.6, 0, 0, 7);
+    cx.fill();
+    cx.strokeStyle = '#a06a08';
+    cx.beginPath();
+    cx.moveTo(-6, 0);
+    cx.lineTo(7, 0);
+    cx.stroke();
+    cx.fillStyle = 'rgba(255,255,255,.7)';
+    cx.beginPath();
+    cx.ellipse(-2, -2.4, 3, 1.1, -.2, 0, 7);
+    cx.fill();
+    cx.fillStyle = '#8a5a08';
+    cx.beginPath();
+    cx.ellipse(8.4, 0, 3, 2.6, 0, 0, 7);
+    cx.fill();
+    cx.restore();
+}
+
+var wormNext = 40;
+
 function wormTick(dt) {
-    if (!S.wormSeen && popn() >= 8 && S.foodSpots.length >= 1 && !worm) {
-        S.wormSeen = 1;
-        worm = { x: -30, y: 90 + Math.random() * Math.max(40, QY - 240), t: 0 };
-        toast('An earthworm wriggles through the soil nearby.');
+    if (!worm && popn() >= 8) {
+        wormNext -= dt;
+        if (wormNext <= 0) {
+            var wd = Math.random() < .5 ? 1 : -1, wyy = Math.max(70, Math.min(QY - 150, (tab === 'col' ? 0 : cam) + H * (.25 + Math.random() * .5)));
+            worm = { x: wd > 0 ? wideL() - 40 : wideR() + 40, y: wyy, t: 0, d: wd };
+            wormNext = 110 + Math.random() * 150;
+            if (!S.wormSeen) {
+                S.wormSeen = 1;
+                toast('An earthworm wriggles through the soil. Watch for it.');
+            }
+        }
     }
     if (worm) {
         worm.t += dt;
-        worm.x += 14 * dt;
-        if (worm.x > W + 40) {
+        worm.x += 16 * worm.d * dt;
+        if (worm.x > wideR() + 50 || worm.x < wideL() - 50) {
             worm = null;
-            S.food = Math.min(foodCap(), S.food + 12);
-            toast('The worm left rich castings behind. +12 food.');
+            var wf = Math.min(foodCap() - S.food, Math.max(12, Math.round(foodCap() * .008)));
+            S.food += Math.max(0, wf);
+            S.wormN = (S.wormN || 0) + 1;
+            if (S.wormN <= 3)
+                toast('The worm left rich castings behind. +' + Math.round(wf) + ' food.');
         }
     }
 }
@@ -5743,8 +6702,8 @@ function chipRow(a) { return a.map(function (i) { return '<span class="chip" sty
 function introShow(i) { ii = i; $('ipg').innerHTML = IP[i]; var d = ''; for (var k = 0; k < IP.length; k++)
     d += '<i' + (k === i ? ' class="on"' : '') + '></i>'; $('idots').innerHTML = d; $('iback').style.visibility = i ? 'visible' : 'hidden'; $('inext').textContent = i === IP.length - 1 ? 'Start playing' : 'Next'; }
 
-function introOpen() { if ($('intro').classList.contains('on'))
-    return; introWasDead = dead; dead = true; $('intro').classList.add('on'); introShow(0); }
+function introOpen(full) { if ($('intro').classList.contains('on'))
+    return; IP = full === true ? IP_FULL : IP_QUICK; introWasDead = dead; dead = true; $('intro').classList.add('on'); introShow(0); }
 
 function introClose() { $('intro').classList.remove('on'); dead = introWasDead; try {
     localStorage.setItem('thecolony_intro', '1');
@@ -5766,12 +6725,7 @@ function foldSections() {
             n = nx;
         }
         h2.parentNode.insertBefore(body, h2.nextSibling);
-        if (name === 'Upgrades' && !$('ul').children.length) {
-            h2.style.display = 'none';
-            body.style.display = 'none';
-            return;
-        }
-        var open = sv[name] != null ? sv[name] : (name === 'Dig deeper' || name === 'Chambers' || name === 'Colony orders' || name === 'Build' || name === 'Your ants and queen' || ((name === 'The Anthill' || name === 'The Great Colony') && S.tier >= 4));
+        var open = sv[name] != null ? sv[name] : (name === 'Next nest' || name === 'Build and upgrade' || name === 'Quests' || name === 'Your ants and queen' || ((name === 'The Anthill' || name === 'The Great Colony') && S.tier >= 4));
         h2.className = 'fold';
         h2.tabIndex = 0;
         h2.setAttribute('role', 'button');
@@ -5790,7 +6744,7 @@ function foldSections() {
 }
 
 function goTab(t) {
-    tab = t;
+    tab = t === 'store' ? 'col' : t;
     cv.classList.toggle('tunmode', t === 'tun');
     cv.classList.toggle('nestmode', t !== 'tun');
     document.body.classList.toggle('tt', t === 'tun');
@@ -5800,10 +6754,12 @@ function goTab(t) {
     catch (e) { }
     sel = null;
     selFollow = false;
-    ['nest', 'tun', 'col'].forEach(function (x) { $('p-' + x).classList.toggle('on', x === t); });
+    ['nest', 'tun', 'col', 'store'].forEach(function (x) { $('p-' + x).classList.toggle('on', x === t); });
     document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); });
-    $('view').style.display = t === 'col' ? 'none' : '';
-    if (t !== 'col') {
+    $('view').style.display = tab === 'col' ? 'none' : '';
+    if (t === 'store')
+        storeUi(true);
+    if (tab !== 'col') {
         sizeT();
         camT = t === 'tun' ? (S.dug < 1 ? camClamp(at(1 - S.dug).y - H / 2) : 0) : WH - H;
         cam = camT;
@@ -5826,9 +6782,7 @@ function poll() {
     $('tpl').textContent = nt ? 'Next nest: ' + nt.n + ' (' + Math.floor(f * 100) + '%)' : 'Fully dug';
 }
 
-/* ======================================================================
-   16. MAIN LOOP
-   ====================================================================== */
+// ---- main loop ----
 
 function colony(dt) {
     if (dead)
@@ -5844,6 +6798,13 @@ function colony(dt) {
     goalsTick();
     greetTick(dt);
     wormTick(dt);
+    goldTick(dt);
+    abilityTick(dt);
+    dlyT -= dt;
+    if (dlyT <= 0) {
+        dlyT = 2;
+        dailyTick();
+    }
     var pop = popn(), cap = capN(), i, t = performance.now() * .001;
     digging = S.dug < digCap() && S.workers > 0;
     S.food = Math.max(0, S.food - upkeepRate(pop) * dt);
@@ -5911,7 +6872,7 @@ function colony(dt) {
         lose();
 }
 
-/* Random events: good surprises, trouble and two-way choices. One every 7 to 12 minutes while no invaders are about. */
+// random events: good surprises, trouble and two-way choices
 var evT = 300, rainT = 0, rainSeed = 0;
 function evPct(p) { return Math.round(foodCap() * p); }
 function evSpot() { var q = BP && BP.length && S.sideTunnels > 0 ? BP[Math.floor(Math.random() * Math.min(S.sideTunnels, BP.length))] : MAIN, a = at(.2 + Math.random() * .7, q); return a; }
@@ -5992,6 +6953,7 @@ var ACH = [
     { id: 'tn12', n: 'Honeycomb', d: 'Dig 12 side tunnels.', v: function () { return S.sideTunnels; }, m: 12, r: 1 },
     { id: 'tn19', n: 'Master diggers', d: 'Dig all 19 side tunnels.', v: function () { return S.sideTunnels; }, m: 19, r: 3 },
     { id: 'rch', n: 'Far horizons', d: 'Dig sideways twice.', v: function () { return S.reach || 0; }, m: 2, r: 2 },
+    { id: 'dp', n: 'Deep diggers', d: 'Dig all four deep layers.', v: function () { return S.deep || 0; }, m: 4, r: 3 },
     { id: 'fnd', n: 'Treasure hunters', d: 'Uncover 14 finds.', v: function () { return Object.keys(S.rare).length; }, m: 14, r: 2 },
     { id: 'trm', n: 'Termite terror', d: 'Beat 5 termite raids.', v: function () { return S.termWins || 0; }, m: 5, r: 2 },
     { id: 'cav', n: 'Grand cavern', d: 'Raise the nest cavern to level 11.', v: function () { return S.cavLevel || 0; }, m: 10, r: 3 },
@@ -6209,11 +7171,9 @@ function drawDeadQueen() {
     cx.restore();
 }
 
-function drawT(now) { drawWorld(now); drawTrails(now); drawRooms(now); drawHill(now); drawFood(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawSel(now); deco(now); }
+function drawT(now) { drawWorld(now); drawTrails(now); drawRooms(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawSel(now); deco(now); }
 
-/* ======================================================================
-   17. OFFLINE PROGRESS (THE COLONY KEEPS WORKING WHILE YOU ARE AWAY)
-   ====================================================================== */
+// ---- offline progress (the colony keeps working while you are away) ----
 var earnAcc = 0, digPrev = null, AWAY_MAX = 8 * 3600;
 
 function trackRates(el) {
@@ -6353,9 +7313,7 @@ function resumeFromAway() {
     catch (e) { }
 }
 
-/* ======================================================================
-   18. MUSIC: AN 8-BIT COLONY MARCH
-   ====================================================================== */
+// ---- music: an 8-bit colony march ----
 /* The traditional tune of "When Johnny Comes Marching Home" / "The Ants Go Marching" (1863, public domain),
    moved into A minor. The first ten bars are the traditional melody; the last six are our own ending.
    MEL is the melody, one list per bar: [note, length in eighth notes]. MCH is the chord for each bar.
@@ -6370,7 +7328,7 @@ var MEL = [
     [['A4', 2], ['A4', 1], ['A4', 2], ['B4', 1]], [['C5', 2], ['B4', 1], ['C5', 2], ['D5', 1]], [['E5', 3], [null, 2], ['C5', 1]], [['E5', 3], [null, 2], ['C5', 1]],
     [['E5', 2], ['E5', 1], ['E5', 2], ['C5', 1]], [['D5', 2], ['D5', 1], ['D5', 2], ['B4', 1]], [['C5', 2], ['C5', 1], ['C5', 2], ['A4', 1]], [['B4', 2], ['B4', 1], ['B4', 2], ['G#4', 1]],
     [['A4', 2], ['B4', 1], ['C5', 2], ['D5', 1]], [['E5', 2], ['D5', 1], ['C5', 2], ['B4', 1]], [['C5', 2], ['B4', 1], ['G#4', 2], ['B4', 1]], [['A4', 3], [null, 2], ['E4', 1]],
-    /* Verse B: the same marching rhythm lifted into C major, then home to A minor. Our own tune. */
+    // verse B: the same marching rhythm lifted into C major, then home to A minor. Our own tune
     [['E5', 2], ['E5', 1], ['E5', 2], ['G5', 1]], [['G5', 2], ['F5', 1], ['G5', 2], ['E5', 1]], [['F5', 3], [null, 2], ['C5', 1]], [['E5', 3], [null, 2], ['C5', 1]],
     [['E5', 2], ['E5', 1], ['E5', 2], ['G5', 1]], [['G5', 2], ['E5', 1], ['G5', 2], ['A5', 1]], [['G5', 3], [null, 2], ['D5', 1]], [['D5', 3], [null, 2], ['B4', 1]],
     [['F5', 2], ['F5', 1], ['F5', 2], ['E5', 1]], [['E5', 2], ['E5', 1], ['E5', 2], ['C5', 1]], [['D5', 2], ['D5', 1], ['D5', 2], ['B4', 1]], [['D5', 2], ['E5', 1], ['D5', 2], ['B4', 1]],
@@ -6399,7 +7357,7 @@ function musicEngine(ctx, out) {
     conv.buffer = ir;
     dry.gain.value = 1;
     wet.gain.value = .04;
-    /* Soften the top end: pulse waves are very bright, so roll off the highs and add a gentle low-mid warmth. */
+    // soften the top end: pulse waves are very bright, so roll off the highs and add a gentle low-mid warmth
     var tone = lp(2600, .4), shelf = ctx.createBiquadFilter();
     shelf.type = 'highshelf';
     shelf.frequency.value = 1400;
@@ -6419,7 +7377,7 @@ function musicEngine(ctx, out) {
     function vca(t, a, v, hold, rel) { var g = ctx.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(v, t + a); g.gain.setValueAtTime(v, t + Math.max(a, hold)); g.gain.exponentialRampToValueAtTime(.0001, t + Math.max(a, hold) + rel); return g; }
     function lp(f, q) { var b = ctx.createBiquadFilter(); b.type = 'lowpass'; b.frequency.value = f; b.Q.value = q || .7; return b; }
     function vibrato(o, t, f, depth) { var l = ctx.createOscillator(), lg = ctx.createGain(); l.frequency.value = 5.2; lg.gain.setValueAtTime(0, t); lg.gain.linearRampToValueAtTime(f * depth, t + .25); l.connect(lg); lg.connect(o.frequency); l.start(t); l.stop(t + 4); }
-    /* 8-bit style: pulse-wave lead, triangle bass, noise drums, no reverb. */
+    // 8-bit style: pulse-wave lead, triangle bass, noise drums, no reverb
     var PW = {};
     function pulse(d) {
         if (!PW[d]) {
@@ -6455,9 +7413,17 @@ function musicEngine(ctx, out) {
             g.connect(bus);
         }
     };
+    // brass: a sawtooth and a square wave through a filter that opens on the attack, like a horn blat, with a little 8-bit edge from the square
     E.brass = function (f, t, dur, v) {
-        var o = pOsc(.5, f, t, t + dur + .05), g = vca(t, .006, v * .7, dur * .8, .05);
-        o.connect(g);
+        var e = t + dur + .1, o1 = osc('sawtooth', f, t, e), o2 = pOsc(.5, f * 1.004, t, e), fl = lp(f * 1.6, 1.1), g = vca(t, .028, v * .75, dur * .85, .07), m = ctx.createGain();
+        m.gain.value = .5;
+        fl.frequency.setValueAtTime(f * 1.6, t);
+        fl.frequency.linearRampToValueAtTime(f * 5, t + .07);
+        fl.frequency.exponentialRampToValueAtTime(f * 2.6, t + Math.max(.12, dur));
+        o1.connect(fl);
+        o2.connect(m);
+        m.connect(fl);
+        fl.connect(g);
         g.connect(bus);
     };
     E.glock = function (f, t, v) {
@@ -6507,21 +7473,23 @@ function musicEngine(ctx, out) {
         }
         if (ev && ev[0]) {
             var f = noteF(ev[0]), dur = ev[1] * sd;
-            E.clar(f, t, dur * .92, quiet ? .05 : .085);
+            E.clar(f, t, dur * .92, quiet ? .04 : (L.brass ? .055 : .085));
             if (L.strings && bar >= 8)
                 E.str([f], t, dur * .95, .06);
-            if (L.battle && bar % 16 < 8)
-                E.brass(f / 2, t, dur * .8, .035);
+            if (L.brass || L.battle) {
+                E.brass(f, t, dur * .9, quiet ? .04 : .06);
+                E.brass(f / 2, t, dur * .9, quiet ? .025 : .04);
+            }
             if (L.glock && pos === 0)
                 E.glock(f * 2, t, .05);
         }
         if (L.strings && pos === 0 && !quiet)
             E.str(ch.map(function (n, j) { return noteF(n + (j === 0 ? '3' : '4')); }), t, sd * 6, .07);
-        if ((L.brass || L.battle) && (bar === 3 || bar === 12) && (pos === 0 || pos === 3)) {
+        if ((L.brass || L.battle) && (bar === 3 || bar === 7 || bar === 12 || bar === 15 || bar === 23 || bar === 31) && (pos === 0 || pos === 3)) {
             var top = noteF('E5');
-            E.brass(top, t, sd * 1.6, .06);
-            E.brass(top * .7937, t, sd * 1.6, .045);
-            E.brass(top * .6674, t, sd * 1.6, .04);
+            E.brass(top, t, sd * 1.6, .075);
+            E.brass(top * .7937, t, sd * 1.6, .06);
+            E.brass(top * .6674, t, sd * 1.6, .055);
             E.timp(noteF(root + '2'), t, .3);
         }
         if ((L.brass || L.battle) && pos === 0 && bar % 4 === 0)
@@ -6532,7 +7500,7 @@ function musicEngine(ctx, out) {
     return E;
 }
 
-function musicLayers() { var p = popn(); return { strings: p >= 15, brass: p >= 40, glock: S.tier >= 2, battle: foes.length > 0 || !!RAID, night: (function () { var h = new Date().getHours(); return h >= 21 || h < 6; })(), boss: foes.some(function (f) { return f.boss; }) }; }
+function musicLayers() { var p = popn(); return { strings: p >= 15, brass: p >= 12, glock: S.tier >= 2, battle: foes.length > 0 || !!RAID, night: (function () { var h = new Date().getHours(); return h >= 21 || h < 6; })(), boss: foes.some(function (f) { return f.boss; }) }; }
 
 function musicStepDur(L) { return L.battle ? .2 : L.night ? .29 : .25; }
 
@@ -6553,7 +7521,7 @@ function musicTick() {
 function musicSync() {
     if (!MUS.gain || !AC)
         return;
-    var want = MUS.on && !mut && !document.hidden ? .17 : 0;
+    var want = MUS.on && !mut && !document.hidden ? .153 : 0;
     MUS.gain.gain.setTargetAtTime(want, AC.currentTime, .25);
     var b = $('mus');
     if (b)
@@ -6577,9 +7545,7 @@ function musicStart() {
     musicSync();
 }
 
-/* ======================================================================
-   19. SETTINGS: BACKUPS, LOADING A BACKUP, BATTERY SAVER
-   ====================================================================== */
+// ---- settings: backups, loading a backup, battery saver ----
 var battery = false;
 try {
     battery = localStorage.getItem('thecolony_battery') === '1';
@@ -6729,6 +7695,9 @@ function devPanel() {
             ['Max cavern + hill', function () { S.cavLevel = 10; S.hillLevel = 5; }],
             ['Far lands', null],
             ['Open far lands + all tunnels', function () { devStage(4); S.reach = 2; S.sideTunnels = 19; for (var k = 0; k < 19; k++) S.sideDug[k] = 1; genPebs(); go('tun'); }],
+            ['Unlock next deep layer', function () { S.tier = Math.max(S.tier, 4); S.food = foodCap(); S.jelly += 100; upDeep(); go('tun'); camT = camClamp(deepTop() - H * .3); }],
+            ['All 4 deep layers', function () { S.tier = Math.max(S.tier, 4); S.deep = 4; S.deepAt = [0, 0, 0, 0]; layoutV++; genDeep(); genPebs(); go('tun'); camT = camClamp(deepTop() - H * .3); }],
+            ['Go to deep layers', function () { go('tun'); camT = camClamp(deepTop() - H * .3); }],
             ['Termite raid now', function () { devStage(4); S.reach = 2; S.sideTunnels = 19; for (var k = 0; k < 19; k++) S.sideDug[k] = 1; S.rare.nbf = 1; trmT = 0; genPebs(); go('tun'); }],
             ['Events', null],
             ['Good surprise', function () { EV_GOOD[Math.floor(Math.random() * EV_GOOD.length)].f(); }],
@@ -6769,6 +7738,16 @@ function devPanel() {
 
 function devNote(m) { $('devnote').textContent = m; }
 
+var FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER = 'v26';
+function sendFeedback() {
+    var txt = ($('fbtext').value || '').trim();
+    if (!txt) { setNote('Type a short message first.'); return; }
+    var info = 'Game ' + GAME_VER + ' | stage ' + S.tier + ' | ants ' + Math.floor(popn()) + ' | gen ' + genNum() + ' | ' + (navigator.userAgent || '').slice(0, 120);
+    var url = 'mailto:' + FEEDBACK_EMAIL + '?subject=' + encodeURIComponent('Antropolis feedback: ' + $('fbtype').value) + '&body=' + encodeURIComponent(txt + '\n\n---\n' + info);
+    setNote('Opening your email app. Press send there to finish.');
+    try { window.location.href = url; } catch (e) { }
+}
+
 function openSettings() {
     var el = $('settings');
     if (!el) {
@@ -6786,6 +7765,11 @@ function openSettings() {
             (DEV ? '<p style="margin:12px 0 4px"><b>Preview tools</b></p><button class="card" id="setdev">Open preview tools</button>' : '') +
             '<p style="margin:12px 0 4px"><b>Battery saver</b></p>' +
             '<button class="card" id="setbat"></button>' +
+            (FEEDBACK_EMAIL.indexOf('CHANGE-ME') === 0 ? '' : (
+            '<p style="margin:12px 0 4px"><b>Send feedback</b></p>' +
+            '<div class="irow" style="margin-bottom:6px"><select id="fbtype" style="flex:1;padding:8px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)"><option>Bug</option><option>Idea</option><option>Something confusing</option></select></div>' +
+            '<textarea id="fbtext" rows="3" placeholder="What happened, or what would you like to see?" style="width:100%;font:13px sans-serif;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px"></textarea>' +
+            '<button class="card" id="fbsend" style="margin-top:6px">Send feedback</button>')) +
             '<p id="setnote" class="mute" style="min-height:1.4em;margin:10px 0" aria-live="polite"></p>' +
             '<div class="irow"><button class="card dig" id="setok">Done</button></div></div>';
         document.body.appendChild(el);
@@ -6798,6 +7782,8 @@ function openSettings() {
         $('setfile').onchange = function () { var f = this.files && this.files[0]; if (!f)
             return; var r = new FileReader(); r.onload = function () { $('setcode').value = String(r.result); pendingLoad = null; tryLoadSave($('setcode').value); }; r.readAsText(f); };
         $('setbat').onclick = function () { setBattery(!battery); };
+        if ($('fbsend'))
+            $('fbsend').onclick = sendFeedback;
         if (DEV)
             $('setdev').onclick = function () { el.classList.remove('on'); devPanel(); };
         $('setok').onclick = function () { el.classList.remove('on'); pendingLoad = null; $('setload').textContent = 'Load this backup'; setNote(''); };
@@ -6806,18 +7792,33 @@ function openSettings() {
     el.classList.add('on');
 }
 
-/* ======================================================================
-   20. COLONY ORDERS, BUILDINGS AND THREATS
-   ====================================================================== */
+// ---- colony orders, buildings and threats ----
 
+/* little card icons, drawn as inline SVG so they stay sharp at any size */
+var ICO = {
+    store: '<path d="M6 7Q10 3 14 7L16 16Q10 19 4 16Z"/><path d="M7 7H13" stroke="#2b1a0e" stroke-width="1.4" fill="none"/>',
+    nest: '<ellipse cx="10" cy="11" rx="5" ry="7"/>',
+    farm: '<path d="M3 10Q10 0 17 10Z"/><rect x="8" y="10" width="4" height="7" rx="1.5"/>',
+    rax: '<path d="M10 2L17 5V10Q17 16 10 18Q3 16 3 10V5Z"/>',
+    archive: '<rect x="4" y="3" width="12" height="14" rx="1.5"/><path d="M7 7H13M7 10H13" stroke="#2b1a0e" stroke-width="1.2" fill="none"/>',
+    hatch: '<ellipse cx="10" cy="12" rx="4.5" ry="6"/><path d="M10 1L11 3.5L13.5 4L11.5 5.5L12 8L10 6.6L8 8L8.5 5.5L6.5 4L9 3.5Z"/>',
+    tower: '<path d="M6 17V7H5V3H8V5H9V3H11V5H12V3H15V7H14V17Z"/>',
+    court: '<path d="M3 16L4 6L8 10L10 4L12 10L16 6L17 16Z"/>',
+    cave: '<path d="M2 17Q2 4 10 4Q18 4 18 17Z"/>',
+    reach: '<path d="M2 10H18M5 7L2 10L5 13M15 7L18 10L15 13" fill="none" stroke="#e8b04a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+    deep: '<path d="M10 2V17M5 12L10 17L15 12" fill="none" stroke="#e8b04a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+    jelly: '<path d="M10 2L16 6V14L10 18L4 14V6Z"/>'
+};
+function ico(k) { return ICO[k] ? '<svg viewBox="0 0 20 20" width="18" height="18" fill="#e8b04a" style="vertical-align:-3px;margin-right:7px">' + ICO[k] + '</svg>' : ''; }
+var RICO = ['farm', 'nest', 'rax', 'court'];
 var BDEF = [
-    { id: 'store', n: 'Food store', d: 'Holds 25% more food per level.', t: 1, c: 150 },
-    { id: 'nest', n: 'Extra nursery', d: 'One more egg in every clutch, per level.', t: 1, c: 220 },
-    { id: 'farm', n: 'Fungus farm', d: 'Grows food slowly. Needs nurses to tend it.', t: 2, c: 300 },
-    { id: 'rax', n: 'Barracks wing', d: 'Soldiers deal 12% more damage per level and break beetle armour.', t: 2, c: 260 },
-    { id: 'archive', n: 'Archive', d: 'Metropolis district. Keepers of old finds slowly make royal jelly.', t: 4, c: 1500, g: 1.75 },
-    { id: 'hatch', n: 'Grand hatchery', d: 'Metropolis district. Eggs hatch 10% faster per level.', t: 4, c: 1500, g: 1.75 },
-    { id: 'tower', n: 'Watchtower', d: 'Metropolis district. Invaders hit 8% weaker per level.', t: 4, c: 1500, g: 1.75 }
+    { id: 'store', n: 'Food store', d: 'Holds 25% more food per level', t: 1, c: 150 },
+    { id: 'nest', n: 'Extra nursery', d: 'One more egg per clutch, each level', t: 1, c: 220 },
+    { id: 'farm', n: 'Fungus farm', d: 'Grows food slowly. Needs nurses', t: 2, c: 300 },
+    { id: 'rax', n: 'Barracks wing', d: 'Soldiers hit 12% harder, each level', t: 2, c: 260 },
+    { id: 'archive', n: 'Archive', d: 'Slowly makes royal jelly', t: 4, c: 1500, g: 1.75 },
+    { id: 'hatch', n: 'Grand hatchery', d: 'Eggs hatch 10% faster, each level', t: 4, c: 1500, g: 1.75 },
+    { id: 'tower', n: 'Watchtower', d: 'Invaders hit 8% weaker, each level', t: 4, c: 1500, g: 1.75 }
 ];
 var ODEF = [
     { k: 'wk', n: 'Workers', o: ['Dig tunnels', 'Balanced', 'Build and maintain'], d: 'Maintaining builds faster, clears debris, and limits flood damage.' },
@@ -6898,14 +7899,15 @@ function ordersUi() {
         var b0 = BDEF.filter(function (x) { return x.id === pj.k; })[0];
         h += '<div class="ol">Building: ' + b0.n + '</div><div class="bar"><i style="width:' + Math.round((1 - pj.left / pj.tot) * 100) + '%;background:var(--accent)"></i></div>';
     }
+    h += '<div class="ol" style="margin:12px 0 6px">Buildings</div>';
     BDEF.forEach(function (b, i) {
         var lv = S.bld[b.id], locked = S.tier < b.t;
-        h += '<button class="card" ' + (locked || lv >= 4 || pj || S.food < bCost(i) ? 'disabled ' : '') + 'onclick="startBuild(' + i + ')"><span><b>' + b.n + ' ' + lv + '/4</b><span class="mute">' + b.d + '</span></span><span class="r">' + (locked ? 'Needs nest stage ' + b.t : lv >= 4 ? 'Maxed' : fmt(bCost(i)) + ' food') + '</span></button>';
+        h += '<button class="card" ' + (locked || lv >= 4 || pj || S.food < bCost(i) ? 'disabled ' : '') + 'onclick="startBuild(' + i + ')"><span><b>' + ico(b.id) + b.n + ' ' + lv + '/4</b><span class="mute">' + b.d + '</span></span><span class="r">' + (locked ? 'Needs nest stage ' + b.t : lv >= 4 ? 'Maxed' : fmt(bCost(i)) + ' food') + '</span></button>';
     });
     bl.innerHTML = h;
 }
 
-/* The seven buildings are real structures on the floor of the nest. They grow with each level. */
+// the seven buildings are real structures on the floor of the nest. They grow with each level
 var BLAY = [[.12, .35], [.27, .9], [.79, .9], [.51, .3], [.39, .95], [.66, .45], [.92, .4]];
 function bpos(i) {
     var y0 = QY + (WH - QY) * .58, y1 = WH - 30, t = BLAY[i];
@@ -7389,7 +8391,7 @@ function dTower(lv, now) {
 
 var BFN = [bStore, bNursery, bFarm, bBarracks, bArchive, bHatch, bTower], BDET = [dStore, dNursery, dFarm, dBarracks, dArchive, dHatch, dTower], BSHORT = ['Store', 'Nursery', 'Farm', 'Barracks', 'Archive', 'Hatchery', 'Tower'], dustT = 0;
 
-/* Lanterns that hang from the ceiling of the main cavern, one more for each cavern level. */
+// lanterns that hang from the ceiling of the main cavern, one more for each cavern level
 function statue(x, y, k, latest, now) {
     cx.fillStyle = 'rgba(0,0,0,.3)';
     cx.beginPath();
@@ -7449,6 +8451,22 @@ function drawCavern(now) {
         cx.scale(1.3, 1.3);
         statue(0, 0, k, k === ns - 1, now);
         cx.restore();
+    }
+    if (S.deep) {
+        var nj = S.deep * 5, fillF = Math.min(1, S.food / Math.max(1, foodCap()));
+        for (k = 0; k < nj; k++) {
+            var ja = Math.PI * (.14 + .72 * (k + .5) / nj), jx = c.x + Math.cos(ja) * c.rx * .8, jy = c.y + Math.sin(ja) * c.ry * .74 - 8 + (k % 2) * 6;
+            cx.fillStyle = 'rgba(0,0,0,.25)';
+            cx.beginPath();
+            cx.ellipse(jx, jy + 9, 7, 2.4, 0, 0, 7);
+            cx.fill();
+            cx.fillStyle = '#4a3320';
+            cx.fillRect(jx - 5, jy - 8, 10, 17);
+            cx.fillStyle = '#e8b04a';
+            cx.fillRect(jx - 4, jy + 8 - 15 * (.25 + .75 * fillF), 8, 15 * (.25 + .75 * fillF));
+            cx.fillStyle = '#7a5530';
+            cx.fillRect(jx - 6, jy - 10, 12, 3);
+        }
     }
     if (!cl)
         return;
@@ -7520,7 +8538,7 @@ function blockChance() {
     return 1 - (1 - patrol) * (1 - (S.orders.fg === 3 ? .5 : 0));
 }
 
-/* Where the spider is lurking: at the food spot it is guarding, or near the middle of the tunnel. */
+// where the spider is lurking: at the food spot it is guarding, or near the middle of the tunnel
 function lairPos() {
     var sp = S.foodSpots.filter(function (x) { return x.lair > 0; })[0], a = at(sp ? sp.p : .5);
     return { x: a.x + a.nx * (sp ? sp.side * 5 : 0), y: a.y + a.ny * (sp ? sp.side * 5 : 0), ang: a.ang, p: sp ? sp.p : .5 };
@@ -7554,15 +8572,15 @@ function startThreat() {
         THR = { k: k, t: 20 + S.tier * 4, a: 4 };
         if (S.foodSpots.length)
             S.foodSpots[Math.floor(Math.random() * S.foodSpots.length)].lair = 1;
-        toast('A spider is lurking in the tunnels. It will ambush lone foragers. Send guards on patrol or set foragers to Safest.');
+        toast('A spider lurks in the tunnels. Send guards on patrol or set foragers to Safest.');
     }
     else if (k === 'flood') {
         THR = { k: k, t: 18 };
-        toast('Dark clouds gather. Rain is coming: set workers to Build and maintain to hold off the flood.');
+        toast('Rain is coming! Set workers to Build and maintain.');
     }
     else {
         THR = { k: k, t: 28, a: 5 };
-        toast('A rival ant colony is raiding your food spots! Patrol soldiers can drive them off.');
+        toast('Rival ants are raiding your food! Soldiers on patrol can stop them.');
     }
 }
 
@@ -7769,7 +8787,7 @@ function farNest() {
     return { fx: e[0] - .09, ya: e[1] + 40 / (WH || 500), kind: 'termites', hostile: 1 };
 }
 
-function raidTick(dt, quiet) {
+function termRaidTick(dt, quiet) {
     var B = BP[17];
     if (!B || !S.reach)
         return;
@@ -7778,7 +8796,7 @@ function raidTick(dt, quiet) {
             S.rare.nbf = 1;
             trmT = 90;
             if (!quiet) {
-                toast('Workers broke into a termite nest at the end of the far east tunnel. They are not friendly!');
+                toast('Workers found a termite nest in the far east tunnel. Not friendly!');
                 SFX.win();
             }
         }
@@ -7916,7 +8934,7 @@ function featTick(dt) {
             var fp = at(ff.pf, BP[k]);
             burst(fp.x, fp.y, 18, ['#ffd23f', '#fff', '#9bffc8'], 70);
         });
-    raidTick(dt, quiet);
+    termRaidTick(dt, quiet);
     if (S.tier >= 2 && !S.rare.nb && fy <= wy(f.nb.fy)) {
         S.rare.nb = 1;
         if (!quiet)
@@ -8069,7 +9087,7 @@ function drawSoil(now) {
     }
 }
 
-/* Tiny side-on insect for the neighbour colony: termite (pale, long) or aphid (green, pear shaped). */
+// tiny side-on insect for the neighbour colony: termite (pale, long) or aphid (green, pear shaped)
 function critter(x, y, ang, s, aph) {
     cx.save();
     cx.translate(x, y);
@@ -8217,28 +9235,29 @@ function drawNeighbour(nb, now, br, bdug) {
     cx.fillText(term ? 'Termite colony' : 'Aphid farm', nx, ny - 26 * sc);
 }
 
-/* Offline and home-screen support (only works when the game is served from a web address). */
+// offline and home-screen support (only works when the game is served from a web address)
 try {
     if ('serviceWorker' in navigator && /^https?:/.test(location.protocol))
         window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () { }); });
 }
 catch (e) { }
 
-/* ======================================================================
-   STARTUP
-   ====================================================================== */
-IP = ['<h3>Welcome to Antropolis</h3><p>You are a queen ant and you have burrowed deep beneath the ground. You have found an abandoned egg chamber, and in it lies a dead queen. You take your chance to start your own colony, and her remains are your first food.</p><p>Every <b>30 seconds</b> you lay an egg on your own. Tap the queen on the <b>Nest</b> tab to hurry the next one.</p>',
-    '<h3>Five kinds of ant</h3><p>Every egg hatches into one of five kinds of ant. It is a random roll, so you get a mix.</p><p>' + chipRow([6, 0, 1, 2, 3]) + '</p><p><b>Workers</b> dig every tunnel and chamber, and only they can dig. <b>Nurses</b> heal hurt ants and tend eggs. <b>Foragers</b> bring food. <b>Soldiers</b> defend the tunnel. <b>Scouts</b> explore, find treasure and warn you about waves.</p><p>About 1 egg in 5,000 is a <b>golden egg</b> that hatches a mighty Super Major. The odds are shown on the Nest tab.</p>',
-    '<h3>Food keeps everything going</h3><p>You begin with what is left of the dead queen. Soon workers discover food spots while they dig, and foragers harvest them once the tunnel is long enough to walk. Spots slowly grow back. Once you break through to the surface, foragers also pick leaves and scavenge dead bugs. Food is shown at the top right.</p><p>Eggs, upgrades and digging deeper all cost food, and every ant eats a little. With no food, ants starve, so make sure you have foragers.</p>',
-    '<h3>Defend your nest</h3><p>Once your tunnel breaks through to the surface, invaders come down it in waves. Wood lice are slow and may kill a few ants, but they are no real threat. Your soldiers fight them. Hurt ants limp to the infirmary and nurses heal them.</p><p>If invaders reach the queen and her health runs out, the colony falls. Open the <b>Tunnel</b> tab to watch the fights, and use the Surface, Front line and Nest buttons to look around.</p>',
-    '<h3>Grow and upgrade</h3><p>On the <b>Colony</b> tab, dig a bigger nest once you have enough ants and food. Each stage fits more ants, unlocks a named chamber with a bonus and zooms the map out.</p><p><b>Royal jelly</b> comes from cleared waves, bosses and scout finds. Tap an ant class or the queen on the Colony tab to level them up. The <b>Goal</b> card above the nest always tells you what to do next. Tap any ant to follow it and see what it is doing. Once the nest is fully dug you can build an anthill on the surface, but raiders will come for it.</p>'];
+// ---- startup ----
+var IP_FULL = ['<h3>Welcome to Antropolis</h3><p>You are a queen ant starting a new colony deep underground.</p><p>You lay an egg every <b>30 seconds</b>. Tap the queen on the <b>Nest</b> tab to lay faster.</p>',
+    '<h3>Five kinds of ant</h3><p>' + chipRow([6, 0, 1, 2, 3]) + '</p><p><b>Workers</b> dig. <b>Nurses</b> heal. <b>Foragers</b> fetch food. <b>Soldiers</b> fight. <b>Scouts</b> find treasure.</p><p>Every egg hatches into a random one. Rarely, a golden egg hatches a mighty Super Major.</p>',
+    '<h3>Food</h3><p>Foragers bring food home. Eggs, upgrades and digging all cost food, and ants starve without it.</p><p>Keep some foragers working.</p>',
+    '<h3>Defend your nest</h3><p>Once your tunnel reaches the surface, invaders attack in waves. Soldiers fight them. Nurses heal the hurt.</p><p>Watch the fights on the <b>Tunnel</b> tab.</p>',
+    '<h3>Grow</h3><p>On the <b>Colony</b> tab, dig a bigger nest and spend <b>royal jelly</b> to level up your ants.</p><p>The <b>Goal</b> card always shows what to do next. Tap any ant to follow it.</p>'];
+var IP_QUICK = ['<h3>Welcome to Antropolis</h3><p>You are a queen ant starting a new colony underground.</p><p><b>Tap the queen</b> on the Nest tab to lay eggs faster.</p>',
+    '<h3>Grow your colony</h3><p>Your ants dig, find food and fight invaders.</p><p>Follow the <b>Goal</b> card. It always shows what to do next.</p><p class="mute">Need more help? Open the menu and tap How to play.</p>'];
+IP = IP_QUICK;
 $('inext').onclick = function () { if (ii >= IP.length - 1)
     introClose();
 else
     introShow(ii + 1); };
 $('iback').onclick = function () { if (ii > 0)
     introShow(ii - 1); };
-$('help').onclick = introOpen;
+$('help').onclick = function () { introOpen(true); };
 load();
 if (S.workers == null)
     S.workers = 1;
@@ -8291,7 +9310,7 @@ try {
 catch (e) {
     introOpen();
 }
-/* Title screen. It sits over the running game and is skipped when the game is driven by test tools. */
+// title screen
 (function () {
     var t = $('title');
     if (navigator.webdriver) {
@@ -8302,10 +9321,10 @@ catch (e) {
     $('tgo').textContent = S.totalHatched > 0 || S.dug > 0 ? 'CONTINUE' : 'PLAY';
     function go() { t.className = 'off'; setTimeout(function () { t.style.display = 'none'; }, 800); musicStart(); }
     $('tgo').onclick = go;
-    $('thelp').onclick = function () { go(); setTimeout(introOpen, 300); };
+    $('thelp').onclick = function () { go(); setTimeout(function () { introOpen(true); }, 300); };
 })();
 if (S.totalHatched === 0 && S.dug === 0)
-    toast('An old egg chamber, and a dead queen. Her remains feed your first brood. Tap the queen to hurry an egg.');
+    toast('A new colony begins. Tap the queen to lay an egg.');
 window.addEventListener('resize', sizeT);
 cv.classList.toggle('tunmode', tab === 'tun');
 cv.classList.toggle('nestmode', tab !== 'tun');
@@ -8314,6 +9333,7 @@ document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { pa
 var lastTouchEnd = 0;
 cv.addEventListener('touchend', function (e) { var n = Date.now(); if (n - lastTouchEnd < 400)
     e.preventDefault(); lastTouchEnd = n; }, { passive: false });
+$('tstw').onclick = function () { $('tinfo').classList.toggle('on'); };
 $('zfol').onclick = function () {
     var pool = [];
     crewA.forEach(function (a) { if (a.wx != null && a.st !== 'idle')
@@ -8330,7 +9350,7 @@ $('zfol').onclick = function () {
 };
 try {
     var lastTab = localStorage.getItem('thecolony_tab');
-    if (lastTab === 'tun' || lastTab === 'col')
+    if (lastTab === 'tun' || lastTab === 'col' || lastTab === 'store')
         go(lastTab);
 }
 catch (e) { }
