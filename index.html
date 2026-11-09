@@ -2675,10 +2675,9 @@ function forageStep(m, dt, sp) {
 
 function surfaceSpot(j) { var e0 = PT[0][0], mr = 28 + S.tier * 8, sd = j % 2 ? 1 : -1; return Math.max(8, Math.min(W - 8, e0 + sd * (mr + 8 + Math.floor(j / 2) * 12))); }
 
+// keeps foragers in the same lane at least 5 px apart, so busy tunnels form neat queues.
+// Runs every frame: every other frame made queued ants shuffle forward and back.
 function queueForagers() {
-    queueForagers.n = (queueForagers.n || 0) + 1;
-    if (queueForagers.n % 2)
-        return;
     var G = {}, gap = 5 / LEN;
     marchers.forEach(function (m) { if (m.k !== 1 || m.inj || m.wait > 0 || m.tp == null || m.gt > 0 || m.sf)
         return; var key = (m.d > 0 ? 'h' : 'o') + (m.l > .33 ? 2 : m.l < -.33 ? 0 : 1); (G[key] || (G[key] = [])).push(m); });
@@ -11191,7 +11190,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 57, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 58, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
