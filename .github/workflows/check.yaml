@@ -1,0 +1,21 @@
+# Runs on every push and pull request: checks the built files match src/ and lints the code.
+name: Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Built files are up to date with src/
+        run: python3 tools/build.py --check
+      - name: Lint
+        run: |
+          npm install --no-save eslint@9
+          python3 tools/lint.py

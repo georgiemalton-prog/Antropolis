@@ -2,3 +2,4 @@ dev.html
 __pycache__/
 *.snap
 tools/test/out/
+node_modules/
