@@ -87,7 +87,7 @@ function soilTex() {
     var XL = wideL() - 20, XR = wideR() + 20, XW = XR - XL, WWf = Math.round(XW / W);
     cx.fillStyle = soilP;
     cx.fillRect(XL, 0, XW, WH);
-    var r = rng(S.seed + 3), i, x;
+    var r = rng(S.seed + 3), x;
     for (i = 0; i < 7; i++) {
         var y = 60 + i * WH / 7 + r() * 30;
         cx.fillStyle = i % 2 ? 'rgba(0,0,0,.10)' : 'rgba(255,200,140,.05)';

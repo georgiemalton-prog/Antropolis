@@ -22,7 +22,6 @@ function initResetButton() {
 // power: 'auto' (default: 30 frames a second once the colony is big, 60 while it's small), 'smooth' (always 60), 'saver' (30 and a lighter picture)
 var battery = false, power = 'auto';
 
-function setBattery(on) { setPower(on ? 'saver' : 'auto'); }
 function setPower(m) {
     power = m;
     battery = m === 'saver';

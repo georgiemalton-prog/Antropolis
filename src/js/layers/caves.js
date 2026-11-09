@@ -48,8 +48,8 @@ function crystalFind(x, y) {
         S.crD = d;
         S.crN = 0;
     }
-    if (S.crS >= 6) {
-        if (S.crN < 4) {
+    if (S.crS >= TUNING.caves.shardsPerJelly) {
+        if (S.crN < TUNING.caves.jellyPerDay) {
             S.crS -= 6;
             S.crN++;
             gainJelly(1);

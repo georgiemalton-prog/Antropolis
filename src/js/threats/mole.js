@@ -5,7 +5,7 @@
 /* ---- the Giant Mole (Bedrock) ----
    Saved: S.moleHp (health left, damage sticks between attacks), S.moleWon, S.hall (Great Hall level 0-4).
    The battle itself (MF) is not saved: closing the game mid-fight simply ends it. */
-var MOLE_MAX = 900000, MF = null;
+var MOLE_MAX = TUNING.mole.maxHp, MF = null;
 function moleOn() { return (S.deep || 0) >= 4; }
 function molePos() {
     var qs = [trunkQ(0), trunkQ(1), trunkQ(2), trunkQ(3)];
@@ -33,7 +33,7 @@ function moleTick(dt) {
     if (!MF) {
         // the mole slowly licks its wounds: 5% of its health back per hour
         if (S.moleHp != null && S.moleHp < MOLE_MAX)
-            S.moleHp = Math.min(MOLE_MAX, S.moleHp + MOLE_MAX * .05 / 3600 * dt);
+            S.moleHp = Math.min(MOLE_MAX, S.moleHp + MOLE_MAX * TUNING.mole.regenPerHour / 3600 * dt);
         return;
     }
     if (MF.end) {
@@ -82,13 +82,13 @@ function moleTick(dt) {
     MF.kt -= dt;
     if (MF.kt <= 0) {
         MF.kt = 2;
-        var n = Math.max(1, Math.round(S.soldiers * .006));
+        var n = Math.max(1, Math.round(S.soldiers * TUNING.mole.lossPerHit));
         S.soldiers = Math.max(0, S.soldiers - n);
         if (S.injured[2] > S.soldiers)
             S.injured[2] = S.soldiers;
-        if (S.superMajors > 0 && Math.random() < .12)
+        if (S.superMajors > 0 && Math.random() < TUNING.mole.superLoss)
             S.superMajors--;
-        if (healthy(2) > 0 && Math.random() < .5)
+        if (healthy(2) > 0 && Math.random() < TUNING.mole.injureChance)
             S.injured[2]++;
         shake = Math.max(shake, .2);
         SFX.hit();
@@ -106,7 +106,7 @@ function moleTick(dt) {
         moleWin();
         return;
     }
-    if (dps() < MF.d0 * .4) {
+    if (dps() < MF.d0 * TUNING.mole.retreatAt) {
         MF.end = 1;
         MF.t = 0;
         toast('Your army falls back from the Giant Mole with ' + Math.round(S.moleHp / MOLE_MAX * 100) + '% of its health left. The damage sticks; regroup and try again.');
@@ -118,7 +118,7 @@ function moleWin() {
     S.moleHp = 0;
     MF.end = 1;
     MF.t = 0;
-    gainJelly(30);
+    gainJelly(TUNING.mole.winJelly);
     S.food = foodCap();
     flash = 1;
     shake = .8;
@@ -127,12 +127,12 @@ function moleWin() {
         pulseRing('255,210,60');
     }
     SFX.fan();
-    toast('VICTORY! The Giant Mole is beaten. +30 royal jelly, a full food store, and the cavern is yours: build the Great Hall in it.');
+    toast('VICTORY! The Giant Mole is beaten. +' + TUNING.mole.winJelly + ' royal jelly, a full food store, and the cavern is yours: build the Great Hall in it.');
 }
-function hallCost() { var lv = S.hall || 0; return { f: Math.round(foodCap() * (.4 + .15 * lv)), j: 25 + 25 * lv }; }
+function hallCost() { var lv = S.hall || 0; return { f: Math.round(foodCap() * (TUNING.hall.foodBase + TUNING.hall.foodStep * lv)), j: TUNING.hall.jellyBase + TUNING.hall.jellyStep * lv }; }
 function upHall() {
     var lv = S.hall || 0, c = hallCost();
-    if (!S.moleWon || lv >= 4 || S.food < c.f || S.jelly < c.j)
+    if (!S.moleWon || lv >= TUNING.hall.maxLevel || S.food < c.f || S.jelly < c.j)
         return;
     S.food -= c.f;
     S.jelly -= c.j;
@@ -140,7 +140,7 @@ function upHall() {
     SFX.buy();
     flash = .5;
     pulseRing('255,210,60');
-    toast('The Great Hall is now level ' + S.hall + '. Food and soldier damage +' + (S.hall * 10) + '%.');
+    toast('The Great Hall is now level ' + S.hall + '. Food and soldier damage +' + Math.round(S.hall * TUNING.hall.bonus * 100) + '%.');
 }
 function moleCard() {
     if (!moleOn())
@@ -148,7 +148,7 @@ function moleCard() {
     var hp = moleHp(), pc = Math.ceil(hp / MOLE_MAX * 100), lv = S.hall || 0, c;
     if (S.moleWon) {
         c = hallCost();
-        return '<button class="card dig" ' + (lv >= 4 || S.food < c.f || S.jelly < c.j ? 'disabled ' : '') + 'onclick="upHall()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Great Hall ' + lv + '/4</b><span class="mute">Built in the Giant Mole\'s old cavern. Each level: +10% food and soldier damage</span></span><span class="r">' + (lv >= 4 ? 'Maxed' : fmt(c.f) + ' food, ' + c.j + ' jelly') + '</span></button>';
+        return '<button class="card dig" ' + (lv >= TUNING.hall.maxLevel || S.food < c.f || S.jelly < c.j ? 'disabled ' : '') + 'onclick="upHall()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Great Hall ' + lv + '/' + TUNING.hall.maxLevel + '</b><span class="mute">Built in the Giant Mole\'s old cavern. Each level: +10% food and soldier damage</span></span><span class="r">' + (lv >= 4 ? 'Maxed' : fmt(c.f) + ' food, ' + c.j + ' jelly') + '</span></button>';
     }
     if (MF)
         return '<div class="card info" style="margin:0 0 6px;display:block"><b>' + (MF.end ? 'Your army is climbing back up' : MF.fight ? 'Battle with the Giant Mole!' : 'Your army is marching down') + '</b><div class="bar" style="margin:6px 0 2px"><i style="width:' + pc + '%;background:#c43fe0"></i></div><span class="mute">Mole health ' + pc + '%</span></div>';

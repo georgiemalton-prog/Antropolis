@@ -65,7 +65,7 @@ function antWhere(o) {
 }
 
 function antInfo(s) {
-    var o = s.o, t, a;
+    var o = s.o;
     if (s.t !== 'a' && !o.inj) {
         if (o.nap > 0)
             return [CN[o.k], o.k === 0 ? 'Resting in the nest' : 'Resting at the nest entrance'];

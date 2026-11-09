@@ -1,81 +1,10 @@
 /* render/ant.js
-   Drawing one ant (every class), and crowds of them when the colony is huge.
+   Drawing one ant (every class), with cached pictures for speed when there are lots.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
-/* Big colonies: only about 1,400 ants are drawn as individuals. The rest are drawn as single pixels
-   (the "crowd"), so the whole population is always visible. The counts and balance do not change. */
-var VCAP = [250, 600, 400, 80, 80], SEEDS = null, LUT = null, LUTK = '', SPR = {}, SPRN = 0;
-
-function crowdLut() {
-    var key = layoutV + '|' + S.sideTunnels + '|' + Math.round(S.dug * 60) + '|' + S.sideDug.slice(0, 20).map(function (v) { return Math.round((v == null ? 1 : v) * 10); }).join('');
-    if (LUT && LUTK === key)
-        return LUT;
-    var L = { main: null, sides: [] }, N = 260, i, a, lo = 1 - S.dug, mk2 = function (q, p0, p1, n) {
-        var o = { x: new Float32Array(n), y: new Float32Array(n), nx: new Float32Array(n), ny: new Float32Array(n), n: n };
-        for (var j = 0; j < n; j++) {
-            var r = at(p0 + (p1 - p0) * j / (n - 1), q);
-            o.x[j] = r.x;
-            o.y[j] = r.y;
-            o.nx[j] = r.nx;
-            o.ny[j] = r.ny;
-        }
-        return o;
-    };
-    L.main = mk2(MAIN, lo, 1, N);
-    for (i = 0; i < S.sideTunnels && i < BP.length; i++) {
-        a = S.sideDug[i] == null ? 1 : S.sideDug[i];
-        if (a > .05)
-            L.sides.push(mk2(BP[i], 0, a, 50));
-    }
-    LUT = L;
-    LUTK = key;
-    return L;
-}
-
-function drawCrowd(now, ex) {
-    var tot = ex[0] + ex[1] + ex[2] + ex[3] + ex[4], k, i, sc, t = now * .001, L, sz, tw = tunW(), cvx;
-    if (tot < 1)
-        return;
-    if (!SEEDS) {
-        SEEDS = new Float32Array(36000);
-        for (i = 0; i < SEEDS.length; i++)
-            SEEDS[i] = Math.random();
-    }
-    L = crowdLut();
-    sc = Math.max(1, Math.ceil(tot / 12000));
-    sz = Math.max(.9, 1.6 / (K * uz));
-    cvx = cav();
-    for (k = 0; k < 5; k++) {
-        var n = Math.min(12000, Math.ceil(ex[k] / sc));
-        if (n < 1)
-            continue;
-        cx.fillStyle = ['#f2a6c1', '#7fcf55', '#e0553a', '#5bb8e8', '#d94a38'][k];
-        cx.globalAlpha = .92;
-        for (i = 0; i < n; i++) {
-            var q = ((i + k * 2411) % 12000) * 3, s0 = SEEDS[q], s1 = SEEDS[q + 1], s2 = SEEDS[q + 2], x, y, ln, pf, ix;
-            if (k === 0) {
-                x = cvx.x + (s0 * 2 - 1) * cvx.rx * .8 + Math.sin(t * .6 + s2 * 40) * 4;
-                y = QY + 34 + s1 * Math.max(10, WH - 16 - QY - 34) + Math.cos(t * .5 + s0 * 30) * 3;
-            }
-            else {
-                ln = k === 3 && L.sides.length ? L.sides[Math.floor(s2 * L.sides.length)] : L.main;
-                if (k === 1)
-                    pf = (s0 + (s2 < .5 ? -1 : 1) * t * .02) % 1;
-                else if (k === 3)
-                    pf = .5 + .5 * Math.sin(t * .15 + s0 * 6.28);
-                else
-                    pf = (s2 < .6 ? s0 * .09 : s0) + Math.sin(t * .3 + s1 * 6.28) * .01;
-                if (pf < 0)
-                    pf += 1;
-                ix = Math.max(0, Math.min(ln.n - 1, Math.floor(pf * (ln.n - 1))));
-                x = ln.x[ix] + ln.nx[ix] * (s1 * 2 - 1) * tw * .32;
-                y = ln.y[ix] + ln.ny[ix] * (s1 * 2 - 1) * tw * .32;
-            }
-            cx.fillRect(x, y, sz, sz);
-        }
-    }
-    cx.globalAlpha = 1;
-}
+/* Big colonies: only about 1,400 ants are drawn (VCAP per class: nurses, foragers, soldiers,
+   scouts, super majors). The counts and balance do not change. */
+var VCAP = [250, 600, 400, 80, 80], SPR = {}, SPRN = 0;
 
 // normal ants are drawn from small cached pictures when there are lots of them, which is much faster
 function antDraw(x, y, ang, sz, leaf, ph, kd, fast) {

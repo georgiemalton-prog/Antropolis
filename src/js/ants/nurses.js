@@ -109,8 +109,6 @@ function keeperStep(m, dt, ci, t) {
     return true;
 }
 
-function napAt(m) { return m.nap > 0; }
-
 function energyStep(m, dt) {
     if (m.en == null)
         m.en = 55 + ((m.u || .5) * 37 % 1) * 45;

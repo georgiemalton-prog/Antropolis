@@ -46,11 +46,11 @@ function armyCounts() {
             C.injPos.push({ x: m.px, y: m.py });
     } });
     C.ldTot = 0;
-    C.ldCap = larderOn() ? Math.min(6, Math.floor(C.nN / 8)) : 0;
+    C.ldCap = larderOn() ? Math.min(TUNING.larder.carriers, Math.floor(C.nN / TUNING.larder.nursesPer)) : 0;
     C.drTot = 0;
-    C.drCap = armouryOn() && !foes.length ? Math.min(6, Math.floor(S.soldiers / 10)) : 0;
+    C.drCap = armouryOn() && !foes.length ? Math.min(TUNING.armoury.drillers, Math.floor(S.soldiers / TUNING.armoury.soldiersPer)) : 0;
     C.crTot = 0;
-    C.crCap = cavesOn() ? Math.min(4, Math.max(1, Math.floor(S.scouts / 6))) : 0;
+    C.crCap = cavesOn() ? Math.min(TUNING.caves.scouts, Math.max(1, Math.floor(S.scouts / TUNING.caves.scoutsPer))) : 0;
     C.moTot = 0;
     C.moCap = 36;
     C.trTot = 0;
@@ -434,7 +434,7 @@ function soldierGuard(m, dt, t, C) {
 
 function foeSz(f) { return (8 + S.tier * 1.5) * (f.boss ? 1.9 : 1); }
 
-function dps() { return heroB(2) * (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax) * (1 + .1 * (S.hall || 0)); }
+function dps() { return heroB(2) * (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax) * (1 + TUNING.hall.bonus * (S.hall || 0)); }
 
 function majorDps() { return (rallyT > 0 ? 1.5 : 1) * healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax); }
 

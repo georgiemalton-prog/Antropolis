@@ -41,7 +41,7 @@ function gen() {
     }
     for (var k = 0; k < 12; k++) {
         var q = rng(S.seed + k * 977 + 13), j = 1 + Math.floor(q() * 7), a = MP[j], pts = [a], dir = q() < .5 ? -1 : 1, x = a[0], y = a[1], m = 3 + Math.floor(q() * 3);
-        for (var i = 0; i < m; i++) {
+        for (i = 0; i < m; i++) {
             var okp = false, nx, ny, nd, att, first = null;
             for (att = 0; att < 6 && !okp; att++) {
                 nd = dir;
@@ -255,7 +255,7 @@ var DLAY = [
 function genDeep() {
     DEEP = [];
     DEEPP = [];
-    var top = deepTop(), lh = LH(), c = cavFull(), r = rng(S.seed + 91000), L, i, k, trunk = [], amix = .25 + rng(S.seed + 778)() * .65, segsD = [], byL = [[], [], [], []];
+    var top = deepTop(), lh = LH(), c = cavFull(), r = rng(S.seed + 91000), L, i, amix = .25 + rng(S.seed + 778)() * .65, segsD = [], byL = [[], [], [], []];
     function addSegs(pts) { for (var j = 1; j < pts.length; j++) segsD.push([pts[j - 1][0] * W, pts[j - 1][1] * WH, pts[j][0] * W, pts[j][1] * WH]); }
     function dseg(px, py, g) {
         var dx = g[2] - g[0], dy = g[3] - g[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - g[0]) * dx + (py - g[1]) * dy) / l2)), x = g[0] + dx * t, y = g[1] + dy * t;

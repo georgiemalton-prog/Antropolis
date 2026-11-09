@@ -68,7 +68,7 @@ function drawCrew(now) {
     cx.save();
     cx.translate(0, -cam);
     drawSpoil();
-    var ss = crewSites(now), n = crewA.length, slotN = {};
+    var ss = crewSites(now), slotN = {};
     crewA.forEach(function (a, i) {
         var s = a.si >= 0 ? ss[a.si] : null, x, y, ang, carry = false, q;
         if (a.st && a.st[0] === 't' && a.trt) {

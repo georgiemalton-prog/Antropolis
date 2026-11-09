@@ -179,7 +179,9 @@ function hudClasses() {
     $('tdf').textContent = 'Soldiers ' + healthy(2) + (S.superMajors ? ', super majors ' + healthy(4) : '') + ', foragers ' + healthy(1) + ', scouts ' + healthy(3) + '. Defense ' + fmt(dps()) + ' damage per second.';
     $('tin').textContent = ij ? 'Injured and recovering: ' + ij + '. ' + (healthy(0) > 0 ? 'Nurses heal one about every ' + (9 / Math.min(8, healthy(0))).toFixed(1) + 's.' : 'You have no healthy nurses to heal them!') : 'No injured ants.';
     for (i = 0; i < 7; i++) {
-        var el = $('ro-' + i), q = i === 5, lv = q ? S.queenLevel : S.classLevel[i], c = clCost(i);
+        var el = $('ro-' + i), q = i === 5;
+        lv = q ? S.queenLevel : S.classLevel[i];
+        c = clCost(i);
         el.innerHTML = '<span><b><span style="color:' + (q ? '#ffd23f' : CC[i]) + '">\u25cf</span> ' + (q ? 'The Queen' : CN[i] + 's') + ' <span class="mute">level ' + lv + '/8</span></b><span class="mute">' + RD[i] + ' ' + ((lv >= 8 ? 'Mastered: ' + MST[i][1] + '.' : CE[i] + ' ' + (lv < 4 ? 'Mastery at level 4: ' : 'Mastery at level 8: ') + MST[i][lv < 4 ? 0 : 1] + '.')) + '</span></span><span class="r"><span class="own">' + (q ? '' : cnt(i)) + '</span>' + (!q && S.injured[i] ? '<br>' + S.injured[i] + ' injured' : '') + '<br>' + (lv >= 8 ? 'Maxed' : c + ' jelly') + '</span>';
         el.disabled = lv >= 8 || S.jelly < c;
         el.style.display = (i === 4 && !S.superMajors) ? 'none' : '';
@@ -202,7 +204,7 @@ function goalText() {
     var dl = S.deep || 0;
     if (moleOn() && !S.moleWon)
         return '<b>Goal:</b> the Giant Mole sleeps in the Bedrock (' + Math.ceil(moleHp() / MOLE_MAX * 100) + '% health). Grow your soldiers and attack it from the Colony tab.';
-    if (S.moleWon && (S.hall || 0) < 4)
+    if (S.moleWon && (S.hall || 0) < TUNING.hall.maxLevel)
         return '<b>Goal:</b> the Giant Mole is beaten. Raise the Great Hall to level 4 on the Colony tab.';
     if (dl < 4 && deepGenOk(dl))
         return '<b>Goal:</b> dig down to the ' + ['Clay', 'Stone', 'Deep dark', 'Bedrock'][dl] + ' layer on the Colony tab.';

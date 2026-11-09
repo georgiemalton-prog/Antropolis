@@ -156,7 +156,7 @@ function queen(s, ph) {
     cx.ellipse(s * 1.3, -s * .38, s * .3, s * .07, 0, 0, 7);
     cx.fill();
     [1, -1].forEach(function (d) {
-        var aw = Math.sin(tm * 2.3 + d * 1.9) * s * .1 + Math.sin(tm * .7 + d) * s * .06 + Math.sin(ph * .9 + d) * s * .06 * wk, ex = s * 1.9, ey = d * s * (.62 + .06) + aw;
+        var aw = Math.sin(tm * 2.3 + d * 1.9) * s * .1 + Math.sin(tm * .7 + d) * s * .06 + Math.sin(ph * .9 + d) * s * .06 * wk;
         // mandibles
         cx.fillStyle = '#26120a';
         cx.beginPath();

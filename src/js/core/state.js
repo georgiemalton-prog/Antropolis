@@ -4,14 +4,13 @@
 
 var S, P = { legacy: 0, legacyEver: 0, perks: {} }, mut = false, dead = false;
 var fly;
-var cv, cx, W = 320, H = 267, WH = 534, K = 1.1, dpr = 1, cam = 0, PT = [], CUM = [], LEN = 0, pebs = [], marchers = [], fx = [], foes = [], wvi = { n: 0 }, nf = 0, QX = 160, QY = 480, pulse = 0, shake = 0, lastP = 0, dtip = 0;
-var PN = [[.22, .05], [.22, .13], [.75, .21], [.8, .3], [.25, .38], [.22, .5], [.75, .58], [.7, .7], [.5, .88]];
+var cv, cx, W = 320, H = 267, WH = 534, K = 1.1, dpr = 1, cam = 0, PT = [], CUM = [], LEN = 0, pebs = [], marchers = [], fx = [], foes = [], wvi = { n: 0 }, nf = 0, QX = 160, QY = 480, pulse = 0, shake = 0, lastP = 0;
 var FN = ['beetle', 'spider', 'wasp', 'wood louse'], IC = ['', '', '', ''], CI = [6, 7, 5, 4];
 var still;
-var lt, sy = 0, dc = 0;
-var DEEP = [], DEEPP = [], FARM = [], FARMP = [], BRN = [], BP = [], MP = [], MAIN = null, nbt = 25, ltx, follow = 0, dy0 = null;
+var lt, sy = 0;
+var DEEP = [], DEEPP = [], FARM = [], FARMP = [], BRN = [], BP = [], MP = [], MAIN = null, nbt = 25, ltx, follow = 0;
 var rings = [], flash = 0, motes = [];
-var CAPS = [12, 40, 120, 400, 1500], TP = [0, 10, 35, 110, 360], TF = [0, 30, 250, 1500, 8000], digging = false, reb = 0;
+var CAPS = [12, 40, 120, 400, 1500], TP = [0, 10, 35, 110, 360], TF = [0, 30, 250, 1500, 8000], digging = false;
 var MSD = [[5, 'First Brood'], [10, 'A Real Colony'], [25, 'The Colony Grows'], [50, 'Fifty Strong'], [100, 'A Hundred Legs'], [250, 'The Great Swarm'], [500, 'Ant Nation'], [1000, 'The Endless March']];
 var GOLD = 1 / 5000, ORD = [6, 0, 1, 2, 3], CW = [22, 28, 26, 14, 10], CN = ['Nurse', 'Forager', 'Soldier', 'Scout', 'Super Major'], CC = ['#f2a6c1', '#6fbf4a', '#d9452b', '#4aa8d8', '#b5382a'], KD = [4, 5, 1, 6, 7], SZ = [3.4, 3.6, 4.8, 3.6, 14.4];
 var RD = ['Tend the eggs and heal injured ants (about one every 9 seconds each).', 'Carry food home through the tunnel. Eggs and upgrades all need it.', 'Guard the tunnel mouth and fight invaders. 3 damage per second.', 'Explore side tunnels for food caches and warn you about waves.', 'Hatched from a golden egg. Fights like 10 soldiers.'];

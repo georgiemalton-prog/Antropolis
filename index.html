@@ -258,7 +258,6 @@ function patchCanvasEllipse() {
    ---------------------------------------------------------------------- */
 var $ = function (i) { return document.getElementById(i); };
 var T = [{ n: 'Dirt hole', c: 0 }, { n: 'Burrow', c: 1500 }, { n: 'Colony', c: 20000 }, { n: 'Anthill', c: 200000 }, { n: 'Supercolony', c: 1000000 }];
-var U = [];
 var LG = [
     { id: 'swift', n: 'Swift diggers', d: 'Tunnels dig 50% faster per level.' },
     { id: 'found', n: 'Founding brood', d: 'Start each colony with 3 more nurses per level.' },
@@ -347,20 +346,64 @@ var ICO = {
 function ico(k) { return ICO[k] ? '<svg viewBox="0 0 20 20" width="18" height="18" fill="#e8b04a" style="vertical-align:-3px;margin-right:7px">' + ICO[k] + '</svg>' : ''; }
 var RICO = ['farm', 'nest', 'rax', 'court'];
 
+/* core/tuning.js
+   Balance numbers for the newer systems, in one place so they can be tuned after playtesting.
+   Changing a value here changes the game. Older systems still keep their numbers next to their code.
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+var TUNING = {
+    // Giant Mole (threats/mole.js) and the Great Hall built after beating it
+    mole: {
+        maxHp: 900000,        // mole health; damage between fights is kept
+        regenPerHour: .05,    // share of max health it heals back per hour
+        lossPerHit: .006,     // soldiers lost per mole hit, as a share of all soldiers
+        superLoss: .12,       // chance a hit also kills a super major
+        injureChance: .5,     // chance a hit also injures a soldier
+        retreatAt: .4,        // army falls back when damage drops below this share of its start
+        winJelly: 30          // royal jelly for beating it
+    },
+    hall: {
+        maxLevel: 4,
+        foodBase: .4,         // cost in food = food store x (foodBase + foodStep x level)
+        foodStep: .15,
+        jellyBase: 25,        // cost in jelly = jellyBase + jellyStep x level
+        jellyStep: 25,
+        bonus: .1             // food and soldier damage bonus per level
+    },
+    // Termite raids (threats/termites.js)
+    termites: {
+        armouryBonus: 1.2,    // army strength multiplier with the Armoury built
+        lootShare: .05,       // food won, as a share of the food store, on a win
+        lossShare: .06        // food lost, as a share of the food store, on a loss
+    },
+    // Cave crickets (threats/crickets.js)
+    crickets: {
+        firstAt: 300,         // seconds before the first visit
+        gapMin: 420,          // seconds between visits: gapMin + random x gapRand
+        gapRand: 300,
+        hp: 10,
+        stealShare: .025,     // food each cricket steals, as a share of the food store
+        lootShare: .03        // food won per cricket beaten
+    },
+    // Deep layers (layers/*.js)
+    larder: { carriers: 6, nursesPer: 8, storeBonus: 1.25, awayHours: 10, awayHoursOff: 8 },
+    armoury: { drillers: 6, soldiersPer: 10, injuryMul: .75 },
+    caves: { scouts: 4, scoutsPer: 6, shardsPerJelly: 6, jellyPerDay: 4, goldenMul: 1.5 }
+};
+
 /* core/state.js
    The colony state S, legacy P and the global game variables (canvas, camera, ants, invaders, effects).
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 var S, P = { legacy: 0, legacyEver: 0, perks: {} }, mut = false, dead = false;
 var fly;
-var cv, cx, W = 320, H = 267, WH = 534, K = 1.1, dpr = 1, cam = 0, PT = [], CUM = [], LEN = 0, pebs = [], marchers = [], fx = [], foes = [], wvi = { n: 0 }, nf = 0, QX = 160, QY = 480, pulse = 0, shake = 0, lastP = 0, dtip = 0;
-var PN = [[.22, .05], [.22, .13], [.75, .21], [.8, .3], [.25, .38], [.22, .5], [.75, .58], [.7, .7], [.5, .88]];
+var cv, cx, W = 320, H = 267, WH = 534, K = 1.1, dpr = 1, cam = 0, PT = [], CUM = [], LEN = 0, pebs = [], marchers = [], fx = [], foes = [], wvi = { n: 0 }, nf = 0, QX = 160, QY = 480, pulse = 0, shake = 0, lastP = 0;
 var FN = ['beetle', 'spider', 'wasp', 'wood louse'], IC = ['', '', '', ''], CI = [6, 7, 5, 4];
 var still;
-var lt, sy = 0, dc = 0;
-var DEEP = [], DEEPP = [], FARM = [], FARMP = [], BRN = [], BP = [], MP = [], MAIN = null, nbt = 25, ltx, follow = 0, dy0 = null;
+var lt, sy = 0;
+var DEEP = [], DEEPP = [], FARM = [], FARMP = [], BRN = [], BP = [], MP = [], MAIN = null, nbt = 25, ltx, follow = 0;
 var rings = [], flash = 0, motes = [];
-var CAPS = [12, 40, 120, 400, 1500], TP = [0, 10, 35, 110, 360], TF = [0, 30, 250, 1500, 8000], digging = false, reb = 0;
+var CAPS = [12, 40, 120, 400, 1500], TP = [0, 10, 35, 110, 360], TF = [0, 30, 250, 1500, 8000], digging = false;
 var MSD = [[5, 'First Brood'], [10, 'A Real Colony'], [25, 'The Colony Grows'], [50, 'Fifty Strong'], [100, 'A Hundred Legs'], [250, 'The Great Swarm'], [500, 'Ant Nation'], [1000, 'The Endless March']];
 var GOLD = 1 / 5000, ORD = [6, 0, 1, 2, 3], CW = [22, 28, 26, 14, 10], CN = ['Nurse', 'Forager', 'Soldier', 'Scout', 'Super Major'], CC = ['#f2a6c1', '#6fbf4a', '#d9452b', '#4aa8d8', '#b5382a'], KD = [4, 5, 1, 6, 7], SZ = [3.4, 3.6, 4.8, 3.6, 14.4];
 var RD = ['Tend the eggs and heal injured ants (about one every 9 seconds each).', 'Carry food home through the tunnel. Eggs and upgrades all need it.', 'Guard the tunnel mouth and fight invaders. 3 damage per second.', 'Explore side tunnels for food caches and warn you about waves.', 'Hatched from a golden egg. Fights like 10 soldiers.'];
@@ -745,20 +788,6 @@ function bio() { return BIOMES[S.biome || 0] || BIOMES[0]; }
    Counting ants, eggs, food, rooms, rewards, upgrades and the main colony tick.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
-// the jelly upgrades list (called once from boot.js)
-function defineUpgrades() {
-    U = [{ id: 'dig', n: 'Strong mandibles', d: 'Your ants dig twice as fast.', c: 15, t: 'dig', m: 2 },
-        { id: 'warm', n: 'Warm brood', d: 'Eggs hatch 40% faster.', c: 30, t: 'hatch', m: .6 },
-        { id: 'leaf', n: 'Bigger leaves', d: 'Foragers carry twice as much food.', c: 50, t: 'forager', m: 2 },
-        { id: 'venom', n: 'Venom sacs', d: 'Soldiers deal double damage.', c: 80, t: 'soldier', m: 2 },
-        { id: 'jelly', n: 'Royal jelly', d: 'The queen lays 25% sooner.', c: 100, t: 'lay', m: .75 },
-        { id: 'sentry', n: 'Sentry ants', d: 'Invaders crawl 35% slower.', c: 120, t: 'slow', m: .65 },
-        { id: 'armor', n: 'Chitin armor', d: 'Invaders kill 30% fewer ants.', c: 150, t: 'armor', m: .7 },
-        { id: 'twin', n: 'Twin eggs', d: 'The queen lays two eggs at a time.', c: 250, t: 'clutch', m: 2 },
-        { id: 'guard', n: 'Royal guard', d: 'The queen takes half damage.', c: 300, t: 'guard', m: .5 },
-        { id: 'leaf2', n: 'Fungus gardens', d: 'Foragers carry twice as much again.', c: 600, t: 'forager', m: 2 }];
-}
-
 // ---- counting ants ----
 
 function cnt(c) { return [S.nurses, S.foragers, S.soldiers, S.scouts, S.superMajors, 0, S.workers][c]; }
@@ -788,9 +817,9 @@ function layGap() { return (bio().eg || 1) * 30 * (1 - .04 * S.queenLevel) * (S.
 
 function eggCost() { return Math.max(1, Math.ceil((1 + S.tier) * (1 - .15 * pk('fat')))); }
 
-function foodCap() { return Math.round(400 * Math.pow(2.2, S.tier + 1) * (1 + .25 * S.bld.store) * (1 + .08 * (S.deep || 0)) * (larderOn() ? 1.25 : 1)); }
+function foodCap() { return Math.round(400 * Math.pow(2.2, S.tier + 1) * (1 + .25 * S.bld.store) * (1 + .08 * (S.deep || 0)) * (larderOn() ? TUNING.larder.storeBonus : 1)); }
 
-function leaf() { return heroB(1) * (bio().fd || 1) * 2 * (1 + .15 * S.tier) * (S.tier === 0 ? 3.2 : S.tier === 1 ? 2.2 : S.tier === 2 ? 1.3 : 1) * (1 + .05 * P.legacyEver) * (1 + .2 * S.classLevel[1]) * ((S.hillLevel || 0) >= 4 ? 1.1 : 1) * (1 + .1 * (S.hall || 0)); }
+function leaf() { return heroB(1) * (bio().fd || 1) * 2 * (1 + .15 * S.tier) * (S.tier === 0 ? 3.2 : S.tier === 1 ? 2.2 : S.tier === 2 ? 1.3 : 1) * (1 + .05 * P.legacyEver) * (1 + .2 * S.classLevel[1]) * ((S.hillLevel || 0) >= 4 ? 1.1 : 1) * (1 + TUNING.hall.bonus * (S.hall || 0)); }
 
 function capN() { return CAPS[S.tier] + (S.tier >= 4 ? 250 * (S.hillLevel || 0) : 0) + (S.cavLevel || 0) * Math.round(CAPS[S.tier] * .2); }
 
@@ -865,7 +894,7 @@ function hpMax() { return 100 + 20 * S.queenLevel; }
 
 function clutch() { return (Math.max(1, Math.round(CL[S.tier] * (1 + .08 * S.queenLevel))) + S.bld.nest) * (S.queenLevel >= 8 && Math.random() < .25 ? 2 : 1); }
 
-function rollClass() { if (Math.random() < GOLD * (S.queenLevel >= 4 ? 5 : 1) * (cavesOn() ? 1.5 : 1))
+function rollClass() { if (Math.random() < GOLD * (S.queenLevel >= 4 ? 5 : 1) * (cavesOn() ? TUNING.caves.goldenMul : 1))
     return 4; var r = Math.random() * 100, a = 0; for (var n = 0; n < ORD.length; n++) {
     a += CW[n];
     if (r < a)
@@ -897,12 +926,6 @@ function haul() { var c = S.classLevel[1] >= 8 ? .2 : S.classLevel[1] >= 4 ? .1 
 
 function perk(l) { var lv = pk(l.id), c = (lv + 1) * 2; if (lv >= 5 || P.legacy < c || (P.gen || 0) < (l.gen || 0))
     return; P.legacy -= c; P.perks[l.id] = lv + 1; SFX.buy(); }
-
-function upgBuy(u) { if (S.upgrades[u.id] || S.food < u.c)
-    return; S.food -= u.c; S.upgrades[u.id] = 1; SFX.buy(); }
-
-function upg(u) { var had = S.upgrades[u.id]; upgBuy(u); if (!had && S.upgrades[u.id])
-    burst(QX, QY, 18, ['#fff', '#ffd35a'], 90); }
 
 function clCost(i) { return Math.max(1, Math.ceil(3 * Math.pow(1.75, i === 5 ? S.queenLevel : S.classLevel[i]) * (1 - .08 * pk('wisdom')))); }
 
@@ -1223,7 +1246,7 @@ function colony(dt) {
         S.injuryTimer -= dt;
         if (S.injuryTimer <= 0) {
             S.injuryTimer = 4 / eng;
-            if (Math.random() < .75 * (armouryOn() ? .75 : 1))
+            if (Math.random() < .75 * (armouryOn() ? TUNING.armoury.injuryMul : 1))
                 injure();
         }
     }
@@ -1285,8 +1308,8 @@ function diaryLines() {
 }
 
 // ---- offline progress (the colony keeps working while you are away) ----
-var earnAcc = 0, digPrev = null, AWAY_MAX = 8 * 3600;
-function awayMax() { return (larderOn() ? 10 : 8) * 3600; }
+var earnAcc = 0, digPrev = null;
+function awayMax() { return (larderOn() ? TUNING.larder.awayHours : TUNING.larder.awayHoursOff) * 3600; }
 
 function trackRates(el) {
     if (dead || el <= 0 || el > 5) {
@@ -1477,7 +1500,7 @@ function gen() {
     }
     for (var k = 0; k < 12; k++) {
         var q = rng(S.seed + k * 977 + 13), j = 1 + Math.floor(q() * 7), a = MP[j], pts = [a], dir = q() < .5 ? -1 : 1, x = a[0], y = a[1], m = 3 + Math.floor(q() * 3);
-        for (var i = 0; i < m; i++) {
+        for (i = 0; i < m; i++) {
             var okp = false, nx, ny, nd, att, first = null;
             for (att = 0; att < 6 && !okp; att++) {
                 nd = dir;
@@ -1691,7 +1714,7 @@ var DLAY = [
 function genDeep() {
     DEEP = [];
     DEEPP = [];
-    var top = deepTop(), lh = LH(), c = cavFull(), r = rng(S.seed + 91000), L, i, k, trunk = [], amix = .25 + rng(S.seed + 778)() * .65, segsD = [], byL = [[], [], [], []];
+    var top = deepTop(), lh = LH(), c = cavFull(), r = rng(S.seed + 91000), L, i, amix = .25 + rng(S.seed + 778)() * .65, segsD = [], byL = [[], [], [], []];
     function addSegs(pts) { for (var j = 1; j < pts.length; j++) segsD.push([pts[j - 1][0] * W, pts[j - 1][1] * WH, pts[j][0] * W, pts[j][1] * WH]); }
     function dseg(px, py, g) {
         var dx = g[2] - g[0], dy = g[3] - g[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - g[0]) * dx + (py - g[1]) * dy) / l2)), x = g[0] + dx * t, y = g[1] + dy * t;
@@ -3159,8 +3182,6 @@ function keeperStep(m, dt, ci, t) {
     return true;
 }
 
-function napAt(m) { return m.nap > 0; }
-
 function energyStep(m, dt) {
     if (m.en == null)
         m.en = 55 + ((m.u || .5) * 37 % 1) * 45;
@@ -3246,11 +3267,11 @@ function armyCounts() {
             C.injPos.push({ x: m.px, y: m.py });
     } });
     C.ldTot = 0;
-    C.ldCap = larderOn() ? Math.min(6, Math.floor(C.nN / 8)) : 0;
+    C.ldCap = larderOn() ? Math.min(TUNING.larder.carriers, Math.floor(C.nN / TUNING.larder.nursesPer)) : 0;
     C.drTot = 0;
-    C.drCap = armouryOn() && !foes.length ? Math.min(6, Math.floor(S.soldiers / 10)) : 0;
+    C.drCap = armouryOn() && !foes.length ? Math.min(TUNING.armoury.drillers, Math.floor(S.soldiers / TUNING.armoury.soldiersPer)) : 0;
     C.crTot = 0;
-    C.crCap = cavesOn() ? Math.min(4, Math.max(1, Math.floor(S.scouts / 6))) : 0;
+    C.crCap = cavesOn() ? Math.min(TUNING.caves.scouts, Math.max(1, Math.floor(S.scouts / TUNING.caves.scoutsPer))) : 0;
     C.moTot = 0;
     C.moCap = 36;
     C.trTot = 0;
@@ -3634,7 +3655,7 @@ function soldierGuard(m, dt, t, C) {
 
 function foeSz(f) { return (8 + S.tier * 1.5) * (f.boss ? 1.9 : 1); }
 
-function dps() { return heroB(2) * (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax) * (1 + .1 * (S.hall || 0)); }
+function dps() { return heroB(2) * (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax) * (1 + TUNING.hall.bonus * (S.hall || 0)); }
 
 function majorDps() { return (rallyT > 0 ? 1.5 : 1) * healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax); }
 
@@ -4406,18 +4427,18 @@ function trmResolve(B) {
     trm.res = 1;
     trm.fT = 0;
     trm.forEach(function (t) { t.back = 1; t.hold = 0; });
-    var sz = trm.length ? trm[0].size : 0, str = (S.soldiers * (1 + .25 * S.classLevel[2]) + S.superMajors * 10) * (armouryOn() ? 1.2 : 1), cap = foodCap();
+    var sz = trm.length ? trm[0].size : 0, str = (S.soldiers * (1 + .25 * S.classLevel[2]) + S.superMajors * 10) * (armouryOn() ? TUNING.termites.armouryBonus : 1), cap = foodCap();
     if (str >= sz * 6) {
         trm.chT = trm.ms != null ? 5 : 0;
         S.termWins = (S.termWins || 0) + 1;
-        var loot = Math.ceil(cap * .05);
+        var loot = Math.ceil(cap * TUNING.termites.lootShare);
         S.food = Math.min(cap, S.food + loot);
         toast('Your soldiers drove the termites back and took ' + fmt(loot) + ' food from them.');
         if (Math.random() < .25)
             gainJelly(1);
     }
     else {
-        var lost = Math.min(S.food, Math.ceil(cap * .06));
+        var lost = Math.min(S.food, Math.ceil(cap * TUNING.termites.lossShare));
         S.food -= lost;
         toast('The termites stole ' + fmt(lost) + ' food before running off. More soldiers would stop them.');
     }
@@ -4440,7 +4461,7 @@ function drawRaid() {
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 // ---- cave crickets: now and then a band creeps up the stone shaft from the Armoury towards the Larder to eat seeds ----
-var cric = [], cricT = 300, cricDef = [], cricStole = 0;
+var cric = [], cricT = TUNING.crickets.firstAt, cricDef = [], cricStole = 0;
 function cricLive() {
     for (var i = 0; i < cric.length; i++)
         if (!cric[i].back && cric[i].hp > 0)
@@ -4452,12 +4473,12 @@ function cricSpawn() {
     cric.length = 0;
     cricStole = 0;
     for (var i = 0; i < n; i++)
-        cric.push({ s: 1, w: i * 1.6, hp: 10, mhp: 10, back: 0, i: i, ph: Math.random() * 6, ate: 0 });
+        cric.push({ s: 1, w: i * 1.6, hp: TUNING.crickets.hp, mhp: TUNING.crickets.hp, back: 0, i: i, ph: Math.random() * 6, ate: 0 });
     toast('Cave crickets are creeping up from the stone layer towards the Larder! Soldiers are on their way.');
     SFX.hit();
 }
 function cricTick(dt) {
-    var ap = armouryPos(), cap, i, c, L, live = 0, dead = 0;
+    var ap = armouryPos(), cap, i, c, L;
     if (!ap || !armouryOn()) {
         cric.length = 0;
         return;
@@ -4467,7 +4488,7 @@ function cricTick(dt) {
             return;
         cricT -= dt;
         if (cricT <= 0) {
-            cricT = 420 + Math.random() * 300;
+            cricT = TUNING.crickets.gapMin + Math.random() * TUNING.crickets.gapRand;
             cricSpawn();
         }
         return;
@@ -4484,7 +4505,6 @@ function cricTick(dt) {
             c.dt = (c.dt || 0) + dt;
             if (c.dt > 1.2)
                 cric.splice(i, 1);
-            dead++;
             continue;
         }
         if (c.back) {
@@ -4493,7 +4513,6 @@ function cricTick(dt) {
                 cric.splice(i, 1);
             continue;
         }
-        live++;
         // a soldier standing just above blocks the way up
         var blk = false;
         for (var j = 0; j < cricDef.length; j++) {
@@ -4514,7 +4533,7 @@ function cricTick(dt) {
         if (c.s <= .02) {
             c.s = .02;
             c.back = 1;
-            var take = Math.min(S.food, Math.ceil(cap * .025));
+            var take = Math.min(S.food, Math.ceil(cap * TUNING.crickets.stealShare));
             S.food -= take;
             cricStole += take;
             if (!c.ate) {
@@ -4530,7 +4549,7 @@ function cricTick(dt) {
         if (cricStole > 0)
             toast('The cave crickets ate ' + fmt(cricStole) + ' food from the Larder. More soldiers would stop them.');
         else {
-            var loot = Math.ceil(cap * .03);
+            var loot = Math.ceil(cap * TUNING.crickets.lootShare);
             S.food = Math.min(cap, S.food + loot);
             S.cricWins = (S.cricWins || 0) + 1;
             toast('Your soldiers squashed the cave crickets! +' + fmt(loot) + ' food.');
@@ -4596,7 +4615,7 @@ function drawCrickets(now) {
     var ap = armouryPos();
     if (!ap || !cric.length)
         return;
-    var q = ap.q1, i, c, a, hop, sc, l;
+    var q = ap.q1, i, c, a, hop, l;
     cx.save();
     cx.translate(0, -cam);
     for (i = 0; i < cric.length; i++) {
@@ -4673,7 +4692,7 @@ function drawCrickets(now) {
 /* ---- the Giant Mole (Bedrock) ----
    Saved: S.moleHp (health left, damage sticks between attacks), S.moleWon, S.hall (Great Hall level 0-4).
    The battle itself (MF) is not saved: closing the game mid-fight simply ends it. */
-var MOLE_MAX = 900000, MF = null;
+var MOLE_MAX = TUNING.mole.maxHp, MF = null;
 function moleOn() { return (S.deep || 0) >= 4; }
 function molePos() {
     var qs = [trunkQ(0), trunkQ(1), trunkQ(2), trunkQ(3)];
@@ -4701,7 +4720,7 @@ function moleTick(dt) {
     if (!MF) {
         // the mole slowly licks its wounds: 5% of its health back per hour
         if (S.moleHp != null && S.moleHp < MOLE_MAX)
-            S.moleHp = Math.min(MOLE_MAX, S.moleHp + MOLE_MAX * .05 / 3600 * dt);
+            S.moleHp = Math.min(MOLE_MAX, S.moleHp + MOLE_MAX * TUNING.mole.regenPerHour / 3600 * dt);
         return;
     }
     if (MF.end) {
@@ -4750,13 +4769,13 @@ function moleTick(dt) {
     MF.kt -= dt;
     if (MF.kt <= 0) {
         MF.kt = 2;
-        var n = Math.max(1, Math.round(S.soldiers * .006));
+        var n = Math.max(1, Math.round(S.soldiers * TUNING.mole.lossPerHit));
         S.soldiers = Math.max(0, S.soldiers - n);
         if (S.injured[2] > S.soldiers)
             S.injured[2] = S.soldiers;
-        if (S.superMajors > 0 && Math.random() < .12)
+        if (S.superMajors > 0 && Math.random() < TUNING.mole.superLoss)
             S.superMajors--;
-        if (healthy(2) > 0 && Math.random() < .5)
+        if (healthy(2) > 0 && Math.random() < TUNING.mole.injureChance)
             S.injured[2]++;
         shake = Math.max(shake, .2);
         SFX.hit();
@@ -4774,7 +4793,7 @@ function moleTick(dt) {
         moleWin();
         return;
     }
-    if (dps() < MF.d0 * .4) {
+    if (dps() < MF.d0 * TUNING.mole.retreatAt) {
         MF.end = 1;
         MF.t = 0;
         toast('Your army falls back from the Giant Mole with ' + Math.round(S.moleHp / MOLE_MAX * 100) + '% of its health left. The damage sticks; regroup and try again.');
@@ -4786,7 +4805,7 @@ function moleWin() {
     S.moleHp = 0;
     MF.end = 1;
     MF.t = 0;
-    gainJelly(30);
+    gainJelly(TUNING.mole.winJelly);
     S.food = foodCap();
     flash = 1;
     shake = .8;
@@ -4795,12 +4814,12 @@ function moleWin() {
         pulseRing('255,210,60');
     }
     SFX.fan();
-    toast('VICTORY! The Giant Mole is beaten. +30 royal jelly, a full food store, and the cavern is yours: build the Great Hall in it.');
+    toast('VICTORY! The Giant Mole is beaten. +' + TUNING.mole.winJelly + ' royal jelly, a full food store, and the cavern is yours: build the Great Hall in it.');
 }
-function hallCost() { var lv = S.hall || 0; return { f: Math.round(foodCap() * (.4 + .15 * lv)), j: 25 + 25 * lv }; }
+function hallCost() { var lv = S.hall || 0; return { f: Math.round(foodCap() * (TUNING.hall.foodBase + TUNING.hall.foodStep * lv)), j: TUNING.hall.jellyBase + TUNING.hall.jellyStep * lv }; }
 function upHall() {
     var lv = S.hall || 0, c = hallCost();
-    if (!S.moleWon || lv >= 4 || S.food < c.f || S.jelly < c.j)
+    if (!S.moleWon || lv >= TUNING.hall.maxLevel || S.food < c.f || S.jelly < c.j)
         return;
     S.food -= c.f;
     S.jelly -= c.j;
@@ -4808,7 +4827,7 @@ function upHall() {
     SFX.buy();
     flash = .5;
     pulseRing('255,210,60');
-    toast('The Great Hall is now level ' + S.hall + '. Food and soldier damage +' + (S.hall * 10) + '%.');
+    toast('The Great Hall is now level ' + S.hall + '. Food and soldier damage +' + Math.round(S.hall * TUNING.hall.bonus * 100) + '%.');
 }
 function moleCard() {
     if (!moleOn())
@@ -4816,7 +4835,7 @@ function moleCard() {
     var hp = moleHp(), pc = Math.ceil(hp / MOLE_MAX * 100), lv = S.hall || 0, c;
     if (S.moleWon) {
         c = hallCost();
-        return '<button class="card dig" ' + (lv >= 4 || S.food < c.f || S.jelly < c.j ? 'disabled ' : '') + 'onclick="upHall()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Great Hall ' + lv + '/4</b><span class="mute">Built in the Giant Mole\'s old cavern. Each level: +10% food and soldier damage</span></span><span class="r">' + (lv >= 4 ? 'Maxed' : fmt(c.f) + ' food, ' + c.j + ' jelly') + '</span></button>';
+        return '<button class="card dig" ' + (lv >= TUNING.hall.maxLevel || S.food < c.f || S.jelly < c.j ? 'disabled ' : '') + 'onclick="upHall()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Great Hall ' + lv + '/' + TUNING.hall.maxLevel + '</b><span class="mute">Built in the Giant Mole\'s old cavern. Each level: +10% food and soldier damage</span></span><span class="r">' + (lv >= 4 ? 'Maxed' : fmt(c.f) + ' food, ' + c.j + ' jelly') + '</span></button>';
     }
     if (MF)
         return '<div class="card info" style="margin:0 0 6px;display:block"><b>' + (MF.end ? 'Your army is climbing back up' : MF.fight ? 'Battle with the Giant Mole!' : 'Your army is marching down') + '</b><div class="bar" style="margin:6px 0 2px"><i style="width:' + pc + '%;background:#c43fe0"></i></div><span class="mute">Mole health ' + pc + '%</span></div>';
@@ -5327,8 +5346,8 @@ function crystalFind(x, y) {
         S.crD = d;
         S.crN = 0;
     }
-    if (S.crS >= 6) {
-        if (S.crN < 4) {
+    if (S.crS >= TUNING.caves.shardsPerJelly) {
+        if (S.crN < TUNING.caves.jellyPerDay) {
             S.crS -= 6;
             S.crN++;
             gainJelly(1);
@@ -5572,7 +5591,7 @@ function drawWorld(now) {
             rooms.push({ x: fe[0], y: fe[1], rx: 7 + (fe[0] * 7 % 4), ry: 5 + (fe[1] * 3 % 3), ic: null });
         }
     });
-    var rx = 62 + S.tier * 5, ry = 36 + S.tier * 2;
+    var rx = 62 + S.tier * 5;
     cavernRim();
     rooms = rooms.filter(function (r) { return r.x + r.rx + 12 > VR.x0 && r.x - r.rx - 12 < VR.x1 && r.y + r.ry + 12 > VR.y0 && r.y - r.ry - 12 < VR.y1; });
     rooms.forEach(function (r) { chamberRim(r.x, r.y, r.rx, r.ry); });
@@ -5634,7 +5653,7 @@ function drawWorld(now) {
         cx.fill();
     }
     var nl = Math.min(28, Math.floor(S.food));
-    for (var i = 0; i < nl; i++) {
+    for (i = 0; i < nl; i++) {
         cx.fillStyle = i % 2 ? '#6fbf4a' : '#4f9a35';
         cx.beginPath();
         cx.ellipse(QX - rx * .72 + ((i * 17) % 9) * 4, QY + 2 + (i % 5) * 5, 4, 2.4, i, 0, 7);
@@ -5700,7 +5719,7 @@ function lighting(now) {
     }
     cx.stroke();
     if (S.tier >= 2) {
-        for (var x = Math.floor(wideL() / 23) * 23 + 6; x < wideR(); x += 23) {
+        for (x = Math.floor(wideL() / 23) * 23 + 6; x < wideR(); x += 23) {
             cx.fillStyle = x % 2 ? '#f2c94c' : '#ff8fb1';
             cx.beginPath();
             cx.arc(x + Math.sin(t + x) * 1.2, 15, 1.4, 0, 7);
@@ -6025,7 +6044,7 @@ function soilTex() {
     var XL = wideL() - 20, XR = wideR() + 20, XW = XR - XL, WWf = Math.round(XW / W);
     cx.fillStyle = soilP;
     cx.fillRect(XL, 0, XW, WH);
-    var r = rng(S.seed + 3), i, x;
+    var r = rng(S.seed + 3), x;
     for (i = 0; i < 7; i++) {
         var y = 60 + i * WH / 7 + r() * 30;
         cx.fillStyle = i % 2 ? 'rgba(0,0,0,.10)' : 'rgba(255,200,140,.05)';
@@ -6997,7 +7016,6 @@ function drawFood(now) {
         }
     });
     if (S.dug >= 1) {
-        var e = PT[0], mr = 28 + S.tier * 8;
         for (var lj = 0; lj < 8; lj++) {
             var lx = surfaceSpot(lj), lsd = lj % 2 ? 1 : -1;
             cx.fillStyle = lj % 2 ? '#5aa845' : '#78c25a';
@@ -7384,7 +7402,7 @@ function critter(x, y, ang, s, aph) {
 }
 
 function drawNeighbour(nb, now, br, bdug) {
-    var nx = nb.fx * W, ny = nb.ya != null ? nb.ya * WH : wy(nb.fy), term = nb.kind === 'termites', dr = nx < W * .5 ? 1 : -1, t = now * .001, i, a, g, sc = .7 / (K * uz), ph = nb.fx * 9;
+    var nx = nb.fx * W, ny = nb.ya != null ? nb.ya * WH : wy(nb.fy), term = nb.kind === 'termites', t = now * .001, i, g, sc = .7 / (K * uz);
     function blob(rx, ry) { caveP(nx, ny, rx, ry, Math.round(nb.fx * 997) + 5, .34); }
     cx.lineCap = 'round';
     var bp = null, bd = 1e9, pp, q0, dd, lim = Math.max(.02, S.dug);
@@ -7483,83 +7501,12 @@ function drawNeighbour(nb, now, br, bdug) {
 }
 
 /* render/ant.js
-   Drawing one ant (every class), and crowds of them when the colony is huge.
+   Drawing one ant (every class), with cached pictures for speed when there are lots.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
-/* Big colonies: only about 1,400 ants are drawn as individuals. The rest are drawn as single pixels
-   (the "crowd"), so the whole population is always visible. The counts and balance do not change. */
-var VCAP = [250, 600, 400, 80, 80], SEEDS = null, LUT = null, LUTK = '', SPR = {}, SPRN = 0;
-
-function crowdLut() {
-    var key = layoutV + '|' + S.sideTunnels + '|' + Math.round(S.dug * 60) + '|' + S.sideDug.slice(0, 20).map(function (v) { return Math.round((v == null ? 1 : v) * 10); }).join('');
-    if (LUT && LUTK === key)
-        return LUT;
-    var L = { main: null, sides: [] }, N = 260, i, a, lo = 1 - S.dug, mk2 = function (q, p0, p1, n) {
-        var o = { x: new Float32Array(n), y: new Float32Array(n), nx: new Float32Array(n), ny: new Float32Array(n), n: n };
-        for (var j = 0; j < n; j++) {
-            var r = at(p0 + (p1 - p0) * j / (n - 1), q);
-            o.x[j] = r.x;
-            o.y[j] = r.y;
-            o.nx[j] = r.nx;
-            o.ny[j] = r.ny;
-        }
-        return o;
-    };
-    L.main = mk2(MAIN, lo, 1, N);
-    for (i = 0; i < S.sideTunnels && i < BP.length; i++) {
-        a = S.sideDug[i] == null ? 1 : S.sideDug[i];
-        if (a > .05)
-            L.sides.push(mk2(BP[i], 0, a, 50));
-    }
-    LUT = L;
-    LUTK = key;
-    return L;
-}
-
-function drawCrowd(now, ex) {
-    var tot = ex[0] + ex[1] + ex[2] + ex[3] + ex[4], k, i, sc, t = now * .001, L, sz, tw = tunW(), cvx;
-    if (tot < 1)
-        return;
-    if (!SEEDS) {
-        SEEDS = new Float32Array(36000);
-        for (i = 0; i < SEEDS.length; i++)
-            SEEDS[i] = Math.random();
-    }
-    L = crowdLut();
-    sc = Math.max(1, Math.ceil(tot / 12000));
-    sz = Math.max(.9, 1.6 / (K * uz));
-    cvx = cav();
-    for (k = 0; k < 5; k++) {
-        var n = Math.min(12000, Math.ceil(ex[k] / sc));
-        if (n < 1)
-            continue;
-        cx.fillStyle = ['#f2a6c1', '#7fcf55', '#e0553a', '#5bb8e8', '#d94a38'][k];
-        cx.globalAlpha = .92;
-        for (i = 0; i < n; i++) {
-            var q = ((i + k * 2411) % 12000) * 3, s0 = SEEDS[q], s1 = SEEDS[q + 1], s2 = SEEDS[q + 2], x, y, ln, pf, ix;
-            if (k === 0) {
-                x = cvx.x + (s0 * 2 - 1) * cvx.rx * .8 + Math.sin(t * .6 + s2 * 40) * 4;
-                y = QY + 34 + s1 * Math.max(10, WH - 16 - QY - 34) + Math.cos(t * .5 + s0 * 30) * 3;
-            }
-            else {
-                ln = k === 3 && L.sides.length ? L.sides[Math.floor(s2 * L.sides.length)] : L.main;
-                if (k === 1)
-                    pf = (s0 + (s2 < .5 ? -1 : 1) * t * .02) % 1;
-                else if (k === 3)
-                    pf = .5 + .5 * Math.sin(t * .15 + s0 * 6.28);
-                else
-                    pf = (s2 < .6 ? s0 * .09 : s0) + Math.sin(t * .3 + s1 * 6.28) * .01;
-                if (pf < 0)
-                    pf += 1;
-                ix = Math.max(0, Math.min(ln.n - 1, Math.floor(pf * (ln.n - 1))));
-                x = ln.x[ix] + ln.nx[ix] * (s1 * 2 - 1) * tw * .32;
-                y = ln.y[ix] + ln.ny[ix] * (s1 * 2 - 1) * tw * .32;
-            }
-            cx.fillRect(x, y, sz, sz);
-        }
-    }
-    cx.globalAlpha = 1;
-}
+/* Big colonies: only about 1,400 ants are drawn (VCAP per class: nurses, foragers, soldiers,
+   scouts, super majors). The counts and balance do not change. */
+var VCAP = [250, 600, 400, 80, 80], SPR = {}, SPRN = 0;
 
 // normal ants are drawn from small cached pictures when there are lots of them, which is much faster
 function antDraw(x, y, ang, sz, leaf, ph, kd, fast) {
@@ -7996,7 +7943,7 @@ function queen(s, ph) {
     cx.ellipse(s * 1.3, -s * .38, s * .3, s * .07, 0, 0, 7);
     cx.fill();
     [1, -1].forEach(function (d) {
-        var aw = Math.sin(tm * 2.3 + d * 1.9) * s * .1 + Math.sin(tm * .7 + d) * s * .06 + Math.sin(ph * .9 + d) * s * .06 * wk, ex = s * 1.9, ey = d * s * (.62 + .06) + aw;
+        var aw = Math.sin(tm * 2.3 + d * 1.9) * s * .1 + Math.sin(tm * .7 + d) * s * .06 + Math.sin(ph * .9 + d) * s * .06 * wk;
         // mandibles
         cx.fillStyle = '#26120a';
         cx.beginPath();
@@ -8192,7 +8139,7 @@ function drawArmy(now) {
     cx.save();
     cx.translate(0, -cam);
     drawBuild(now);
-    var tw = tunW(), ip = infPos(), ry = 36 + S.tier * 2, i;
+    var tw = tunW(), ip = infPos(), ry = 36 + S.tier * 2;
     cx.lineCap = 'round';
     cx.strokeStyle = '#150c07';
     cx.lineWidth = 12;
@@ -8495,7 +8442,7 @@ function drawCrew(now) {
     cx.save();
     cx.translate(0, -cam);
     drawSpoil();
-    var ss = crewSites(now), n = crewA.length, slotN = {};
+    var ss = crewSites(now), slotN = {};
     crewA.forEach(function (a, i) {
         var s = a.si >= 0 ? ss[a.si] : null, x, y, ang, carry = false, q;
         if (a.st && a.st[0] === 't' && a.trt) {
@@ -9158,7 +9105,9 @@ function hudClasses() {
     $('tdf').textContent = 'Soldiers ' + healthy(2) + (S.superMajors ? ', super majors ' + healthy(4) : '') + ', foragers ' + healthy(1) + ', scouts ' + healthy(3) + '. Defense ' + fmt(dps()) + ' damage per second.';
     $('tin').textContent = ij ? 'Injured and recovering: ' + ij + '. ' + (healthy(0) > 0 ? 'Nurses heal one about every ' + (9 / Math.min(8, healthy(0))).toFixed(1) + 's.' : 'You have no healthy nurses to heal them!') : 'No injured ants.';
     for (i = 0; i < 7; i++) {
-        var el = $('ro-' + i), q = i === 5, lv = q ? S.queenLevel : S.classLevel[i], c = clCost(i);
+        var el = $('ro-' + i), q = i === 5;
+        lv = q ? S.queenLevel : S.classLevel[i];
+        c = clCost(i);
         el.innerHTML = '<span><b><span style="color:' + (q ? '#ffd23f' : CC[i]) + '">\u25cf</span> ' + (q ? 'The Queen' : CN[i] + 's') + ' <span class="mute">level ' + lv + '/8</span></b><span class="mute">' + RD[i] + ' ' + ((lv >= 8 ? 'Mastered: ' + MST[i][1] + '.' : CE[i] + ' ' + (lv < 4 ? 'Mastery at level 4: ' : 'Mastery at level 8: ') + MST[i][lv < 4 ? 0 : 1] + '.')) + '</span></span><span class="r"><span class="own">' + (q ? '' : cnt(i)) + '</span>' + (!q && S.injured[i] ? '<br>' + S.injured[i] + ' injured' : '') + '<br>' + (lv >= 8 ? 'Maxed' : c + ' jelly') + '</span>';
         el.disabled = lv >= 8 || S.jelly < c;
         el.style.display = (i === 4 && !S.superMajors) ? 'none' : '';
@@ -9181,7 +9130,7 @@ function goalText() {
     var dl = S.deep || 0;
     if (moleOn() && !S.moleWon)
         return '<b>Goal:</b> the Giant Mole sleeps in the Bedrock (' + Math.ceil(moleHp() / MOLE_MAX * 100) + '% health). Grow your soldiers and attack it from the Colony tab.';
-    if (S.moleWon && (S.hall || 0) < 4)
+    if (S.moleWon && (S.hall || 0) < TUNING.hall.maxLevel)
         return '<b>Goal:</b> the Giant Mole is beaten. Raise the Great Hall to level 4 on the Colony tab.';
     if (dl < 4 && deepGenOk(dl))
         return '<b>Goal:</b> dig down to the ' + ['Clay', 'Stone', 'Deep dark', 'Bedrock'][dl] + ' layer on the Colony tab.';
@@ -9421,7 +9370,7 @@ function antWhere(o) {
 }
 
 function antInfo(s) {
-    var o = s.o, t, a;
+    var o = s.o;
     if (s.t !== 'a' && !o.inj) {
         if (o.nap > 0)
             return [CN[o.k], o.k === 0 ? 'Resting in the nest' : 'Resting at the nest entrance'];
@@ -9883,7 +9832,7 @@ function storeUi(force) {
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 /* Colony map: every tunnel at once, with a dot for each ant. Tap it to jump the tunnel view to that spot. */
-var mapT = 0, mapG = null, mapV = { z: 1, cx: null, cy: null }, mapP = {}, mapMv = 0;
+var mapT = 0, mapG = null, mapV = { z: 1, cx: null, cy: null };
 function mapOpen() {
     var o = $('mapov'), nv = document.querySelector('.nav'), h = Math.round((nv ? nv.getBoundingClientRect().top : innerHeight - 100) - 6);
     o.classList.add('on');
@@ -10026,7 +9975,7 @@ function mapDraw() {
             g.lineWidth = w;
             g.stroke();
         }
-        var i, k, e, pr;
+        var i, k, pr;
         var tw = Math.min(16, Math.max(2, 5 * sc));
         for (k = 0; k < S.sideTunnels && k < BP.length; k++) {
             pr = S.sideDug[k] == null ? 1 : S.sideDug[k];
@@ -10148,7 +10097,7 @@ function mapZoomAt(f, px, py) {
 // panning, pinching and tapping on the colony map (called once from boot.js)
 function initMapGestures() {
     (function () {
-        var c = $('mapcv'), pts = {}, last = 0, moved = false, d0 = 0;
+        var c = $('mapcv'), pts = {}, moved = false, d0 = 0;
         function rel(e) { var r = c.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
         c.addEventListener('pointerdown', function (e) {
             pts[e.pointerId] = rel(e);
@@ -10328,7 +10277,7 @@ function wormTick(dt) {
 }
 
 // random events: good surprises, trouble and two-way choices
-var evT = 300, rainT = 0, rainSeed = 0;
+var evT = 300, rainT = 0;
 function evPct(p) { return Math.round(foodCap() * p); }
 function evSpot() { var q = BP && BP.length && S.sideTunnels > 0 ? BP[Math.floor(Math.random() * Math.min(S.sideTunnels, BP.length))] : MAIN, a = at(.2 + Math.random() * .7, q); return a; }
 var EV_GOOD = [
@@ -11097,7 +11046,6 @@ function initResetButton() {
 // power: 'auto' (default: 30 frames a second once the colony is big, 60 while it's small), 'smooth' (always 60), 'saver' (30 and a lighter picture)
 var battery = false, power = 'auto';
 
-function setBattery(on) { setPower(on ? 'saver' : 'auto'); }
 function setPower(m) {
     power = m;
     battery = m === 'saver';
@@ -11383,7 +11331,6 @@ function musicEngine(ctx, out) {
         o.detune.setValueAtTime(det, t); o.start(t); o.stop(end); return o; }
     function vca(t, a, v, hold, rel) { var g = ctx.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(v, t + a); g.gain.setValueAtTime(v, t + Math.max(a, hold)); g.gain.exponentialRampToValueAtTime(.0001, t + Math.max(a, hold) + rel); return g; }
     function lp(f, q) { var b = ctx.createBiquadFilter(); b.type = 'lowpass'; b.frequency.value = f; b.Q.value = q || .7; return b; }
-    function vibrato(o, t, f, depth) { var l = ctx.createOscillator(), lg = ctx.createGain(); l.frequency.value = 5.2; lg.gain.setValueAtTime(0, t); lg.gain.linearRampToValueAtTime(f * depth, t + .25); l.connect(lg); lg.connect(o.frequency); l.start(t); l.stop(t + 4); }
     // 8-bit style: pulse-wave lead, triangle bass, noise drums, no reverb
     var PW = {};
     function pulse(d) {
@@ -11898,7 +11845,7 @@ function frame(n) {
     else if (cv.style.transform)
         cv.style.transform = '';
     fx = fx.filter(function (p) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.g || 0) * dt; p.l -= dt; return p.l > 0; });
-    var sp = still ? 0 : .06, lo = 1 - S.dug;
+    var lo = 1 - S.dug;
     marchers.forEach(function (m) { energyStep(m, dt); if (m.nap > 0)
         return; if (m.k === 1) {
         forageStep(m, dt, .06);
@@ -12059,9 +12006,6 @@ cv.addEventListener('pointerdown', function () { if (tab === 'nest' && !dead) {
     if (Math.random() < .3)
         pulseRing('255,235,200');
 } });
-
-// ---- economy/colony ----
-defineUpgrades();
 
 // ---- core/state ----
 CN[6] = 'Worker';

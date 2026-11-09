@@ -141,7 +141,7 @@ function drawWorld(now) {
             rooms.push({ x: fe[0], y: fe[1], rx: 7 + (fe[0] * 7 % 4), ry: 5 + (fe[1] * 3 % 3), ic: null });
         }
     });
-    var rx = 62 + S.tier * 5, ry = 36 + S.tier * 2;
+    var rx = 62 + S.tier * 5;
     cavernRim();
     rooms = rooms.filter(function (r) { return r.x + r.rx + 12 > VR.x0 && r.x - r.rx - 12 < VR.x1 && r.y + r.ry + 12 > VR.y0 && r.y - r.ry - 12 < VR.y1; });
     rooms.forEach(function (r) { chamberRim(r.x, r.y, r.rx, r.ry); });
@@ -203,7 +203,7 @@ function drawWorld(now) {
         cx.fill();
     }
     var nl = Math.min(28, Math.floor(S.food));
-    for (var i = 0; i < nl; i++) {
+    for (i = 0; i < nl; i++) {
         cx.fillStyle = i % 2 ? '#6fbf4a' : '#4f9a35';
         cx.beginPath();
         cx.ellipse(QX - rx * .72 + ((i * 17) % 9) * 4, QY + 2 + (i % 5) * 5, 4, 2.4, i, 0, 7);
@@ -269,7 +269,7 @@ function lighting(now) {
     }
     cx.stroke();
     if (S.tier >= 2) {
-        for (var x = Math.floor(wideL() / 23) * 23 + 6; x < wideR(); x += 23) {
+        for (x = Math.floor(wideL() / 23) * 23 + 6; x < wideR(); x += 23) {
             cx.fillStyle = x % 2 ? '#f2c94c' : '#ff8fb1';
             cx.beginPath();
             cx.arc(x + Math.sin(t + x) * 1.2, 15, 1.4, 0, 7);

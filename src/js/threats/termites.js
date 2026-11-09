@@ -153,18 +153,18 @@ function trmResolve(B) {
     trm.res = 1;
     trm.fT = 0;
     trm.forEach(function (t) { t.back = 1; t.hold = 0; });
-    var sz = trm.length ? trm[0].size : 0, str = (S.soldiers * (1 + .25 * S.classLevel[2]) + S.superMajors * 10) * (armouryOn() ? 1.2 : 1), cap = foodCap();
+    var sz = trm.length ? trm[0].size : 0, str = (S.soldiers * (1 + .25 * S.classLevel[2]) + S.superMajors * 10) * (armouryOn() ? TUNING.termites.armouryBonus : 1), cap = foodCap();
     if (str >= sz * 6) {
         trm.chT = trm.ms != null ? 5 : 0;
         S.termWins = (S.termWins || 0) + 1;
-        var loot = Math.ceil(cap * .05);
+        var loot = Math.ceil(cap * TUNING.termites.lootShare);
         S.food = Math.min(cap, S.food + loot);
         toast('Your soldiers drove the termites back and took ' + fmt(loot) + ' food from them.');
         if (Math.random() < .25)
             gainJelly(1);
     }
     else {
-        var lost = Math.min(S.food, Math.ceil(cap * .06));
+        var lost = Math.min(S.food, Math.ceil(cap * TUNING.termites.lossShare));
         S.food -= lost;
         toast('The termites stole ' + fmt(lost) + ' food before running off. More soldiers would stop them.');
     }

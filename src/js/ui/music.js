@@ -61,7 +61,6 @@ function musicEngine(ctx, out) {
         o.detune.setValueAtTime(det, t); o.start(t); o.stop(end); return o; }
     function vca(t, a, v, hold, rel) { var g = ctx.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(v, t + a); g.gain.setValueAtTime(v, t + Math.max(a, hold)); g.gain.exponentialRampToValueAtTime(.0001, t + Math.max(a, hold) + rel); return g; }
     function lp(f, q) { var b = ctx.createBiquadFilter(); b.type = 'lowpass'; b.frequency.value = f; b.Q.value = q || .7; return b; }
-    function vibrato(o, t, f, depth) { var l = ctx.createOscillator(), lg = ctx.createGain(); l.frequency.value = 5.2; lg.gain.setValueAtTime(0, t); lg.gain.linearRampToValueAtTime(f * depth, t + .25); l.connect(lg); lg.connect(o.frequency); l.start(t); l.stop(t + 4); }
     // 8-bit style: pulse-wave lead, triangle bass, noise drums, no reverb
     var PW = {};
     function pulse(d) {

@@ -3,7 +3,7 @@
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 // ---- cave crickets: now and then a band creeps up the stone shaft from the Armoury towards the Larder to eat seeds ----
-var cric = [], cricT = 300, cricDef = [], cricStole = 0;
+var cric = [], cricT = TUNING.crickets.firstAt, cricDef = [], cricStole = 0;
 function cricLive() {
     for (var i = 0; i < cric.length; i++)
         if (!cric[i].back && cric[i].hp > 0)
@@ -15,12 +15,12 @@ function cricSpawn() {
     cric.length = 0;
     cricStole = 0;
     for (var i = 0; i < n; i++)
-        cric.push({ s: 1, w: i * 1.6, hp: 10, mhp: 10, back: 0, i: i, ph: Math.random() * 6, ate: 0 });
+        cric.push({ s: 1, w: i * 1.6, hp: TUNING.crickets.hp, mhp: TUNING.crickets.hp, back: 0, i: i, ph: Math.random() * 6, ate: 0 });
     toast('Cave crickets are creeping up from the stone layer towards the Larder! Soldiers are on their way.');
     SFX.hit();
 }
 function cricTick(dt) {
-    var ap = armouryPos(), cap, i, c, L, live = 0, dead = 0;
+    var ap = armouryPos(), cap, i, c, L;
     if (!ap || !armouryOn()) {
         cric.length = 0;
         return;
@@ -30,7 +30,7 @@ function cricTick(dt) {
             return;
         cricT -= dt;
         if (cricT <= 0) {
-            cricT = 420 + Math.random() * 300;
+            cricT = TUNING.crickets.gapMin + Math.random() * TUNING.crickets.gapRand;
             cricSpawn();
         }
         return;
@@ -47,7 +47,6 @@ function cricTick(dt) {
             c.dt = (c.dt || 0) + dt;
             if (c.dt > 1.2)
                 cric.splice(i, 1);
-            dead++;
             continue;
         }
         if (c.back) {
@@ -56,7 +55,6 @@ function cricTick(dt) {
                 cric.splice(i, 1);
             continue;
         }
-        live++;
         // a soldier standing just above blocks the way up
         var blk = false;
         for (var j = 0; j < cricDef.length; j++) {
@@ -77,7 +75,7 @@ function cricTick(dt) {
         if (c.s <= .02) {
             c.s = .02;
             c.back = 1;
-            var take = Math.min(S.food, Math.ceil(cap * .025));
+            var take = Math.min(S.food, Math.ceil(cap * TUNING.crickets.stealShare));
             S.food -= take;
             cricStole += take;
             if (!c.ate) {
@@ -93,7 +91,7 @@ function cricTick(dt) {
         if (cricStole > 0)
             toast('The cave crickets ate ' + fmt(cricStole) + ' food from the Larder. More soldiers would stop them.');
         else {
-            var loot = Math.ceil(cap * .03);
+            var loot = Math.ceil(cap * TUNING.crickets.lootShare);
             S.food = Math.min(cap, S.food + loot);
             S.cricWins = (S.cricWins || 0) + 1;
             toast('Your soldiers squashed the cave crickets! +' + fmt(loot) + ' food.');
@@ -159,7 +157,7 @@ function drawCrickets(now) {
     var ap = armouryPos();
     if (!ap || !cric.length)
         return;
-    var q = ap.q1, i, c, a, hop, sc, l;
+    var q = ap.q1, i, c, a, hop, l;
     cx.save();
     cx.translate(0, -cam);
     for (i = 0; i < cric.length; i++) {

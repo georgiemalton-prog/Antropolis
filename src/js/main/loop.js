@@ -116,7 +116,7 @@ function frame(n) {
     else if (cv.style.transform)
         cv.style.transform = '';
     fx = fx.filter(function (p) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.g || 0) * dt; p.l -= dt; return p.l > 0; });
-    var sp = still ? 0 : .06, lo = 1 - S.dug;
+    var lo = 1 - S.dug;
     marchers.forEach(function (m) { energyStep(m, dt); if (m.nap > 0)
         return; if (m.k === 1) {
         forageStep(m, dt, .06);

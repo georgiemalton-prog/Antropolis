@@ -240,7 +240,7 @@ function critter(x, y, ang, s, aph) {
 }
 
 function drawNeighbour(nb, now, br, bdug) {
-    var nx = nb.fx * W, ny = nb.ya != null ? nb.ya * WH : wy(nb.fy), term = nb.kind === 'termites', dr = nx < W * .5 ? 1 : -1, t = now * .001, i, a, g, sc = .7 / (K * uz), ph = nb.fx * 9;
+    var nx = nb.fx * W, ny = nb.ya != null ? nb.ya * WH : wy(nb.fy), term = nb.kind === 'termites', t = now * .001, i, g, sc = .7 / (K * uz);
     function blob(rx, ry) { caveP(nx, ny, rx, ry, Math.round(nb.fx * 997) + 5, .34); }
     cx.lineCap = 'round';
     var bp = null, bd = 1e9, pp, q0, dd, lim = Math.max(.02, S.dug);

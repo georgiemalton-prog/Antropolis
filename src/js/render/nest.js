@@ -378,7 +378,6 @@ function drawFood(now) {
         }
     });
     if (S.dug >= 1) {
-        var e = PT[0], mr = 28 + S.tier * 8;
         for (var lj = 0; lj < 8; lj++) {
             var lx = surfaceSpot(lj), lsd = lj % 2 ? 1 : -1;
             cx.fillStyle = lj % 2 ? '#5aa845' : '#78c25a';

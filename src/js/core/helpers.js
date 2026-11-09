@@ -74,7 +74,6 @@ function patchCanvasEllipse() {
    ---------------------------------------------------------------------- */
 var $ = function (i) { return document.getElementById(i); };
 var T = [{ n: 'Dirt hole', c: 0 }, { n: 'Burrow', c: 1500 }, { n: 'Colony', c: 20000 }, { n: 'Anthill', c: 200000 }, { n: 'Supercolony', c: 1000000 }];
-var U = [];
 var LG = [
     { id: 'swift', n: 'Swift diggers', d: 'Tunnels dig 50% faster per level.' },
     { id: 'found', n: 'Founding brood', d: 'Start each colony with 3 more nurses per level.' },

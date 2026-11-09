@@ -3,7 +3,7 @@
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 /* Colony map: every tunnel at once, with a dot for each ant. Tap it to jump the tunnel view to that spot. */
-var mapT = 0, mapG = null, mapV = { z: 1, cx: null, cy: null }, mapP = {}, mapMv = 0;
+var mapT = 0, mapG = null, mapV = { z: 1, cx: null, cy: null };
 function mapOpen() {
     var o = $('mapov'), nv = document.querySelector('.nav'), h = Math.round((nv ? nv.getBoundingClientRect().top : innerHeight - 100) - 6);
     o.classList.add('on');
@@ -146,7 +146,7 @@ function mapDraw() {
             g.lineWidth = w;
             g.stroke();
         }
-        var i, k, e, pr;
+        var i, k, pr;
         var tw = Math.min(16, Math.max(2, 5 * sc));
         for (k = 0; k < S.sideTunnels && k < BP.length; k++) {
             pr = S.sideDug[k] == null ? 1 : S.sideDug[k];
@@ -268,7 +268,7 @@ function mapZoomAt(f, px, py) {
 // panning, pinching and tapping on the colony map (called once from boot.js)
 function initMapGestures() {
     (function () {
-        var c = $('mapcv'), pts = {}, last = 0, moved = false, d0 = 0;
+        var c = $('mapcv'), pts = {}, moved = false, d0 = 0;
         function rel(e) { var r = c.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
         c.addEventListener('pointerdown', function (e) {
             pts[e.pointerId] = rel(e);

@@ -69,9 +69,6 @@ cv.addEventListener('pointerdown', function () { if (tab === 'nest' && !dead) {
         pulseRing('255,235,200');
 } });
 
-// ---- economy/colony ----
-defineUpgrades();
-
 // ---- core/state ----
 CN[6] = 'Worker';
 CC[6] = '#c9962f';

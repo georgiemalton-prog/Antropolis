@@ -2,20 +2,6 @@
    Counting ants, eggs, food, rooms, rewards, upgrades and the main colony tick.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
-// the jelly upgrades list (called once from boot.js)
-function defineUpgrades() {
-    U = [{ id: 'dig', n: 'Strong mandibles', d: 'Your ants dig twice as fast.', c: 15, t: 'dig', m: 2 },
-        { id: 'warm', n: 'Warm brood', d: 'Eggs hatch 40% faster.', c: 30, t: 'hatch', m: .6 },
-        { id: 'leaf', n: 'Bigger leaves', d: 'Foragers carry twice as much food.', c: 50, t: 'forager', m: 2 },
-        { id: 'venom', n: 'Venom sacs', d: 'Soldiers deal double damage.', c: 80, t: 'soldier', m: 2 },
-        { id: 'jelly', n: 'Royal jelly', d: 'The queen lays 25% sooner.', c: 100, t: 'lay', m: .75 },
-        { id: 'sentry', n: 'Sentry ants', d: 'Invaders crawl 35% slower.', c: 120, t: 'slow', m: .65 },
-        { id: 'armor', n: 'Chitin armor', d: 'Invaders kill 30% fewer ants.', c: 150, t: 'armor', m: .7 },
-        { id: 'twin', n: 'Twin eggs', d: 'The queen lays two eggs at a time.', c: 250, t: 'clutch', m: 2 },
-        { id: 'guard', n: 'Royal guard', d: 'The queen takes half damage.', c: 300, t: 'guard', m: .5 },
-        { id: 'leaf2', n: 'Fungus gardens', d: 'Foragers carry twice as much again.', c: 600, t: 'forager', m: 2 }];
-}
-
 // ---- counting ants ----
 
 function cnt(c) { return [S.nurses, S.foragers, S.soldiers, S.scouts, S.superMajors, 0, S.workers][c]; }
@@ -45,9 +31,9 @@ function layGap() { return (bio().eg || 1) * 30 * (1 - .04 * S.queenLevel) * (S.
 
 function eggCost() { return Math.max(1, Math.ceil((1 + S.tier) * (1 - .15 * pk('fat')))); }
 
-function foodCap() { return Math.round(400 * Math.pow(2.2, S.tier + 1) * (1 + .25 * S.bld.store) * (1 + .08 * (S.deep || 0)) * (larderOn() ? 1.25 : 1)); }
+function foodCap() { return Math.round(400 * Math.pow(2.2, S.tier + 1) * (1 + .25 * S.bld.store) * (1 + .08 * (S.deep || 0)) * (larderOn() ? TUNING.larder.storeBonus : 1)); }
 
-function leaf() { return heroB(1) * (bio().fd || 1) * 2 * (1 + .15 * S.tier) * (S.tier === 0 ? 3.2 : S.tier === 1 ? 2.2 : S.tier === 2 ? 1.3 : 1) * (1 + .05 * P.legacyEver) * (1 + .2 * S.classLevel[1]) * ((S.hillLevel || 0) >= 4 ? 1.1 : 1) * (1 + .1 * (S.hall || 0)); }
+function leaf() { return heroB(1) * (bio().fd || 1) * 2 * (1 + .15 * S.tier) * (S.tier === 0 ? 3.2 : S.tier === 1 ? 2.2 : S.tier === 2 ? 1.3 : 1) * (1 + .05 * P.legacyEver) * (1 + .2 * S.classLevel[1]) * ((S.hillLevel || 0) >= 4 ? 1.1 : 1) * (1 + TUNING.hall.bonus * (S.hall || 0)); }
 
 function capN() { return CAPS[S.tier] + (S.tier >= 4 ? 250 * (S.hillLevel || 0) : 0) + (S.cavLevel || 0) * Math.round(CAPS[S.tier] * .2); }
 
@@ -122,7 +108,7 @@ function hpMax() { return 100 + 20 * S.queenLevel; }
 
 function clutch() { return (Math.max(1, Math.round(CL[S.tier] * (1 + .08 * S.queenLevel))) + S.bld.nest) * (S.queenLevel >= 8 && Math.random() < .25 ? 2 : 1); }
 
-function rollClass() { if (Math.random() < GOLD * (S.queenLevel >= 4 ? 5 : 1) * (cavesOn() ? 1.5 : 1))
+function rollClass() { if (Math.random() < GOLD * (S.queenLevel >= 4 ? 5 : 1) * (cavesOn() ? TUNING.caves.goldenMul : 1))
     return 4; var r = Math.random() * 100, a = 0; for (var n = 0; n < ORD.length; n++) {
     a += CW[n];
     if (r < a)
@@ -154,12 +140,6 @@ function haul() { var c = S.classLevel[1] >= 8 ? .2 : S.classLevel[1] >= 4 ? .1 
 
 function perk(l) { var lv = pk(l.id), c = (lv + 1) * 2; if (lv >= 5 || P.legacy < c || (P.gen || 0) < (l.gen || 0))
     return; P.legacy -= c; P.perks[l.id] = lv + 1; SFX.buy(); }
-
-function upgBuy(u) { if (S.upgrades[u.id] || S.food < u.c)
-    return; S.food -= u.c; S.upgrades[u.id] = 1; SFX.buy(); }
-
-function upg(u) { var had = S.upgrades[u.id]; upgBuy(u); if (!had && S.upgrades[u.id])
-    burst(QX, QY, 18, ['#fff', '#ffd35a'], 90); }
 
 function clCost(i) { return Math.max(1, Math.ceil(3 * Math.pow(1.75, i === 5 ? S.queenLevel : S.classLevel[i]) * (1 - .08 * pk('wisdom')))); }
 
@@ -480,7 +460,7 @@ function colony(dt) {
         S.injuryTimer -= dt;
         if (S.injuryTimer <= 0) {
             S.injuryTimer = 4 / eng;
-            if (Math.random() < .75 * (armouryOn() ? .75 : 1))
+            if (Math.random() < .75 * (armouryOn() ? TUNING.armoury.injuryMul : 1))
                 injure();
         }
     }

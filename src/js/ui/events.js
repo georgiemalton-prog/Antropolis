@@ -128,7 +128,7 @@ function wormTick(dt) {
 }
 
 // random events: good surprises, trouble and two-way choices
-var evT = 300, rainT = 0, rainSeed = 0;
+var evT = 300, rainT = 0;
 function evPct(p) { return Math.round(foodCap() * p); }
 function evSpot() { var q = BP && BP.length && S.sideTunnels > 0 ? BP[Math.floor(Math.random() * Math.min(S.sideTunnels, BP.length))] : MAIN, a = at(.2 + Math.random() * .7, q); return a; }
 var EV_GOOD = [

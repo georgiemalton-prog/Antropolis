@@ -149,7 +149,7 @@ function drawArmy(now) {
     cx.save();
     cx.translate(0, -cam);
     drawBuild(now);
-    var tw = tunW(), ip = infPos(), ry = 36 + S.tier * 2, i;
+    var tw = tunW(), ip = infPos(), ry = 36 + S.tier * 2;
     cx.lineCap = 'round';
     cx.strokeStyle = '#150c07';
     cx.lineWidth = 12;

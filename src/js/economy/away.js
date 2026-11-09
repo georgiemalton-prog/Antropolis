@@ -38,8 +38,8 @@ function diaryLines() {
 }
 
 // ---- offline progress (the colony keeps working while you are away) ----
-var earnAcc = 0, digPrev = null, AWAY_MAX = 8 * 3600;
-function awayMax() { return (larderOn() ? 10 : 8) * 3600; }
+var earnAcc = 0, digPrev = null;
+function awayMax() { return (larderOn() ? TUNING.larder.awayHours : TUNING.larder.awayHoursOff) * 3600; }
 
 function trackRates(el) {
     if (dead || el <= 0 || el > 5) {

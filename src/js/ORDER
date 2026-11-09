@@ -1,5 +1,6 @@
 # Files are joined in this order by tools/build.py. boot.js must stay last.
 core/helpers.js
+core/tuning.js
 core/state.js
 core/audio.js
 core/save.js
