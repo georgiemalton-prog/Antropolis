@@ -33,6 +33,9 @@ canvas{display:block;width:100%;height:400px;touch-action:manipulation}
 #tinfo{display:none;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.15)}#tinfo.on{display:block}
 #tzoom{top:44px;right:8px;display:flex;flex-direction:column;gap:6px;width:52px}#tzoom .card{width:52px;font-size:12px;padding:8px 0}#zin,#zout{font-size:22px!important;padding:4px 0!important}
 #tbot{left:8px;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px;pointer-events:none}#tbot .card,#tbot #abil,#tbot #wrow{pointer-events:auto}#tbot .card{flex:1}#tbot .card span{display:block}#tbot .card small,#tbot .card .mute{font-size:11px}
+#ctabs{display:flex;gap:4px;margin:10px 0 0;padding:4px;border-radius:18px;background:rgba(0,0,0,.28);border:1px solid var(--line)}#ctabs button{flex:1;border:0;border-radius:14px;background:transparent;color:var(--mute);font:700 13px var(--ff);padding:9px 0;cursor:pointer}#ctabs button.on{background:linear-gradient(180deg,var(--accent2),var(--accent));color:var(--aink)}
+#p-col:not([data-g=today]) [data-g=today],#p-col:not([data-g=build]) [data-g=build],#p-col:not([data-g=ants]) [data-g=ants],#p-col:not([data-g=more]) [data-g=more]{display:none!important}
+#mapov{display:none;position:fixed;left:0;top:0;right:0;z-index:5;background:#150d07}#mapov.on{display:block}#mapov canvas{display:block;width:100%;touch-action:none}#mapch{position:absolute;top:10px;left:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:calc(100% - 130px)}#mapch button{width:auto;margin:0;padding:7px 11px;font-size:12px;background:rgba(30,20,10,.75)}#mapx{position:absolute;top:10px;right:10px;width:auto;margin:0;padding:8px 14px;font-size:13px;background:rgba(30,20,10,.75)}
 canvas.zin{animation:zin 1.1s ease-out}
 @keyframes zin{from{transform:scale(1.7)}to{transform:scale(1)}}
 .pn{display:none}.pn.on{display:block;animation:fin .3s ease both}
@@ -107,6 +110,7 @@ body.tt .hchip small{margin:0;font-size:10px}
 .gh{display:flex;justify-content:space-between;font:600 15px var(--fh);margin-bottom:4px}.gh span{font:600 12px var(--ff);color:var(--mute)}
 .gi{display:flex;align-items:baseline;gap:8px;padding:4px 0;color:var(--mute);font-size:13.5px}.gi.on{color:var(--ink);font-weight:700;font-size:14.5px}
 .gk{width:14px;color:var(--accent)}.gt{flex:1}.gt em{font-style:normal;color:var(--accent)}.gr{font-size:12px;color:var(--mute);white-space:nowrap}
+@keyframes flashme{0%,100%{box-shadow:var(--sh)}30%,70%{box-shadow:var(--sh),0 0 0 4px var(--accent2)}}.card.flashme{animation:flashme 1s ease 2}
 #aps.bump{animation:bump .32s ease}@keyframes bump{40%{transform:scale(1.22);color:var(--accent)}}
 #antlbl{position:fixed;display:none;z-index:9;pointer-events:none;background:rgba(30,19,10,.95);color:#fbeed8;border:1px solid var(--accent);padding:10px 14px 11px;border-radius:16px;font-size:13px;line-height:1.45;text-align:left;box-shadow:0 10px 22px -6px rgba(0,0,0,.7)}
 #antlbl b{display:block;font:600 19px var(--fh);color:#ffe27a;letter-spacing:.02em}
@@ -130,13 +134,13 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #title .sub{font:400 18px var(--fh);letter-spacing:.2em;color:#9a6b3a;background:none;border:0;cursor:pointer;padding:6px}
 #title .sub:hover{color:#f5b23c}
 </style></head>
-<body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button></div><main>
+<body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
 <div class="top"><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
 <div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
 <div id="goals"></div><p id="goal" class="gline"></p>
 <div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food · <b id="jel">0</b> jelly</small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
- <div id="tzoom"><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
+ <div id="tzoom"><button class="card" id="tmap">Map</button><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
  <div id="tbot"><div id="abil" style="display:none;gap:6px"><button class="card" id="abR">Rally</button><button class="card" id="abA">Sound the alarm</button></div>
  <div id="wrow" style="display:none;gap:6px"><button class="card" id="jw">&#9664; West</button><button class="card" id="jh">Home</button><button class="card" id="je">East &#9654;</button></div>
  <div style="display:flex;gap:6px"><button class="card" id="j0">Surface</button><button class="card" id="j1">Front line</button><button class="card" id="j2">Nest</button></div></div></div></div>
@@ -151,10 +155,11 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 <div class="pn" id="p-col">
  <div id="daily"></div>
  <div id="nextup"></div>
+ <div id="ctabs"></div>
  <h2>Next nest</h2><div id="tier"></div>
  <h2>Build and upgrade</h2><div id="rooms" style="margin:0 0 4px"></div><div id="build"></div>
  <h2>Quests</h2><div id="quests"></div>
- <h2>Shop</h2><div id="shop"></div>
+ <h2>Heroes</h2><div id="heroes"></div>
  <h2>Your ants and queen</h2><p class="mute" style="margin:0 0 4px">Tap a card to level up with royal jelly. Earn jelly from waves, bosses, finds and daily tasks.</p><div id="bl"></div>
  <h2>The Anthill</h2><p class="mute" id="hilltx" style="margin:0 0 6px"></p><button class="card dig" id="hillbtn" style="margin:0 0 10px">Build</button>
  <h2>The Great Colony</h2><div id="great"></div>
@@ -162,7 +167,8 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
  <h2>Achievements</h2><div id="ach" style="margin:0 0 8px"></div><h2>Royal flight</h2><p class="mute" id="prinfo" style="margin:0"></p><div id="pr"></div>
  <button class="link" id="reset">Erase everything</button>
 </div>
-<div class="pn" id="p-store"><div id="store"></div></div>
+<div id="mapov"><canvas id="mapcv"></canvas><div id="mapch"></div><button class="card" id="mapx">Close map</button></div>
+<div class="pn" id="p-store"><h2>Boosts</h2><div id="shop"></div><div id="store"></div></div>
 </main>
 <nav class="nav"><button data-t="nest" class="on"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkN"><rect width="96" height="96" fill="#fff"/><path d="M36 84V68C36 55 60 55 60 68V84Z" fill="#000"/></mask></defs><g mask="url(#mkN)"><path d="M10 84H86" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M15 84C15 56 29 32 48 32S81 56 81 84Z"/></g><path d="M68 30q2-9 9-12M72 31q7-5 13-3" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span>Nest</button><button data-t="tun"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkT"><rect width="96" height="96" fill="#fff"/><path d="M42 12V46C42 60 56 58 56 72V90M42 46H30" stroke="#000" stroke-width="11" fill="none"/><circle cx="25" cy="46" r="9" fill="#000"/></mask></defs><g mask="url(#mkT)"><rect x="12" y="14" width="72" height="72" rx="14"/></g></svg></span>Tunnel</button><button data-t="col"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkC"><rect width="96" height="96" fill="#fff"/><circle cx="30" cy="30" r="6" fill="#000"/><circle cx="66" cy="30" r="6" fill="#000"/><circle cx="48" cy="70" r="7.5" fill="#000"/></mask></defs><path d="M30 30H66M30 30L48 70M66 30L48 70" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/><g mask="url(#mkC)"><circle cx="30" cy="30" r="14"/><circle cx="66" cy="30" r="14"/><circle cx="48" cy="70" r="16"/></g></svg></span>Colony</button><button data-t="store"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><path d="M12 72L8 28L30 46L48 18L66 46L88 28L84 72Z"/><rect x="12" y="78" width="72" height="9" rx="3"/></svg></span>Store</button></nav>
 <div class="over" id="gen" style="background:radial-gradient(ellipse at center,rgba(70,50,10,.9),rgba(8,4,2,.96))"><div style="font-size:13px;letter-spacing:.2em;color:#e8b04a">A NEW AGE</div><h2 id="gent" style="font-size:38px;margin:0;color:#ffd23f"></h2><div id="genp" style="max-width:330px;max-height:62vh;overflow-y:auto;text-align:left;font-size:15px;line-height:1.35"></div><button class="card dig" id="gencont" style="max-width:340px"><b>Begin the new generation</b></button></div>
@@ -374,7 +380,7 @@ $('reset').onclick = function () {
         setTimeout(function () { rs = 0; $('reset').textContent = 'Erase everything'; }, 3000);
         return;
     }
-    P = { legacy: 0, legacyEver: 0, perks: {} };
+    P = { legacy: 0, legacyEver: 0, perks: {}, wn: WN_V };
     rs = 0;
     this.textContent = 'Erase everything';
     newRun(0);
@@ -594,6 +600,11 @@ cv.addEventListener('pointerup', function (e) {
         bd = d;
         best = { t: 'a', o: a };
     } });
+    Object.keys(FAO).forEach(function (key) { var a = FAO[key]; if (a.wx == null || performance.now() - a.seen > 500)
+        return; var d = Math.hypot(a.wx - wx, a.wy - wy); if (d < bd) {
+        bd = d;
+        best = { t: 'f', o: a };
+    } });
     sel = best;
     if (sel && tab === 'tun') {
         selFollow = true;
@@ -619,6 +630,9 @@ function fmt(n) {
 
 function rng(s) { return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 
+// 0 to 1 with a small bounce past full size
+function popIn(t) { var c = 1.9; t -= 1; return Math.max(.2, 1 + (c + 1) * t * t * t + c * t * t); }
+function rrect(x, y, w, h, r) { r = Math.min(r, w / 2, h / 2); cx.beginPath(); if (w <= 0) return; cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
 function glow(x, y, r, c, a) { var g = cx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, 'rgba(' + c + ',' + a + ')'); g.addColorStop(1, 'rgba(' + c + ',0)'); cx.fillStyle = g; cx.fillRect(x - r, y - r, 2 * r, 2 * r); }
 
 function toast(m) {
@@ -773,7 +787,7 @@ function load() {
     catch (e) { }
 }
 
-function newRunBase(lp) { P.legacy += lp; P.legacyEver += lp; S = fresh(); foes = []; wvi = { n: 0 }; nf = 0; dead = false; $('over').classList.remove('on'); marchers.length = 0; sync(); save(); }
+function newRunBase(lp) { P.legacy += lp; P.legacyEver += lp; S = fresh(); foes = []; MF = null; clearOldRun(); wvi = { n: 0 }; nf = 0; dead = false; $('over').classList.remove('on'); marchers.length = 0; sync(); save(); }
 
 function headStart() {
     var gn = P.gen || 0;
@@ -820,6 +834,8 @@ function genShow(g, hatched) {
     lines.push('Future flights earn ' + (10 * P.gen) + '% more legacy plus a bonus of ' + (4 + 2 * P.gen) + '.');
     LG.forEach(function (l) { if (l.gen === P.gen)
         lines.push('<b>Unlocked: ' + l.n + '.</b> ' + l.d); });
+    if (P.gen >= 1 && P.gen <= 4)
+        lines.push('<b>New ground: the ' + DLAY[P.gen - 1].n + ' layer.</b> Your colonies can now dig down to it once they are ' + (P.gen <= 2 ? 'an ' + T[3].n : 'a ' + T[4].n) + '.');
     lines.push('The Hall of Queens in your nest now holds ' + Math.min(P.gen, 8) + ' statue' + (P.gen > 1 ? 's' : '') + '.');
     $('gent').textContent = 'Generation ' + genName(n);
     $('genp').innerHTML = '<p class="mute" style="margin:0 0 6px">The old queen is honoured. A new queen takes the throne.</p>' + lines.map(function (l) { return '<p style="margin:5px 0">' + l + '</p>'; }).join('');
@@ -879,9 +895,9 @@ function layGap() { return (bio().eg || 1) * 30 * (1 - .04 * S.queenLevel) * (S.
 
 function eggCost() { return Math.max(1, Math.ceil((1 + S.tier) * (1 - .15 * pk('fat')))); }
 
-function foodCap() { return Math.round(400 * Math.pow(2.2, S.tier + 1) * (1 + .25 * S.bld.store) * (1 + .08 * (S.deep || 0))); }
+function foodCap() { return Math.round(400 * Math.pow(2.2, S.tier + 1) * (1 + .25 * S.bld.store) * (1 + .08 * (S.deep || 0)) * (larderOn() ? 1.25 : 1)); }
 
-function leaf() { return (bio().fd || 1) * 2 * (1 + .15 * S.tier) * (S.tier === 0 ? 3.2 : S.tier === 1 ? 2.2 : S.tier === 2 ? 1.3 : 1) * (1 + .05 * P.legacyEver) * (1 + .2 * S.classLevel[1]) * ((S.hillLevel || 0) >= 4 ? 1.1 : 1); }
+function leaf() { return heroB(1) * (bio().fd || 1) * 2 * (1 + .15 * S.tier) * (S.tier === 0 ? 3.2 : S.tier === 1 ? 2.2 : S.tier === 2 ? 1.3 : 1) * (1 + .05 * P.legacyEver) * (1 + .2 * S.classLevel[1]) * ((S.hillLevel || 0) >= 4 ? 1.1 : 1) * (1 + .1 * (S.hall || 0)); }
 
 function capN() { return CAPS[S.tier] + (S.tier >= 4 ? 250 * (S.hillLevel || 0) : 0) + (S.cavLevel || 0) * Math.round(CAPS[S.tier] * .2); }
 
@@ -956,7 +972,7 @@ function hpMax() { return 100 + 20 * S.queenLevel; }
 
 function clutch() { return (Math.max(1, Math.round(CL[S.tier] * (1 + .08 * S.queenLevel))) + S.bld.nest) * (S.queenLevel >= 8 && Math.random() < .25 ? 2 : 1); }
 
-function rollClass() { if (Math.random() < GOLD * (S.queenLevel >= 4 ? 5 : 1))
+function rollClass() { if (Math.random() < GOLD * (S.queenLevel >= 4 ? 5 : 1) * (cavesOn() ? 1.5 : 1))
     return 4; var r = Math.random() * 100, a = 0; for (var n = 0; n < ORD.length; n++) {
     a += CW[n];
     if (r < a)
@@ -966,7 +982,7 @@ function rollClass() { if (Math.random() < GOLD * (S.queenLevel >= 4 ? 5 : 1))
 function upkeepRate(pop) { return Math.max(0, pop - 8) * .014 * (S.tier >= 1 ? 1 - .3 * (1 + .2 * rl(0)) : 1) * (S.tier === 0 ? .3 : S.tier === 1 ? .6 : 1); }
 
 function deposit(m) {
-    var y = leaf() * haul() * (m && m.si < 0 ? 1.52 : 1);
+    var y = leaf() * haul() * (m && m.si < 0 ? (m.si === -1 ? 1.52 : sideYield(-2 - m.si)) : 1) * restMul();
     S.food = Math.min(foodCap(), S.food + y);
     earnAcc += y;
     S.deliveries = (S.deliveries || 0) + 1;
@@ -986,6 +1002,49 @@ function addSpotAt(p, quiet) {
     }
     return sp;
 }
+
+// Rested colony: after a long break the ants come back keen, and foragers carry 25% more food for a few minutes.
+// Saved as S.restT (seconds left); old saves without it simply have no boost.
+var REST_MUL = 1.25;
+function restMul() { return S.restT > 0 ? REST_MUL : 1; }
+function restMins(secs) { return secs >= 3600 ? Math.round(Math.min(15, Math.max(5, secs / 7200 * 5))) : 0; }
+function restTick(dt) {
+    if (!(S.restT > 0))
+        return;
+    S.restT = Math.max(0, S.restT - dt);
+    if (S.restT === 0)
+        toast('The rested-colony boost has worn off. Your foragers are back to their usual pace.');
+}
+function restTxt() { return S.restT > 0 ? 'Rested colony: foragers carry 25% more food (' + Math.floor(S.restT / 60) + ':' + ('0' + Math.floor(S.restT % 60)).slice(-2) + ' left). ' : ''; }
+
+// a couple of little moments from the colony's day, shown on the welcome-back screen
+function diaryLines() {
+    var L = ['The queen took a slow walk around her chamber and looked over every egg.', 'Nurses groomed the newest ants until they shone.', 'Two foragers tugged at the same seed for a whole minute. The bigger one won.', 'A worker pushed a pebble out of the tunnel. It took five tries.'], H = S.heroes || [], o = [], i, j;
+    if (S.sideTunnels > 0)
+        L.push('Your scouts walked every side tunnel and came home dusty.');
+    if (S.dug >= 1)
+        L.push('A soldier stood guard at the tunnel mouth all night without moving once.', 'Foragers found a fallen leaf on the surface and cut it into a hundred pieces.');
+    if (S.deep > 0)
+        L.push('Ants in the deep layers dug a new little chamber in the ' + DLAY[Math.min(3, S.deep - 1)].n.toLowerCase() + '.');
+    if (H.length) {
+        var h = H[Math.floor(Math.random() * H.length)];
+        if (h && h.n)
+            L.push('<b>' + h.n + '</b> led a patrol through the tunnels and came back proud.');
+    }
+    for (i = 0; i < 2 && L.length; i++) {
+        j = Math.floor(Math.random() * L.length);
+        o.push(L.splice(j, 1)[0]);
+    }
+    return o;
+}
+
+// Side-chamber food stores. A side trip is shorter or longer than a surface trip, so each load is scaled
+// to give the same food per second of walking as a surface leaf; that keeps the colony's income where it was.
+var SIDE_W = 1, SIDE_K = .4;
+// rough round-trip time: main-tunnel walking goes at about .027 of the tunnel per second, side and surface walks at about 34 px/s
+function tripT(pMain, offL) { return 2 * pMain / .027 + 2 * offL / 34 + .9; }
+function surfL() { var e0 = PT[0][0], d = Math.abs(PT[0][1] - 23), j, a = 0; for (j = 0; j < 8; j++) a += Math.abs(surfaceSpot(j) - e0); return d + a / 8; }
+function sideYield(k) { var b = BP[k]; if (!b) return 1.52; return SIDE_K * 1.52 * Math.max(.25, Math.min(1.6, tripT(1 - juncP(k), b.LEN) / tripT(1, surfL()))); }
 
 function spotMax() { return Math.min(10, 3 + S.tier * 2); }
 
@@ -1017,6 +1076,13 @@ function pickTarget(m) {
         c.push({ i: -1, p: 0, w: sw });
         w += sw;
     }
+    // side chambers (Anthill stage on): every finished side tunnel ends in a food store, which spreads foragers across the whole nest
+    if (S.tier >= 3)
+    for (i = 0; i < S.sideTunnels && i < BP.length; i++)
+        if (S.sideDug[i] >= 1 && juncP(i) >= 1 - S.dug) {
+            c.push({ i: -2 - i, p: juncP(i), w: SIDE_W });
+            w += SIDE_W;
+        }
     if (!c.length)
         return null;
     r = Math.random() * w;
@@ -1043,6 +1109,8 @@ function harvest(m) {
         m.cg = 0;
 }
 
+// changes only when the tunnels themselves move (new colony, new nest size, new screen width), not on a tab switch
+function geoKey() { return Math.round(W * 10) + '|' + Math.round(LEN) + '|' + Math.round(PT[0][0] * 10) + '|' + (BP[0] ? Math.round(BP[0].LEN) : 0); }
 function forageStep(m, dt, sp) {
     if (m.gt > 0)
         return;
@@ -1053,6 +1121,12 @@ function forageStep(m, dt, sp) {
             fx.push({ x: qa.x + qa.nx * sd0 * 3, y: qa.y + qa.ny * sd0 * 3, vx: (Math.random() - .5) * 14, vy: -6 - Math.random() * 8, l: .4, c: '#cfe8a0', s: 1.6, g: 30 });
         }
         return;
+    }
+    if (m.sf && m.sf.lv !== geoKey()) {
+        // the nest was redrawn (new size or layout) while this forager was out: its old path no longer matches, so it heads home
+        m.p = m.sf.rp || 0;
+        m.sf = null;
+        m.home = 1;
     }
     if (m.sf) {
         var sf = m.sf, V2 = 34 * (m.v || 1) * dt;
@@ -1071,9 +1145,9 @@ function forageStep(m, dt, sp) {
         else {
             sf.d = Math.max(0, sf.d - V2);
             if (sf.d <= 0) {
+                m.p = m.sf.rp || 0;
                 m.sf = null;
                 m.home = 1;
-                m.p = 0;
             }
         }
         return;
@@ -1086,7 +1160,7 @@ function forageStep(m, dt, sp) {
     }
     if (m.wait > 0) {
         m.wait -= dt;
-        var qp = 1 - .004 - ((m.fi || 0) % 14) * .004;
+        var qp = Math.max(1 - .004 - ((m.fi || 0) % 14) * .004, 1 - S.dug * .9);
         m.p += (qp - m.p) * Math.min(1, dt * 3);
         m.d = -1;
         m.cg = 0;
@@ -1107,9 +1181,15 @@ function forageStep(m, dt, sp) {
         m.p += dir * v * dt;
         if ((dir === -1 && m.p <= m.tp) || (dir === 1 && m.p >= m.tp)) {
             m.p = m.tp;
+            if (m.si <= -2 && BP[-2 - m.si]) {
+                var sk = -2 - m.si, srt = [brSeg(BP[sk], 0, 1)];
+                m.sf = { rt: srt, L: srt[0].n, d: 0, pk: 0, back: 0, rp: m.p, side: 1, lv: geoKey() };
+                m.cg = 0;
+                return;
+            }
             if (m.si < 0 && S.dug >= 1) {
                 var a0 = at(0), e0 = PT[0][0], gx = surfaceSpot(Math.floor(Math.random() * 8)), rt = [lnSeg(a0.x, a0.y, e0, 23), lnSeg(e0, 23, gx, 22)];
-                m.sf = { rt: rt, L: rt[0].n + rt[1].n, d: 0, pk: 0, back: 0 };
+                m.sf = { rt: rt, L: rt[0].n + rt[1].n, d: 0, pk: 0, back: 0, lv: geoKey() };
                 m.cg = 0;
                 return;
             }
@@ -1274,8 +1354,8 @@ function gen() {
     for (fi = 0; fi < 520 && FARM.length < 160; fi++) {
         var fq = rng(S.seed + 31000 + fi * 331), pf = FARM.length > 5 && fq() < .6 ? FARM[Math.floor(fq() * FARM.length)] : null, sc = pf ? { p: pf.pts, r: pf.par } : fsrc[Math.floor(fq() * fsrc.length)],
             sgi = Math.floor(fq() * (sc.p.length - 1)), ft = .15 + .7 * fq(),
-            fx0 = sc.p[sgi][0] + (sc.p[sgi + 1][0] - sc.p[sgi][0]) * ft, fy0 = sc.p[sgi][1] + (sc.p[sgi + 1][1] - sc.p[sgi][1]) * ft,
-            ang = fq() < amix, vert = fq() < .6, th = Math.PI / 2 + (fq() - .5) * 2.4 + (fq() < .35 ? Math.PI / 2 * (fq() < .5 ? 1 : -1) : 0),
+            fx0 = sc.p[sgi][0] + (sc.p[sgi + 1][0] - sc.p[sgi][0]) * ft, fy0 = sc.p[sgi][1] + (sc.p[sgi + 1][1] - sc.p[sgi][1]) * ft, ow = fx0 < .5 ? -1 : 1,
+            ang = fq() < amix, vert = fq() < .45, th = Math.PI / 2 + (fq() - .5) * 2.4 + (fq() < .5 ? -Math.PI / 2 * (fq() < .75 ? ow : -ow) : 0),
             fm = 3 + Math.floor(fq() * 5), fpts = [[fx0, fy0]], fx = fx0, fy = fy0, fst, fat, fnx, fny, snapped = false;
         if (fy0 < .1 || fy0 > .86)
             continue;
@@ -1286,7 +1366,7 @@ function gen() {
                 if (ang) {
                     if (fst > 0 && fq() < .75)
                         vert = !vert;
-                    var sg2 = vert ? (fq() < .72 ? 1 : -1) : (fq() < .5 ? 1 : -1);
+                    var sg2 = vert ? (fq() < .72 ? 1 : -1) : (fq() < .72 ? ow : -ow);
                     ddx = vert ? (fq() - .5) * u * .5 : sg2 * u;
                     ddy = vert ? sg2 * u : (fq() - .5) * u * .4;
                 }
@@ -1295,7 +1375,7 @@ function gen() {
                     ddx = Math.cos(th) * u;
                     ddy = Math.sin(th) * u;
                 }
-                fnx = Math.max(-1.95, Math.min(2.95, fx + ddx));
+                fnx = fx0 >= 0 && fx0 <= 1 ? Math.max(.02, Math.min(.98, fx + ddx)) : Math.max(-1.95, Math.min(2.95, fx + ddx));
                 fny = Math.max(.08, Math.min(.86, fy + ddy / YS));
                 if (Math.hypot(fnx - fx, (fny - fy) * YS) < .025)
                     continue;
@@ -1418,6 +1498,10 @@ function sizeT() {
     QY = PT[8][1];
     genDeep();
     genPebs();
+    var gk = geoKey();
+    if (sizeT.gk && sizeT.gk !== gk)
+        crewA.length = 0;
+    sizeT.gk = gk;
     camT = tab === 'tun' ? (S.dug < 1 ? camClamp(at(1 - S.dug).y - H / 2) : -SK) : WH - H;
     cam = camT;
     uz = 1;
@@ -1436,7 +1520,7 @@ function at(p, q) {
 
 // deep layers: soil below the queen's cavern
 function LH() { return Math.round(H * .7); }
-function deepTop() { var c = cav(); return c.y + c.ry + 28; }
+function deepTop() { var c = cavFull(); return c.y + c.ry + 28; }
 function WHX() { return S.deep ? deepTop() + S.deep * LH() : WH; }
 var DLAY = [
     { n: 'Clay', a: '#2f1d10', b: '#3b2412', c: '#6e4426' },
@@ -1448,7 +1532,7 @@ var DLAY = [
 function genDeep() {
     DEEP = [];
     DEEPP = [];
-    var top = deepTop(), lh = LH(), c = cav(), r = rng(S.seed + 91000), L, i, k, trunk = [], amix = .25 + rng(S.seed + 778)() * .65, segsD = [], byL = [[], [], [], []];
+    var top = deepTop(), lh = LH(), c = cavFull(), r = rng(S.seed + 91000), L, i, k, trunk = [], amix = .25 + rng(S.seed + 778)() * .65, segsD = [], byL = [[], [], [], []];
     function addSegs(pts) { for (var j = 1; j < pts.length; j++) segsD.push([pts[j - 1][0] * W, pts[j - 1][1] * WH, pts[j][0] * W, pts[j][1] * WH]); }
     function dseg(px, py, g) {
         var dx = g[2] - g[0], dy = g[3] - g[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - g[0]) * dx + (py - g[1]) * dy) / l2)), x = g[0] + dx * t, y = g[1] + dy * t;
@@ -1471,9 +1555,11 @@ function genDeep() {
         for (fi = 0; fi < 700 && made < 48; fi++) {
             var fq = rng(S.seed + 92000 + L * 7919 + fi * 331), srcI = byL[L][Math.floor(fq() * byL[L].length)], src = DEEP[srcI], sg = Math.floor(fq() * (src.pts.length - 1)), ft = .15 + .7 * fq(),
                 fx = (src.pts[sg][0] + (src.pts[sg + 1][0] - src.pts[sg][0]) * ft) * W, fy = (src.pts[sg][1] + (src.pts[sg + 1][1] - src.pts[sg][1]) * ft) * WH,
-                ang = fq() < amix, vert = fq() < .5, th = (fq() - .5) * 6.28, fm = 5 + Math.floor(fq() * 7), fpts = [[fx / W, fy / WH]], snapped = false, st, at, got, nx, ny;
+                ow = fx < W / 2 ? -1 : 1, ang = fq() < amix, vert = fq() < .42, th = (fq() - .5) * 6.28, fm = 5 + Math.floor(fq() * 7), fpts = [[fx / W, fy / WH]], snapped = false, st, at, got, nx, ny;
             if (fy < yA || fy > yB)
                 continue;
+            // wandering tunnels set off towards the nearer edge so the sides of the deep layers fill in too
+            th = Math.atan2(Math.sin(th), Math.abs(Math.cos(th)) * ow);
             for (st = 0; st < fm && !snapped; st++) {
                 got = false;
                 for (at = 0; at < 6 && !got; at++) {
@@ -1481,7 +1567,7 @@ function genDeep() {
                     if (ang) {
                         if (st > 0 && fq() < .75)
                             vert = !vert;
-                        var sg2 = fq() < .5 ? 1 : -1;
+                        var sg2 = vert ? (fq() < .5 ? 1 : -1) : (fq() < .68 ? ow : -ow);
                         ddx = vert ? (fq() - .5) * u * .5 : sg2 * u;
                         ddy = vert ? sg2 * u : (fq() - .5) * u * .4;
                     }
@@ -1535,7 +1621,93 @@ function genDeep() {
     });
 }
 
+// worked out once per change instead of ~20 times a frame
+var DLC = { k: null, v: null }, FLC = { k: null, v: null }, FDV = 0, FQ = [], DQ = [], DIGF = [];
+/* Ant-farm branches and deep-layer tunnels: hatching eggs unlocks the next one (as before, one per 24 hatches, deep one per 14),
+   but now the workers actually dig each one out (S.fdg / S.ddg: index -> 0..1). Older saves keep what was already open. */
+function farInit() {
+    if (S.fdg && S.ddg)
+        return;
+    var f = {}, d = {};
+    if (!S.fdg)
+        farmListOld().forEach(function (o) { f[o.i] = o.pr; });
+    if (!S.ddg)
+        deepListOld().forEach(function (o) { d[o.i] = o.pr; });
+    S.fdg = S.fdg || f;
+    S.ddg = S.ddg || d;
+    FDV++;
+}
+function deepList0() {
+    farInit();
+    var o = [], cnt = [0, 0, 0, 0], inc = [], rc = S.reach || 0, i, e, pr, at = S.deepAt || [], dd = S.ddg;
+    DQ = [];
+    if (!S.deep)
+        return o;
+    for (i = 0; i < DEEPP.length; i++) {
+        e = DEEPP[i];
+        if (e.L >= S.deep || e.lo < -rc + .015 || e.hi > 1 + rc - .015 || (e.pi >= 0 && !inc[e.pi]))
+            continue;
+        var ok = cnt[e.L]++ < (S.totalHatched - (at[e.L] || 0)) / 14;
+        pr = Math.min(1, dd[i] || 0);
+        if (pr >= 1)
+            inc[i] = 1;
+        else if (ok)
+            DQ.push({ i: i, q: e.q, deep: 1, L: e.L, t: e.t });
+        if (pr > 0)
+            o.push({ f: e, pr: pr, i: i });
+    }
+    return o;
+}
+function farmList0() {
+    farInit();
+    var o = [], i, pr, n = 0, inc = [], rc = S.reach || 0, fd = S.fdg;
+    FQ = [];
+    for (i = 0; i < FARMP.length; i++) {
+        // only inside the part of the map that is unlocked, and only once the tunnel it grows from is finished
+        if (!farmOpen(FARMP[i].par) || FARMP[i].lo < -rc + .015 || FARMP[i].hi > 1 + rc - .015 || (FARMP[i].pi >= 0 && !inc[FARMP[i].pi]))
+            continue;
+        var ok = n++ < S.totalHatched / 24;
+        pr = Math.min(1, fd[i] || 0);
+        if (pr >= 1)
+            inc[i] = 1;
+        else if (ok)
+            FQ.push({ i: i, q: FARMP[i].q });
+        if (pr > 0)
+            o.push({ f: FARMP[i], pr: pr, i: i });
+        else if (!ok)
+            break;
+    }
+    return o;
+}
+// the workers dig the next few unlocked tunnels; deep shafts first
+function farDigTick(dt) {
+    if (!MAIN || !FARMP)
+        return;
+    farmList();
+    deepList();
+    var w = S.workers || 0, q = DQ.concat(FQ);
+    DIGF = [];
+    if (!w || !q.length)
+        return;
+    var F = Math.min(q.length, 1 + Math.floor(w / 15), 4), rate = 2 * Math.pow(Math.min(w, 150), .8) * (1 + .25 * S.classLevel[6]) * (S.orders.wk === 0 ? 1.3 : S.orders.wk === 2 ? .7 : 1);
+    for (var j = 0; j < F; j++) {
+        var e = q[j], st = e.deep ? S.ddg : S.fdg, b = st[e.i] || 0;
+        st[e.i] = Math.min(1, b + rate / F * dt / Math.max(20, e.q.LEN));
+        DIGF.push(e);
+        if (st[e.i] >= 1 && e.deep && e.t && dt < 5)
+            toast('Your workers dug the shaft down into the ' + ['clay', 'stone layer', 'deep dark', 'bedrock'][e.L] + '.');
+    }
+    FDV++;
+}
 function deepList() {
+    var dk = FDV + '|' + S.totalHatched + '|' + S.deep + '|' + (S.reach || 0) + '|' + (S.deepAt || []).join(',') + '|' + DEEPP.length + '|' + layoutV;
+    if (DLC.k === dk && DLC.s === S)
+        return DLC.v;
+    DLC.k = dk;
+    DLC.s = S;
+    return (DLC.v = deepList0());
+}
+function deepListOld() {
     var o = [], cnt = [0, 0, 0, 0], inc = [], rc = S.reach || 0, i, e, pr, at = S.deepAt || [];
     if (!S.deep)
         return o;
@@ -1551,11 +1723,13 @@ function deepList() {
     return o;
 }
 
+function deepGenOk(lv) { return (P.gen || 0) >= lv + 1; }
+function deepGenTxt(lv) { return 'Unlocks in Generation ' + genName(lv + 2) + '. Take a royal flight to reach it.'; }
 function deepCost() { var lv = S.deep || 0; return { f: Math.round(foodCap() * (.5 + .3 * lv)), j: 25 + 20 * lv }; }
-var DEEPT = ['Clay below the cavern. The colony starts digging down, and the food stores grow.', 'Cold stone layer. More room for stores, and ants are exploring below.', 'The deep dark. Faint crystals glow far below.', 'Bedrock. You have dug to the very bottom of the world.'];
+var DEEPT = ['Clay below the cavern. The cool clay makes a perfect Larder: food stores grow by a quarter, and your ants keep working for 10 hours while you are away.', 'Cold stone layer. Your soldiers set up an Armoury down here: they drill between fights, take a quarter fewer injuries, and fight termite raids 20% harder. Watch out for cave crickets creeping up from below to raid the Larder.', 'The deep dark. Your scouts have found the Crystal Caves: every few mapping trips bring back enough crystal for a drop of jelly, and the glow makes golden eggs more likely.', 'Bedrock. At the very bottom of the world your diggers have broken into a huge cavern, and something enormous is sleeping in it: the Giant Mole.'];
 function upDeep() {
     var lv = S.deep || 0, c = deepCost();
-    if (lv >= 4 || S.tier < (lv < 2 ? 3 : 4) || S.food < c.f || S.jelly < c.j)
+    if (lv >= 4 || !deepGenOk(lv) || S.tier < (lv < 2 ? 3 : 4) || S.food < c.f || S.jelly < c.j)
         return;
     S.food -= c.f;
     S.jelly -= c.j;
@@ -1644,6 +1818,14 @@ function drawDeepBg(now) {
 function farmOpen(par) { return par < 0 ? S.dug >= 1 : (par < S.sideTunnels && S.sideDug[par] >= 1); }
 
 function farmList() {
+    var fk = FDV + '|' + S.totalHatched + '|' + S.sideTunnels + '|' + S.sideDug.join(',') + '|' + (S.reach || 0) + '|' + (S.dug >= 1 ? 1 : 0) + '|' + FARMP.length + '|' + layoutV;
+    if (FLC.k === fk && FLC.s === S)
+        return FLC.v;
+    FLC.k = fk;
+    FLC.s = S;
+    return (FLC.v = farmList0());
+}
+function farmListOld() {
     var o = [], i, pr, n = 0, inc = [], rc = S.reach || 0;
     for (i = 0; i < FARMP.length; i++) {
         // only inside the part of the map that is unlocked, and only if the tunnel it grows from is there too
@@ -1658,6 +1840,15 @@ function farmList() {
     return o;
 }
 
+// the part of the world on screen (with a margin); tunnel segments wholly outside it are skipped
+var VR = { x0: -1e9, x1: 1e9, y0: -1e9, y1: 1e9 };
+function setVR() { var m = 40; VR.x0 = camX - m; VR.x1 = camX + W / uz + m; VR.y0 = cam - m; VR.y1 = cam + H / uz + m; }
+function vto(px, py, x, y) {
+    if ((px < VR.x0 && x < VR.x0) || (px > VR.x1 && x > VR.x1) || (py < VR.y0 && y < VR.y0) || (py > VR.y1 && y > VR.y1))
+        cx.moveTo(x, y);
+    else
+        cx.lineTo(x, y);
+}
 function strokeTun(tw) {
     cx.lineCap = 'round';
     cx.lineJoin = 'round';
@@ -1697,7 +1888,9 @@ function strokeTun(tw) {
     cx.lineCap = 'round';
 }
 
-function drawFarmAnts(now, x0, x1, y0, y1) {
+// the little ants walking the ant-farm and deep-layer tunnels. Worked out from the clock alone, so the
+// tunnel view and the colony map always agree on where each one is.
+function farmAnts(now, fn) {
     farmList().concat(deepList()).forEach(function (o, n) {
         var q = o.f.q, len = q.LEN * o.pr, cnt, c, k;
         if (len < 24)
@@ -1705,11 +1898,30 @@ function drawFarmAnts(now, x0, x1, y0, y1) {
         cnt = Math.min(3, 1 + Math.floor(len / 100));
         for (c = 0; c < cnt; c++) {
             var sp = 15 + (n * 7 + c * 5) % 9, per = len / sp * 2, u = ((now / 1000 + n * 3.7 + c * per / cnt) % per) / per * 2, fwd = u < 1, a = at((fwd ? u : 2 - u) * o.pr, q);
-            if (a.x < x0 || a.x > x1 || a.y < y0 || a.y > y1)
-                continue;
             k = (n + c) % 3;
-            drawAnt(a.x, a.y, fwd ? a.ang : a.ang + Math.PI, SZ[k] * .9, !fwd && c % 2 === 0, now * .012 + n + c, KD[k]);
+            fn(a, fwd, k, n, c);
         }
+    });
+}
+
+// FAO keeps one small record per tunnel ant (keyed by tunnel and slot) so it can be tapped, named and followed
+var FAO = {}, FAOv = -1;
+function drawFarmAnts(now, x0, x1, y0, y1) {
+    if (FAOv !== layoutV) {
+        FAO = {};
+        FAOv = layoutV;
+    }
+    var dt0 = S.deep ? deepTop() : 1e9;
+    farmAnts(now, function (a, fwd, k, n, c) {
+        var key = n + '|' + c, o = FAO[key] || (FAO[key] = { fa: 1, key: key, k: k, u: ((n * 7919 + c * 104729) % 1000) / 1000 });
+        o.wx = a.x;
+        o.wy = a.y;
+        o.wa = fwd ? a.ang : a.ang + Math.PI;
+        o.deep = a.y >= dt0;
+        o.seen = now;
+        if (a.x < x0 || a.x > x1 || a.y < y0 || a.y > y1)
+            return;
+        drawAnt(a.x, a.y, fwd ? a.ang : a.ang + Math.PI, SZ[k] * .9, !fwd && c % 2 === 0, now * .012 + n + c, KD[k]);
     });
 }
 
@@ -1722,17 +1934,26 @@ function tpath() {
         cx.lineTo(PT[0][0], 23);
     }
     cx.moveTo(a.x, a.y);
+    var lx = a.x, ly = a.y;
     for (i = 1; i < PT.length; i++)
-        if (CUM[i] > lo * LEN)
-            cx.lineTo(PT[i][0], PT[i][1]);
+        if (CUM[i] > lo * LEN) {
+            vto(lx, ly, PT[i][0], PT[i][1]);
+            lx = PT[i][0];
+            ly = PT[i][1];
+        }
     for (k = 0; k < S.sideTunnels && k < BP.length; k++) {
         var q = BP[k], pr = S.sideDug[k] == null ? 1 : S.sideDug[k], d = pr * q.LEN;
         cx.moveTo(q.PT[0][0], q.PT[0][1]);
+        lx = q.PT[0][0];
+        ly = q.PT[0][1];
         for (i = 1; i < q.PT.length; i++)
-            if (q.CUM[i] < d)
-                cx.lineTo(q.PT[i][0], q.PT[i][1]);
+            if (q.CUM[i] < d) {
+                vto(lx, ly, q.PT[i][0], q.PT[i][1]);
+                lx = q.PT[i][0];
+                ly = q.PT[i][1];
+            }
         var e = at(pr, q);
-        cx.lineTo(e.x, e.y);
+        vto(lx, ly, e.x, e.y);
     }
 }
 
@@ -1794,7 +2015,55 @@ function pend(e) { delete ptrs[e.pointerId]; pd0 = 0; }
 
 
 
-function cav() { var top = QY - (36 + S.tier * 2) - 14, cy = WH + 34; return { x: W / 2, y: cy, rx: W / 2 - 5, ry: cy - top }; }
+// the nest cavern starts small and grows with the colony. cavFull() is the biggest it gets (deep layers hang off it).
+var CAVG = { s: null, v: 1 };
+function cavFull() { var top = QY - (36 + S.tier * 2) - 14, cy = WH + 34; return { x: W / 2, y: cy, rx: W / 2 - 5, ry: cy - top, top: top }; }
+function cavGoal() {
+    if (S.deep > 0)
+        return 1;
+    var f = Math.min(1, Math.log(Math.max(1, popn())) / Math.log(1500));
+    f = Math.max(f, Math.min(1, (S.cavLevel || 0) / 10));
+    return .4 + .6 * f;
+}
+function cavInit() {
+    CAVG.s = S;
+    S.cavG = Math.max(S.cavG || 0, cavGoal());
+    CAVG.v = S.cavG;
+}
+function cavTick(dt) {
+    if (CAVG.s !== S)
+        cavInit();
+    var g = cavGoal();
+    if (g > (S.cavG || 0))
+        S.cavG = g;
+    if (S.deep > 0)
+        S.cavG = 1;
+    if (S.deep > 0)
+        CAVG.v = 1;
+    else if (CAVG.v < S.cavG && S.workers < 1)
+        CAVG.v = Math.min(S.cavG, CAVG.v + dt * .003);
+    // workers start widening once the nest is noticeably behind the colony's size, and keep going until it has caught up
+    if (CAVG.dig && S.cavG - CAVG.v < .0005)
+        CAVG.dig = 0;
+    else if (!CAVG.dig && S.cavG - CAVG.v > .004 && S.workers > 0 && !(S.deep > 0))
+        CAVG.dig = 1;
+}
+// where the crew chews at the cavern wall: one of four spots round the sides and floor, moving on as the nest grows
+var CAVA = [.15, Math.PI - .15, .95, Math.PI - .95];
+function cavFace() {
+    var c = cav(), a = CAVA[Math.floor(CAVG.v * 12) % 4], m = cavM(a);
+    return { x: c.x + Math.cos(a) * c.rx * m * .97, y: c.y + Math.sin(a) * c.ry * m * .97, ang: a };
+}
+function cav() {
+    var f = cavFull();
+    if (CAVG.s !== S)
+        cavInit();
+    var g = CAVG.v;
+    if (g >= .999)
+        return f;
+    var ry = f.ry * g;
+    return { x: f.x, y: f.top + ry, rx: f.rx * (.55 + .45 * g), ry: ry, top: f.top };
+}
 
 // ---- digging: workers, crews and explorers ----
 
@@ -1860,6 +2129,11 @@ function crewSites(now) {
                     nbt = 4;
                 } }, { b: k, s: sEnd }));
             })(k);
+    if (CAVG.dig) {
+        var cf = cavFace(), cpx = cf.x - Math.cos(cf.ang) * 34, cpy = cf.y - Math.sin(cf.ang) * 34;
+        // each bit of wall chewed away widens the nest a little; a pair of diggers keeps roughly the old pace
+        s.push(mk2('cav', { x: cf.x, y: cf.y, ang: cf.ang }, [lnSeg(cf.x, cf.y, cpx, cpy)], function (len) { CAVG.v = Math.min(S.cavG, CAVG.v + len * .0011); }, { c: [cf.x, cf.y] }, 1));
+    }
     if (exc) {
         var jp = PT[CI[exc.i]], x0 = jp[0] + (exc.i % 2 ? -34 : 34), y0 = jp[1], ec = Math.min(1, exc.t / exc.dur);
         var st = mk2('chamber', { x: x0, y: y0, ang: 0 }, [lnSeg(x0, y0, jp[0], jp[1])], null, { m: CUM[CI[exc.i]] / LEN }, 1);
@@ -2388,6 +2662,9 @@ function hatch(p, e) {
     S.totalHatched++;
     pulse = .6;
     burst(p.x, p.y, c === 4 ? 45 : 8, [CC[c], '#fff6d8', '#ffd35a'], c === 4 ? 130 : 50);
+    // the two shell halves spring apart
+    for (var sh = -1; sh <= 1; sh += 2)
+        fx.push({ x: p.x, y: p.y + sh, vx: sh * (14 + Math.random() * 10), vy: -26 - Math.random() * 10, l: .75, shell: sh, rot: 0, spin: sh * (4 + Math.random() * 4), c: c === 4 ? '#ffd23f' : '#f4efe0', g: 150 });
     tn(800 + c * 120, .06, 'triangle', .06);
     if (c === 4) {
         gainJelly(10);
@@ -2418,7 +2695,7 @@ function kill() {
     SFX.hit();
     var vic = marchers.filter(function (m) { return m.k === k && !m.inj && m.wx != null; })[0];
     if (vic) {
-        fallen.push({ x: vic.wx, y: vic.wy, ang: vic.wa || 0, k: k, t: 5, s: Math.random() * 2 - 1 });
+        fallen.push({ x: vic.wx, y: vic.wy, ang: vic.wa || 0, k: k, t: 5, s: Math.random() * 2 - 1, vx: (Math.random() - .5) * 90, vy: -30 - Math.random() * 30, sp: (Math.random() - .5) * 16 });
         if (fallen.length > 14)
             fallen.shift();
         burst(vic.wx, vic.wy, 5, ['#8a6340', '#5a3d22'], 30);
@@ -2429,9 +2706,24 @@ function kill() {
 }
 
 // ants that fall in battle lie curled on their backs for a few seconds, then fade
-var fallen = [];
+var fallen = [], BITE = 0, dyingF = [], FOEST = null;
 
 function fallenTick(dt) { for (var i = fallen.length - 1; i >= 0; i--) {
+    var fa = fallen[i];
+    if (fa.vx) {
+        // knocked flying, tumbling, then it lies still
+        fa.x += fa.vx * dt;
+        fa.y += fa.vy * dt;
+        fa.vy += 160 * dt;
+        fa.ang += fa.sp * dt;
+        var dmp = Math.max(0, 1 - 5 * dt);
+        fa.vx *= dmp;
+        fa.sp *= dmp;
+        if (fa.t < 4.55) {
+            fa.vx = 0;
+            fa.vy = 0;
+        }
+    }
     fallen[i].t -= dt;
     if (fallen[i].t <= 0)
         fallen.splice(i, 1);
@@ -2689,6 +2981,21 @@ function moveArmy(dt, t) {
         else
             injPos.push({ x: m.px, y: m.py });
     } });
+    var ldTot = 0, ldCap = larderOn() ? Math.min(6, Math.floor(nN / 8)) : 0, drTot = 0, drCap = armouryOn() && !foes.length ? Math.min(6, Math.floor(S.soldiers / 10)) : 0;
+    var crTot = 0, crCap = cavesOn() ? Math.min(4, Math.max(1, Math.floor(S.scouts / 6))) : 0;
+    var moTot = 0, moCap = 36, trTot = 0, trOn = trm.length && !trm.res && !foes.length && termOpen(), trCap = trOn ? Math.min(30, 6 + Math.floor(S.soldiers / 8)) : 0;
+    trmDef = -1;
+    marchers.forEach(function (m) { if (m.ld) ldTot++; if (m.dr) drTot++; if (m.cr) crTot++; if (m.mo) moTot++; if (m.tr) {
+        trTot++;
+        if (m.tr.ph === 'tun' && m.tr.s > trmDef)
+            trmDef = m.tr.s;
+    } });
+    if (trm.length)
+        drCap = 0;
+    var crLive = cricLive();
+    cricDef.length = 0;
+    if (crLive && !foes.length && !trm.length)
+        drCap = Math.max(drCap, Math.min(8, 2 + Math.floor(S.soldiers / 20)));
     var keepCap = keepRooms.length ? Math.min(keepRooms.length * 2, Math.floor(nN / 4)) : 0, keepRecall = injPos.length > 0 && nN - keepTot < tend + 1;
     marchers.forEach(function (m) {
         var k = m.k;
@@ -2721,7 +3028,7 @@ function moveArmy(dt, t) {
             var tx, ty, ci = -1;
             if (m.kp)
                 ci = keepRecall || !keepOpen[m.kp.i] ? -1 : m.kp.i;
-            else if (!keepRecall && !(m.kcool > t) && keepTot < keepCap && nid >= tend) {
+            else if (!m.ld && !keepRecall && !(m.kcool > t) && keepTot < keepCap && nid >= tend) {
                 var best = -1;
                 keepRooms.forEach(function (r) { if (best < 0 || keepCnt[r] < keepCnt[best])
                     best = r; });
@@ -2738,6 +3045,20 @@ function moveArmy(dt, t) {
                     nid++;
                     return;
                 }
+            }
+            if (!m.ld && !m.kp && !keepRecall && ldTot < ldCap && nid >= tend && !(m.lcool > t) && larderPos()) {
+                m.ld = { ph: 'go', s: 0, wt: 0 };
+                ldTot++;
+            }
+            if (m.ld && (keepRecall || foes.length)) {
+                if (m.ld.ph === 'down' || m.ld.ph === 'stay')
+                    m.ld.ph = 'up';
+                else if (m.ld.ph === 'go')
+                    m.ld.ph = 'home';
+            }
+            if (m.ld && larderStep(m, dt, t)) {
+                nid++;
+                return;
             }
             if (nid < tend && injPos.length) {
                 var tg = injPos[nid % injPos.length];
@@ -2857,6 +3178,10 @@ function moveArmy(dt, t) {
             nid++;
             return;
         }
+        if (k === 3 && m.cr) {
+            if (crystalStep(m, dt, t))
+                return;
+        }
         if (k === 3 && S.sideTunnels > 0 && S.dug >= .3) {
             if (m.q == null || m.q >= S.sideTunnels) {
                 m.q = Math.floor(Math.random() * S.sideTunnels);
@@ -2868,7 +3193,7 @@ function moveArmy(dt, t) {
             }
             if (m.xf) {
                 var dm = m.mt - m.mp;
-                m.mp += Math.sign(dm) * Math.min(Math.abs(dm), dt * .045 * (m.v || 1));
+                m.mp += Math.sign(dm) * Math.min(Math.abs(dm), dt * 30 * (m.v || 1) / Math.max(1, LEN));
                 m.p = m.mp;
                 m.ph += dt * 8 * m.v;
                 if (Math.abs(m.mt - m.mp) < 1e-4)
@@ -2882,7 +3207,7 @@ function moveArmy(dt, t) {
             if (Math.random() < dt * .12)
                 m.pz = 1.5;
             var pr = S.sideDug[m.q] == null ? 1 : S.sideDug[m.q];
-            m.s += m.sd * dt * .04;
+            m.s += m.sd * dt * 24 * (m.v || 1) / Math.max(1, BP[m.q] ? BP[m.q].LEN * pr : 600);
             if (m.s > 1) {
                 m.s = 1;
                 m.sd = -1;
@@ -2890,6 +3215,15 @@ function moveArmy(dt, t) {
                     m.cool = performance.now() + 45000;
                     discover(m.q);
                 }
+            }
+            else if (m.s < 0 && crTot < crCap && !(m.ccool > t) && m.hero == null && trait(m, 11) > .4 && cavesPos()) {
+                m.cr = { ph: 'main', i: 0, s: 0, wt: 0 };
+                crTot++;
+                m.p = juncP(m.q);
+                m.d = 1;
+                m.q = null;
+                m.xf = 0;
+                return;
             }
             else if (m.s < 0) {
                 var nq = Math.floor(Math.random() * S.sideTunnels);
@@ -2904,27 +3238,61 @@ function moveArmy(dt, t) {
             }
             return;
         }
+        if ((k === 2 || k === 4) && (m.mo || (MF && !MF.end && moTot < moCap && m.hero == null && trait(m, 12) < .55))) {
+            if (!m.mo) {
+                if (m.dr) {
+                    m.dr = null;
+                    m.dcool = t + 30;
+                }
+                m.mo = { ph: 'main', i: 0, s: 0, slot: moTot };
+                moTot++;
+            }
+            if (moleStep(m, dt, t) || m.mo)
+                return;
+        }
+        if ((k === 2 || k === 4) && !m.mo && (m.tr || (trTot < trCap && !m.dr && m.hero == null && !m.tired && !m.ex))) {
+            if (!m.tr) {
+                m.tr = { ph: 'main', s: 0, slot: trTot };
+                trTot++;
+            }
+            if (trmStep(m, dt, t))
+                return;
+        }
+        if (k === 2) {
+            if (!m.dr && drTot < drCap && m.hero == null && (crLive ? !m.tired && !m.tr : !(m.dcool > t) && trait(m, 9) > .5) && armouryPos()) {
+                m.dr = { ph: 'main', s: 0, wt: 0 };
+                drTot++;
+            }
+            if (m.dr) {
+                if (drillStep(m, dt, t) || m.dr)
+                    return;
+            }
+        }
         if (k === 2 || k === 4) {
             if (foes.length) {
                 var fo = foes[m.fi % foes.length];
                 var dpf = fo.p - m.p;
-                m.p += Math.sign(dpf) * Math.min(Math.abs(dpf), dt * .1 * (alarmT > 0 ? 2.4 : 1));
+                m.p += Math.sign(dpf) * Math.min(Math.abs(dpf), dt * (k === 4 ? 60 : 95) * (m.v || 1) * (alarmT > 0 ? 1.6 : 1) / Math.max(1, LEN));
                 m.d = dpf > 0 ? 1 : -1;
             }
             else {
                 var G = 3 + Math.min(S.sideTunnels, 6), isG = m.u < S.orders.gd / 100 || G === 3, sl = isG ? m.fi % 3 : 3 + m.fi % (G - 3), post = (sl < 3 || !(S.sideDug[sl - 3] >= 1)) ? lo + .025 + m.u * (.06 + .0025 * Math.min(S.soldiers, 60)) : juncP(sl - 3) + (m.u * .03 - .015);
+                // a wave is due in a few seconds: everyone musters near the tunnel mouth
+                var due = nf - performance.now(), mu = S.dug >= 1 && due < 25000 && due > -5000 && !(MF && !MF.end) && !m.tired && tunOK();
+                if (mu)
+                    post = lo + .03 + m.u * .1;
                 if (!tunOK() || m.tired)
-                    post = 1 - .006 - (m.fi % 14) * .004;
+                    post = Math.max(1 - .006 - (m.fi % 14) * .004, 1 - S.dug * .9);
                 else if (k === 4)
-                    post += Math.sin(t * .25 + m.ph) * .03;
+                    post += Math.sin(t * .05 + m.ph) * Math.min(.03, 40 / Math.max(1, LEN));
                 m.sp = (m.sp || 0) - dt;
                 if (m.sp <= 0) {
                     m.sp = (3 + Math.random() * 5) * (.7 + trait(m, 6));
-                    m.mode = Math.random() < .15 + trait(m, 5) * .45 ? 1 : 0;
+                    m.mode = k !== 4 && Math.random() < .15 + trait(m, 5) * .45 ? 1 : 0;
                 }
                 var d2 = post - m.p;
                 if (Math.abs(d2) > .004) {
-                    m.p += Math.sign(d2) * dt * .05;
+                    m.p += Math.sign(d2) * Math.min(Math.abs(d2), dt * (mu ? (k === 4 ? 50 : 80) : k === 4 ? 12 : 26) * (m.v || 1) / Math.max(1, LEN));
                     m.d = d2 > 0 ? 1 : -1;
                 }
                 else if (m.mode === 1) {
@@ -2944,7 +3312,7 @@ function moveArmy(dt, t) {
 
 function foeSz(f) { return (8 + S.tier * 1.5) * (f.boss ? 1.9 : 1); }
 
-function dps() { return (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax); }
+function dps() { return heroB(2) * (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax) * (1 + .1 * (S.hall || 0)); }
 
 function majorDps() { return (rallyT > 0 ? 1.5 : 1) * healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax); }
 
@@ -2972,6 +3340,12 @@ function wave() {
     wvi = { n: cnt, boss: boss, w: 1 };
     SFX.alarm();
     alarmT = 5;
+    var en = at(0);
+    burst(en.x, en.y, boss ? 26 : 14, ['#a07a50', '#7a5636', '#c9a46a'], boss ? 90 : 60);
+    fx.push({ x: en.x, y: en.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
+    fx.push({ x: en.x, y: en.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: boss ? 22 : 17, c: '#ff5a3a', g: 0, pop: 1 });
+    if (boss)
+        shake = Math.max(shake, .4);
     toast(boss ? 'Boss wave! A giant ' + FN[tp] + ' leads the attack. Preparation ' + prep + ' of 3: it is ' + prep * 12 + '% weaker.' : tp === 0 ? 'Armoured beetles! Soldiers struggle; Super Majors and Barracks cut through the armour.' : 'Wave ' + S.wave + ': ' + cnt + ' ' + FN[tp] + (cnt > 1 ? 's' : '') + ' in the tunnel!');
 }
 
@@ -3416,6 +3790,7 @@ function chamberIn(x, y, rx, ry, ic) {
 function drawWorld(now) {
     var zs = dpr * K * uz;
     cx.setTransform(zs, 0, 0, zs, -camX * zs, 0);
+    setVR();
     cx.save();
     cx.translate(0, -cam);
     var g = cx.createLinearGradient(0, 0, 0, WH);
@@ -3485,7 +3860,7 @@ function drawWorld(now) {
     deepList().forEach(function (o) {
         if (o.pr >= 1 && o.f.ch) {
             var de = o.f.q.PT[o.f.q.PT.length - 1];
-            rooms.push({ x: de[0], y: de[1], rx: o.f.ch === 2 ? 17 : 7 + (de[0] * 7 % 4), ry: o.f.ch === 2 ? 10 : 5 + (de[1] * 3 % 3), ic: null });
+            rooms.push({ x: de[0], y: de[1], rx: o.f.ch === 2 ? 17 : 7 + (de[0] * 7 % 4), ry: o.f.ch === 2 ? 10 : 5 + (de[1] * 3 % 3), ic: o.f.ch === 2 && o.f.L === 0 ? '@seed' : null });
         }
     });
     farmList().forEach(function (o) {
@@ -3496,18 +3871,22 @@ function drawWorld(now) {
     });
     var rx = 62 + S.tier * 5, ry = 36 + S.tier * 2;
     cavernRim();
+    rooms = rooms.filter(function (r) { return r.x + r.rx + 12 > VR.x0 && r.x - r.rx - 12 < VR.x1 && r.y + r.ry + 12 > VR.y0 && r.y - r.ry - 12 < VR.y1; });
     rooms.forEach(function (r) { chamberRim(r.x, r.y, r.rx, r.ry); });
     var farmL = farmList();
     if (farmL.length) {
         cx.beginPath();
         farmL.forEach(function (o) {
-            var q = o.f.q, d = o.pr * q.LEN, e2, u;
-            cx.moveTo(q.PT[0][0], q.PT[0][1]);
+            var q = o.f.q, d = o.pr * q.LEN, e2, u, lx2 = q.PT[0][0], ly2 = q.PT[0][1];
+            cx.moveTo(lx2, ly2);
             for (u = 1; u < q.PT.length; u++)
-                if (q.CUM[u] < d)
-                    cx.lineTo(q.PT[u][0], q.PT[u][1]);
+                if (q.CUM[u] < d) {
+                    vto(lx2, ly2, q.PT[u][0], q.PT[u][1]);
+                    lx2 = q.PT[u][0];
+                    ly2 = q.PT[u][1];
+                }
             e2 = at(o.pr, q);
-            cx.lineTo(e2.x, e2.y);
+            vto(lx2, ly2, e2.x, e2.y);
         });
         strokeTun(tw * .42);
     }
@@ -3520,13 +3899,16 @@ function drawWorld(now) {
                 if (!!o.f.t !== !!trk)
                     return;
                 any = true;
-                var q = o.f.q, d = o.pr * q.LEN, e2, u;
-                cx.moveTo(q.PT[0][0], q.PT[0][1]);
+                var q = o.f.q, d = o.pr * q.LEN, e2, u, lx3 = q.PT[0][0], ly3 = q.PT[0][1];
+                cx.moveTo(lx3, ly3);
                 for (u = 1; u < q.PT.length; u++)
-                    if (q.CUM[u] < d)
-                        cx.lineTo(q.PT[u][0], q.PT[u][1]);
+                    if (q.CUM[u] < d) {
+                        vto(lx3, ly3, q.PT[u][0], q.PT[u][1]);
+                        lx3 = q.PT[u][0];
+                        ly3 = q.PT[u][1];
+                    }
                 e2 = at(o.pr, q);
-                cx.lineTo(e2.x, e2.y);
+                vto(lx3, ly3, e2.x, e2.y);
             });
             if (any)
                 strokeTun(tw * (trk ? .8 : .42));
@@ -3557,25 +3939,101 @@ function drawWorld(now) {
     }
     drawCushion(now);
     var qp = qPos(); drawAnt(qp.x, qp.y, Q.tilt, 17 + pulse * 3, false, Q.ph, 3);
+    cx.globalAlpha = 1;
+    cx.restore();
+}
+
+// invaders, dying invaders and effects go on top of the ants, so ants passing behind a big beetle are hidden by it
+function drawFoesFx(now) {
+    cx.save();
+    cx.translate(0, -cam);
     foes.forEach(function (f) {
         var a = at(f.p), sz = foeSz(f), fl = f.tp === 2 ? Math.sin(now * .006 + f.o) * 1.5 : 0, lim = tunW() * .3;
         f.o = Math.max(-lim, Math.min(lim, f.o));
-        drawFoe(a.x + a.nx * (f.o + fl), a.y + a.ny * (f.o + fl), a.ang, sz, f.tp, now * .02);
-        var bw = f.boss ? 56 : 34, hx = a.x + a.nx * f.o - bw / 2, hy = a.y + a.ny * f.o - sz * 2.3;
+        // knocked back by hits, lunges forward when it bites
+        var ak = f.atk > 0 ? Math.sin((1 - f.atk / .32) * Math.PI) : 0, push = ak * sz * .7 - (f.kb || 0), fx0 = a.x + a.nx * (f.o + fl) + Math.cos(a.ang) * push, fy0 = a.y + a.ny * (f.o + fl) + Math.sin(a.ang) * push;
+        FOEST = { hf: f.hf || 0, atk: ak };
+        drawFoe(fx0, fy0, a.ang + (f.kb || 0) * .03 * (f.o > 0 ? 1 : -1), sz, f.tp, now * .012 + f.o);
+        FOEST = null;
+        var bw = f.boss ? 50 : 28, hx = a.x + a.nx * f.o - bw / 2, hy = a.y + a.ny * f.o - sz * 2.2, pr = Math.max(0, f.hp / f.max), pd = Math.max(pr, (f.hd == null ? f.hp : f.hd) / f.max);
         cx.fillStyle = 'rgba(0,0,0,.6)';
-        cx.fillRect(hx - 1, hy - 1, bw + 2, 7);
-        cx.fillStyle = f.boss ? '#c43fe0' : '#e0553f';
-        cx.fillRect(hx, hy, bw * Math.max(0, f.hp / f.max), 5);
+        rrect(hx - 1.2, hy - 1.2, bw + 2.4, 6.4, 3.2);
+        cx.fill();
+        cx.fillStyle = 'rgba(255,240,220,.85)';
+        rrect(hx, hy, bw * pd, 4, 2);
+        cx.fill();
+        cx.fillStyle = f.boss ? '#c43fe0' : pr < .3 ? '#ff7a3a' : '#e0553f';
+        rrect(hx, hy, bw * pr, 4, 2);
+        cx.fill();
+    });
+    dyingF.forEach(function (d) {
+        var a = at(Math.min(1, d.p)), t = d.t, fl = Math.min(1, t / .28);
+        cx.save();
+        cx.globalAlpha = t > .7 ? Math.max(0, 1 - (t - .7) / .4) : 1;
+        cx.translate(a.x + a.nx * d.o, a.y + a.ny * d.o - Math.sin(fl * Math.PI) * d.sz * .8);
+        cx.rotate(a.ang + fl * .5);
+        cx.scale(1 - t * .12, Math.cos(fl * Math.PI));
+        FOEST = { hf: Math.max(0, .35 - t) * 2, atk: 0, dead: 1 };
+        drawFoe(0, 0, 0, d.sz, d.tp, t < .8 ? now * .05 * (1 - t) : 0);
+        FOEST = null;
+        cx.restore();
     });
     fx.forEach(function (p) {
         cx.globalAlpha = Math.max(0, Math.min(1, p.l * 2));
         if (p.t && p.t[0] === '@')
             glyph(p.t, p.x, p.y, p.f || 14);
+        else if (p.t && p.pop) {
+            // pops in big, settles, floats off
+            if (p.l0 == null)
+                p.l0 = p.l;
+            var age = p.l0 - p.l, sc2 = age < .1 ? 1.5 - age * 5 : 1, fs = (p.f || 12) * sc2;
+            cx.font = '800 ' + fs.toFixed(1) + 'px system-ui';
+            cx.textAlign = 'center';
+            cx.lineJoin = 'round';
+            cx.lineWidth = Math.max(1.5, fs * .22);
+            cx.strokeStyle = 'rgba(40,14,4,.85)';
+            cx.strokeText(p.t, p.x, p.y);
+            cx.fillStyle = p.c || '#fff';
+            cx.fillText(p.t, p.x, p.y);
+        }
         else if (p.t) {
             cx.font = (p.c ? '700 ' : '') + (p.f || 22) + 'px ' + (p.c ? 'system-ui' : 'serif');
             cx.textAlign = 'center';
             cx.fillStyle = p.c || '#fff';
             cx.fillText(p.t, p.x, p.y);
+        }
+        else if (p.shell) {
+            p.rot += p.spin * .016;
+            cx.save();
+            cx.translate(p.x, p.y);
+            cx.rotate(p.rot);
+            cx.fillStyle = p.c;
+            cx.beginPath();
+            cx.ellipse(0, 0, 2.8, 3.6, 0, p.shell < 0 ? Math.PI : 0, p.shell < 0 ? 2 * Math.PI : Math.PI);
+            cx.closePath();
+            cx.fill();
+            cx.restore();
+        }
+        else if (p.star) {
+            var r1 = p.star * (.6 + p.l * 2), r2 = r1 * .28;
+            cx.fillStyle = p.c;
+            cx.beginPath();
+            for (var si = 0; si < 8; si++) {
+                var ra = si % 2 ? r2 : r1, an2 = si * Math.PI / 4 + .4;
+                cx.lineTo(p.x + Math.cos(an2) * ra, p.y + Math.sin(an2) * ra);
+            }
+            cx.closePath();
+            cx.fill();
+        }
+        else if (p.slash) {
+            cx.strokeStyle = p.c;
+            cx.lineWidth = 1.6 * p.l / .3 + .4;
+            cx.lineCap = 'round';
+            for (var sl = -1; sl <= 1; sl += 2) {
+                cx.beginPath();
+                cx.arc(p.x - Math.cos(p.ang) * p.slash * .5, p.y - Math.sin(p.ang) * p.slash * .5, p.slash * (.7 + (.3 - p.l) * 1.5), p.ang + sl * .2 - .55, p.ang + sl * .2 + .55);
+                cx.stroke();
+            }
         }
         else {
             cx.fillStyle = p.c;
@@ -3629,6 +4087,1061 @@ function drawTrails(now) {
         }
     }
     cx.restore();
+}
+
+// the main shaft of deep layer L (0 clay .. 3 bedrock), once it is fully dug
+function trunkQ(L) {
+    var o = null;
+    deepList().forEach(function (e) { if (!o && e.f.L === L && e.f.t && e.pr >= 1) o = e; });
+    return o ? o.f.q : null;
+}
+// the Armoury: the chamber at the end of the stone layer's shaft
+function armouryOn() { return (S.deep || 0) >= 2; }
+function armouryPos() {
+    var q0 = trunkQ(0), q1 = trunkQ(1);
+    if (!q0 || !q1)
+        return null;
+    var pe = q1.PT[q1.PT.length - 1];
+    return { q0: q0, q1: q1, x: pe[0], y: pe[1] };
+}
+function drawArmoury(now) {
+    var ap = armouryPos(), i, sc, x;
+    if (!ap)
+        return;
+    cx.save();
+    cx.translate(0, -cam);
+    // thorn spears leaning in a rack, and a pebble shield
+    cx.strokeStyle = '#7a5a34';
+    cx.lineWidth = 1.2;
+    for (i = 0; i < 4; i++) {
+        x = ap.x - 12 + i * 3.2;
+        cx.beginPath();
+        cx.moveTo(x, ap.y + 7);
+        cx.lineTo(x + 2, ap.y - 6);
+        cx.stroke();
+        cx.fillStyle = '#d9d2c2';
+        cx.beginPath();
+        cx.moveTo(x + 2, ap.y - 6);
+        cx.lineTo(x + 3.4, ap.y - 10);
+        cx.lineTo(x + .8, ap.y - 6.6);
+        cx.fill();
+    }
+    cx.fillStyle = '#8a8a92';
+    cx.beginPath();
+    cx.arc(ap.x + 9, ap.y + 3, 4.2, 0, 7);
+    cx.fill();
+    cx.strokeStyle = '#cfcfd6';
+    cx.lineWidth = .8;
+    cx.stroke();
+    sc = .7 / (K * uz);
+    cx.font = '700 ' + (8 * sc) + 'px system-ui';
+    cx.textAlign = 'center';
+    cx.lineWidth = 2 * sc;
+    cx.strokeStyle = 'rgba(0,0,0,.65)';
+    cx.fillStyle = 'rgba(255,245,220,.92)';
+    cx.strokeText('The Armoury', ap.x, ap.y - 15 * sc);
+    cx.fillText('The Armoury', ap.x, ap.y - 15 * sc);
+    cx.restore();
+}
+
+// termite raid: soldiers and super majors march to the far east tunnel and hold the line there
+function termOpen() { return !!BP[17] && S.sideTunnels > 17 && S.sideDug[17] >= 1 && !!S.rare.nbf; }
+function trmFront() {
+    var f = 2;
+    trm.forEach(function (t) { if (t.w <= 0 && t.p < f) f = t.p; });
+    return f;
+}
+function trmStep(m, dt, t) {
+    var o = m.tr, B = BP[17], J = juncP(17), V = (m.k === 4 ? 34 : 46) * (m.v || 1) * dt, d, tg, f;
+    if (!B || foes.length || !termOpen()) {
+        m.tr = null;
+        return false;
+    }
+    if (o.ph !== 'back' && (!trm.length || (trm.res && !(trm.chT > 0))))
+        o.ph = o.ph === 'main' ? 'drop' : 'back';
+    if (o.ph === 'drop') {
+        m.tr = null;
+        return false;
+    }
+    if (o.ph === 'main') {
+        d = J - m.p;
+        m.p += Math.sign(d) * Math.min(Math.abs(d), V / Math.max(1, LEN));
+        m.d = d > 0 ? 1 : -1;
+        m.act = 'Marching out to meet the termites';
+        if (Math.abs(d) < 1e-4) {
+            o.ph = 'tun';
+            o.s = 0;
+        }
+        return true;
+    }
+    var rk = Math.floor(o.slot / 3), gap = (6 + rk * 5) / Math.max(1, B.LEN);
+    if (o.ph === 'tun') {
+        f = trmFront();
+        if (trm.ms != null && !trm.res)
+            tg = trm.ms - rk * 5 / B.LEN;
+        else if (trm.res)
+            tg = Math.min(.92, f - 14 / B.LEN) - gap;
+        else
+            tg = Math.max(o.s, Math.min(.92, f - 14 / B.LEN) - gap);
+        tg = Math.max(0, Math.min(.95, tg));
+        d = tg - o.s;
+        o.s += Math.sign(d) * Math.min(Math.abs(d), V * (trm.res ? 1.25 : 1) / B.LEN);
+        o.dir = Math.abs(d) > 2 / B.LEN ? (d > 0 ? 1 : -1) : 1;
+        m.act = trm.fT > 0 ? 'Fighting termites in the far east tunnel' : trm.res ? 'Chasing the termites off' : 'Marching out to meet the termites';
+        if (trm.fT > 0 && rk < 2 && Math.random() < dt * .8) {
+            var a = at(Math.min(1, o.s + 5 / B.LEN), B);
+            fx.push({ x: a.x, y: a.y - 2, vx: (Math.random() - .5) * 30, vy: -20, l: .35, t: '\u2022', f: 7, c: '#fff2b0', g: 40 });
+        }
+        return true;
+    }
+    // back down the tunnel to the main tunnel, then the usual guard post walk takes over
+    o.s = Math.max(0, o.s - V / B.LEN);
+    o.dir = -1;
+    m.act = 'Heading back to guard duty';
+    if (o.s <= 0) {
+        m.tr = null;
+        m.p = J;
+        m.d = -1;
+    }
+    return true;
+}
+
+// leftovers from the old colony (raids, crickets, dig crews) walk tunnels the new colony hasn't dug, so they go
+function clearOldRun() {
+    trm.length = 0;
+    trm.res = 0;
+    trm.ms = null;
+    trm.fT = 0;
+    trm.chT = 0;
+    trmT = 120;
+    cric.length = 0;
+    cric.done = 0;
+    cricT = 300;
+    crewA.length = 0;
+}
+// ---- cave crickets: now and then a band creeps up the stone shaft from the Armoury towards the Larder to eat seeds ----
+var cric = [], cricT = 300, cricDef = [], cricStole = 0;
+function cricLive() {
+    for (var i = 0; i < cric.length; i++)
+        if (!cric[i].back && cric[i].hp > 0)
+            return true;
+    return false;
+}
+function cricSpawn() {
+    var n = 3 + Math.floor(Math.random() * 3) + ((S.deep || 0) >= 3 ? 1 : 0);
+    cric.length = 0;
+    cricStole = 0;
+    for (var i = 0; i < n; i++)
+        cric.push({ s: 1, w: i * 1.6, hp: 10, mhp: 10, back: 0, i: i, ph: Math.random() * 6, ate: 0 });
+    toast('Cave crickets are creeping up from the stone layer towards the Larder! Soldiers are on their way.');
+    SFX.hit();
+}
+function cricTick(dt) {
+    var ap = armouryPos(), cap, i, c, L, live = 0, dead = 0;
+    if (!ap || !armouryOn()) {
+        cric.length = 0;
+        return;
+    }
+    if (!cric.length) {
+        if (foes.length || trm.length || (MF && !MF.end) || (S.soldiers || 0) < 4)
+            return;
+        cricT -= dt;
+        if (cricT <= 0) {
+            cricT = 420 + Math.random() * 300;
+            cricSpawn();
+        }
+        return;
+    }
+    L = Math.max(1, ap.q1.LEN);
+    cap = foodCap();
+    for (i = cric.length - 1; i >= 0; i--) {
+        c = cric[i];
+        if (c.w > 0) {
+            c.w -= dt;
+            continue;
+        }
+        if (c.hp <= 0) {
+            c.dt = (c.dt || 0) + dt;
+            if (c.dt > 1.2)
+                cric.splice(i, 1);
+            dead++;
+            continue;
+        }
+        if (c.back) {
+            c.s += 30 * dt / L;
+            if (c.s >= 1)
+                cric.splice(i, 1);
+            continue;
+        }
+        live++;
+        // a soldier standing just above blocks the way up
+        var blk = false;
+        for (var j = 0; j < cricDef.length; j++) {
+            var g = (c.s - cricDef[j]) * L;
+            if (g > 0 && g < 10) {
+                blk = true;
+                break;
+            }
+        }
+        for (j = 0; !blk && j < cric.length; j++) {
+            var o2 = cric[j], g2 = (c.s - o2.s) * L;
+            if (o2 !== c && o2.w <= 0 && o2.hp > 0 && !o2.back && g2 > 0 && g2 < 9)
+                blk = true;
+        }
+        c.hold = blk;
+        if (!blk)
+            c.s -= 12 * dt / L;
+        if (c.s <= .02) {
+            c.s = .02;
+            c.back = 1;
+            var take = Math.min(S.food, Math.ceil(cap * .025));
+            S.food -= take;
+            cricStole += take;
+            if (!c.ate) {
+                c.ate = 1;
+                var lp = larderPos();
+                if (lp)
+                    burst(lp.x, lp.y, 8, ['#e8d39a', '#b98d4a'], 40);
+            }
+        }
+    }
+    if (!cricLive() && cric.length && !cric.done) {
+        cric.done = 1;
+        if (cricStole > 0)
+            toast('The cave crickets ate ' + fmt(cricStole) + ' food from the Larder. More soldiers would stop them.');
+        else {
+            var loot = Math.ceil(cap * .03);
+            S.food = Math.min(cap, S.food + loot);
+            S.cricWins = (S.cricWins || 0) + 1;
+            toast('Your soldiers squashed the cave crickets! +' + fmt(loot) + ' food.');
+            if (Math.random() < .2)
+                gainJelly(1);
+            SFX.win();
+        }
+    }
+    if (!cric.length)
+        cric.done = 0;
+}
+// soldiers on the stone shaft go for the nearest cricket and hold the way to the Larder
+function cricFight(m, d, ap, V, t) {
+    var q = ap.q1, L = Math.max(1, q.LEN), best = null, bd = 9, i, c, a, side, tg, dd, sl = ((m.u * 7.3) % 1) * 2 - 1;
+    if (!cricLive()) {
+        d.ph = 'up1';
+        a = at(Math.max(0, Math.min(1, d.s)), q);
+        m.px = a.x;
+        m.py = a.y;
+        return true;
+    }
+    for (i = 0; i < cric.length; i++) {
+        c = cric[i];
+        if (c.w > 0 || c.back || c.hp <= 0)
+            continue;
+        dd = Math.abs(c.s - d.s);
+        if (dd < bd) {
+            bd = dd;
+            best = c;
+        }
+    }
+    m.act = 'Fighting cave crickets on the stone shaft';
+    if (best) {
+        side = d.s < best.s ? -1 : 1;
+        tg = best.s + side * (7 + (m.k === 4 ? 2 : 0)) / L;
+        dd = tg - d.s;
+        d.s += Math.sign(dd) * Math.min(Math.abs(dd), V * 1.3 / L);
+        if (Math.abs(dd) * L < 3) {
+            best.hp -= (m.k === 4 ? 3 : 1) * (1 + .1 * S.classLevel[2]) * V / (54 * (m.v || 1));
+            if (best.hp <= 0) {
+                a = at(best.s, q);
+                burst(a.x, a.y, 10, ['#c9a66b', '#7a5a34', '#fff'], 50);
+            }
+            else if (Math.random() < .05) {
+                a = at(best.s, q);
+                fx.push({ x: a.x, y: a.y - 2, vx: (Math.random() - .5) * 26, vy: -18, l: .3, t: '\u2022', f: 7, c: '#fff2b0', g: 40 });
+            }
+        }
+        if (d.s < best.s)
+            cricDef.push(d.s);
+        a = at(Math.max(0, Math.min(1, d.s + (Math.abs(dd) * L < 3 ? -side * Math.max(0, Math.sin(t * 9 + m.ph * 5)) * 2 / L : 0))), q);
+        m.ang = side < 0 ? a.ang : a.ang + Math.PI;
+    }
+    else {
+        a = at(Math.max(0, Math.min(1, d.s)), q);
+        m.ang = a.ang + Math.PI;
+    }
+    m.px = a.x + a.nx * sl * 2.5;
+    m.py = a.y + a.ny * sl * 2.5;
+    return true;
+}
+function drawCrickets(now) {
+    var ap = armouryPos();
+    if (!ap || !cric.length)
+        return;
+    var q = ap.q1, i, c, a, hop, sc, l;
+    cx.save();
+    cx.translate(0, -cam);
+    for (i = 0; i < cric.length; i++) {
+        c = cric[i];
+        if (c.w > 0)
+            continue;
+        a = at(Math.max(0, Math.min(1, c.s)), q);
+        hop = c.hp > 0 && !c.hold ? Math.abs(Math.sin(now * .006 + c.ph)) * 1.6 : 0;
+        cx.save();
+        cx.translate(a.x, a.y - hop);
+        cx.rotate(a.ang + (c.back ? 0 : Math.PI));
+        cx.scale(1.35, 1.35);
+        cx.globalAlpha = c.hp > 0 ? 1 : Math.max(0, 1 - (c.dt || 0) / 1.2);
+        if (c.hp <= 0)
+            cx.rotate(Math.PI * .5);
+        // long jumping legs
+        cx.strokeStyle = '#2a1c10';
+        cx.lineWidth = .8;
+        for (l = -1; l <= 1; l += 2) {
+            cx.beginPath();
+            cx.moveTo(-1, l * 1.2);
+            cx.lineTo(-3.5, l * 3.6);
+            cx.lineTo(-6.5, l * 1.8);
+            cx.stroke();
+            cx.beginPath();
+            cx.moveTo(1.5, l * 1);
+            cx.lineTo(2.8, l * 2.8);
+            cx.stroke();
+        }
+        // humped, banded body
+        cx.fillStyle = '#5a4026';
+        cx.beginPath();
+        cx.ellipse(-.6, 0, 4.4, 2.3, 0, 0, 7);
+        cx.fill();
+        cx.strokeStyle = 'rgba(20,12,6,.8)';
+        cx.lineWidth = .5;
+        cx.stroke();
+        cx.strokeStyle = 'rgba(190,150,90,.55)';
+        cx.lineWidth = .5;
+        for (l = -2.6; l < 2; l += 1.3) {
+            cx.beginPath();
+            cx.moveTo(l, -2);
+            cx.lineTo(l, 2);
+            cx.stroke();
+        }
+        cx.fillStyle = '#3e2c1a';
+        cx.beginPath();
+        cx.arc(3.8, 0, 1.6, 0, 7);
+        cx.fill();
+        // very long feelers
+        cx.strokeStyle = 'rgba(40,28,16,.9)';
+        cx.lineWidth = .45;
+        for (l = -1; l <= 1; l += 2) {
+            cx.beginPath();
+            cx.moveTo(5, l * .5);
+            cx.quadraticCurveTo(9, l * (2 + Math.sin(now * .004 + c.ph) * 1.2), 13, l * 4.5);
+            cx.stroke();
+        }
+        cx.restore();
+        if (c.hp > 0 && c.hp < c.mhp) {
+            cx.fillStyle = 'rgba(0,0,0,.6)';
+            cx.fillRect(a.x - 5, a.y - 8, 10, 1.6);
+            cx.fillStyle = '#e74c3c';
+            cx.fillRect(a.x - 5, a.y - 8, 10 * c.hp / c.mhp, 1.6);
+        }
+    }
+    cx.restore();
+}
+
+// a few soldiers leave their posts between fights, walk down through the nest and the clay shaft, drill in the Armoury and come back
+function drillStep(m, dt, t) {
+    var d = m.dr, ap = armouryPos(), V = 30 * (m.v || 1) * dt * (cric.length && !cric.done ? 1.8 : 1), a, top;
+    if (!ap) {
+        m.dr = null;
+        return false;
+    }
+    if (foes.length && d.ph !== 'up1' && d.ph !== 'up0' && d.ph !== 'nestB' && d.ph !== 'mainB') {
+        // invaders: drop the drill and hurry back up
+        d.ph = d.ph === 'main' ? 'mainB' : d.ph === 'nest' ? 'nestB' : d.ph === 'down0' ? 'up0' : 'up1';
+    }
+    if (d.ph === 'main' || d.ph === 'mainB') {
+        if (d.ph === 'main') {
+            m.p = Math.min(1, m.p + V / Math.max(1, LEN));
+            m.d = 1;
+            m.act = 'Heading down to the Armoury';
+            if (m.p >= 1) {
+                d.ph = 'nest';
+                a = at(1);
+                m.px = a.x;
+                m.py = a.y;
+            }
+            return false;
+        }
+        m.dr = null;
+        m.dcool = t + 60 + Math.random() * 60;
+        return false;
+    }
+    if (d.ph === 'nest' || d.ph === 'nestB') {
+        top = at(0, ap.q0);
+        if (d.ph === 'nest') {
+            m.act = 'Heading down to the Armoury';
+            if (walkTo(m, top.x, top.y, V)) {
+                d.ph = 'down0';
+                d.s = 0;
+            }
+        }
+        else {
+            m.act = 'Heading back to guard duty';
+            if (walkTo(m, QX, QY, V)) {
+                m.p = 1;
+                m.d = -1;
+                d.ph = 'mainB';
+            }
+        }
+        return true;
+    }
+    if (cricLive() && (d.ph === 'down1' || d.ph === 'drill' || d.ph === 'up1')) {
+        if (d.ph === 'drill')
+            d.s = 1;
+        d.ph = 'cf';
+    }
+    if (d.ph === 'cf')
+        return cricFight(m, d, ap, V, t);
+    var q = d.ph === 'down0' || d.ph === 'up0' ? ap.q0 : ap.q1, dn = d.ph === 'down0' || d.ph === 'down1';
+    if (d.ph === 'drill') {
+        d.wt -= dt;
+        m.act = 'Drilling in the Armoury';
+        if (d.wt <= 0)
+            d.ph = 'up1';
+        // short lunges back and forth on the practice floor
+        a = at(1, ap.q1);
+        m.px = ap.x - 6 + Math.sin(t * 2.2 + m.ph) * 7;
+        m.py = ap.y + 2 + Math.cos(t * 1.3 + m.ph) * 3;
+        m.ang = Math.cos(t * 2.2 + m.ph) > 0 ? 0 : Math.PI;
+        return true;
+    }
+    d.s += (dn ? 1 : -1) * V / Math.max(1, q.LEN);
+    if (dn && d.s >= 1) {
+        d.s = d.ph === 'down0' ? 0 : 1;
+        if (d.ph === 'down0')
+            d.ph = 'down1';
+        else {
+            d.ph = 'drill';
+            d.wt = 15 + Math.random() * 15;
+        }
+    }
+    else if (!dn && d.s <= 0) {
+        d.s = d.ph === 'up1' ? 1 : 0;
+        if (d.ph === 'up1')
+            d.ph = 'up0';
+        else
+            d.ph = 'nestB';
+    }
+    a = at(Math.max(0, Math.min(1, d.s)), q);
+    m.px = a.x;
+    m.py = a.y;
+    m.ang = dn ? a.ang : a.ang + Math.PI;
+    m.act = dn ? 'Heading down to the Armoury' : 'Heading back to guard duty';
+    return true;
+}
+
+/* ---- the Giant Mole (Bedrock) ----
+   Saved: S.moleHp (health left, damage sticks between attacks), S.moleWon, S.hall (Great Hall level 0-4).
+   The battle itself (MF) is not saved: closing the game mid-fight simply ends it. */
+var MOLE_MAX = 900000, MF = null;
+function moleOn() { return (S.deep || 0) >= 4; }
+function molePos() {
+    var qs = [trunkQ(0), trunkQ(1), trunkQ(2), trunkQ(3)];
+    if (!qs[0] || !qs[1] || !qs[2] || !qs[3])
+        return null;
+    var pe = qs[3].PT[qs[3].PT.length - 1];
+    return { qs: qs, x: pe[0], y: pe[1] + 18 };
+}
+function moleHp() { return S.moleHp == null ? MOLE_MAX : S.moleHp; }
+function moleGo() {
+    if (!moleOn() || S.moleWon || MF || foes.length || !molePos() || healthy(2) + healthy(4) < 20)
+        return;
+    MF = { t: 0, d0: dps(), kt: 3, end: 0, fight: 0 };
+    nf = Math.max(nf, performance.now() + 240000);
+    SFX.alarm();
+    toast('Your army marches down to the Mole\'s Cavern! The battle starts when they arrive.');
+    go('tun');
+    var mp = molePos();
+    camT = camClamp(mp.y - H / (2 * uz));
+    follow = performance.now() + 6000;
+}
+function moleTick(dt) {
+    if (!moleOn() || S.moleWon)
+        return;
+    if (!MF) {
+        // the mole slowly licks its wounds: 5% of its health back per hour
+        if (S.moleHp != null && S.moleHp < MOLE_MAX)
+            S.moleHp = Math.min(MOLE_MAX, S.moleHp + MOLE_MAX * .05 / 3600 * dt);
+        return;
+    }
+    if (MF.end) {
+        // wait for the army to climb back up, then the battle is over
+        MF.t += dt;
+        if (MF.t > 240 || !marchers.some(function (m) { return m.mo; }))
+            MF = null;
+        return;
+    }
+    var mp = molePos(), there = 0;
+    if (!mp) {
+        MF.end = 1;
+        return;
+    }
+    marchers.forEach(function (m) { if (m.mo && m.mo.ph === 'fight') there++; });
+    if (!MF.fight) {
+        if (there < 4) {
+            MF.t += dt;
+            if (MF.t > 200)
+                MF.fight = 1;
+            return;
+        }
+        MF.fight = 1;
+        MF.t = 0;
+        shake = .5;
+        SFX.boom();
+        toast('The Giant Mole wakes up!');
+    }
+    MF.t += dt;
+    // about half the army reaches the cavern and fights
+    var hit = dps() * .6 * dt;
+    S.moleHp = Math.max(0, moleHp() - hit);
+    MF.acc = (MF.acc || 0) + hit;
+    MF.nt = (MF.nt || 0) - dt;
+    MF.hf = Math.max(0, (MF.hf || 0) - dt);
+    MF.swp = Math.max(0, (MF.swp || 0) - dt);
+    if (MF.nt <= 0) {
+        MF.nt = .55;
+        fx.push({ x: mp.x - 4 + (Math.random() - .5) * 40, y: mp.y - 44, vx: (Math.random() - .5) * 20, vy: -36, l: .85, t: fmt(Math.round(MF.acc)), f: 13, c: '#ffe27a', g: 30, pop: 1 });
+        MF.acc = 0;
+        MF.hf = .14;
+        var sa = Math.random() * 6.283;
+        fx.push({ x: mp.x - 4 + Math.cos(sa) * 30, y: mp.y + 4 + Math.sin(sa) * 14, vx: 0, vy: 0, l: .22, star: 4, c: '#fff4c2', g: 0 });
+    }
+    // the mole swipes back: soldiers fall
+    MF.kt -= dt;
+    if (MF.kt <= 0) {
+        MF.kt = 2;
+        var n = Math.max(1, Math.round(S.soldiers * .006));
+        S.soldiers = Math.max(0, S.soldiers - n);
+        if (S.injured[2] > S.soldiers)
+            S.injured[2] = S.soldiers;
+        if (S.superMajors > 0 && Math.random() < .12)
+            S.superMajors--;
+        if (healthy(2) > 0 && Math.random() < .5)
+            S.injured[2]++;
+        shake = Math.max(shake, .2);
+        SFX.hit();
+        MF.swp = .45;
+        fx.push({ x: mp.x + 30, y: mp.y + 10, vx: 0, vy: 0, l: .3, slash: 22, ang: (Math.random() - .5) * .8, c: '#ffb0a0', g: 0 });
+        burst(mp.x + 30, mp.y + 8, 6, ['#8a6340', '#5a3d22', '#c9b48c'], 50);
+        // the swipe sends a soldier or two flying
+        for (var fl2 = 0; fl2 < Math.min(2, n); fl2++)
+            fallen.push({ x: mp.x + 30 + Math.random() * 10, y: mp.y + 6, ang: Math.random() * 6.28, k: 2, t: 4, s: 0, vx: 50 + Math.random() * 70, vy: -60 - Math.random() * 40, sp: (Math.random() - .5) * 20 });
+        while (fallen.length > 14)
+            fallen.shift();
+        sync();
+    }
+    if (S.moleHp <= 0) {
+        moleWin();
+        return;
+    }
+    if (dps() < MF.d0 * .4) {
+        MF.end = 1;
+        MF.t = 0;
+        toast('Your army falls back from the Giant Mole with ' + Math.round(S.moleHp / MOLE_MAX * 100) + '% of its health left. The damage sticks; regroup and try again.');
+    }
+}
+function moleWin() {
+    var mp = molePos();
+    S.moleWon = 1;
+    S.moleHp = 0;
+    MF.end = 1;
+    MF.t = 0;
+    gainJelly(30);
+    S.food = foodCap();
+    flash = 1;
+    shake = .8;
+    if (mp) {
+        burst(mp.x, mp.y, 80, ['#ffd23f', '#fff', '#c9b48c', '#e0553f'], 180);
+        pulseRing('255,210,60');
+    }
+    SFX.fan();
+    toast('VICTORY! The Giant Mole is beaten. +30 royal jelly, a full food store, and the cavern is yours: build the Great Hall in it.');
+}
+function hallCost() { var lv = S.hall || 0; return { f: Math.round(foodCap() * (.4 + .15 * lv)), j: 25 + 25 * lv }; }
+function upHall() {
+    var lv = S.hall || 0, c = hallCost();
+    if (!S.moleWon || lv >= 4 || S.food < c.f || S.jelly < c.j)
+        return;
+    S.food -= c.f;
+    S.jelly -= c.j;
+    S.hall = lv + 1;
+    SFX.buy();
+    flash = .5;
+    pulseRing('255,210,60');
+    toast('The Great Hall is now level ' + S.hall + '. Food and soldier damage +' + (S.hall * 10) + '%.');
+}
+function moleCard() {
+    if (!moleOn())
+        return '';
+    var hp = moleHp(), pc = Math.ceil(hp / MOLE_MAX * 100), lv = S.hall || 0, c;
+    if (S.moleWon) {
+        c = hallCost();
+        return '<button class="card dig" ' + (lv >= 4 || S.food < c.f || S.jelly < c.j ? 'disabled ' : '') + 'onclick="upHall()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Great Hall ' + lv + '/4</b><span class="mute">Built in the Giant Mole\'s old cavern. Each level: +10% food and soldier damage</span></span><span class="r">' + (lv >= 4 ? 'Maxed' : fmt(c.f) + ' food, ' + c.j + ' jelly') + '</span></button>';
+    }
+    if (MF)
+        return '<div class="card info" style="margin:0 0 6px;display:block"><b>' + (MF.end ? 'Your army is climbing back up' : MF.fight ? 'Battle with the Giant Mole!' : 'Your army is marching down') + '</b><div class="bar" style="margin:6px 0 2px"><i style="width:' + pc + '%;background:#c43fe0"></i></div><span class="mute">Mole health ' + pc + '%</span></div>';
+    var ok = !foes.length && healthy(2) + healthy(4) >= 20 && !!molePos();
+    return '<button class="card dig" ' + (ok ? '' : 'disabled ') + 'onclick="moleGo()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Attack the Giant Mole</b><span class="mute">' + (!molePos() ? 'Finish digging the bedrock shaft first' : 'Mole health ' + pc + '%. Your army deals ' + fmt(dps() * .6) + ' damage a second down there. It hits back hard; damage stays between attacks. Beat it for 30 jelly and the Great Hall') + '</span></span><span class="r">Fight</span></button>';
+}
+// soldiers and super majors march down all four shafts and surround the mole, then climb back when the battle ends
+function moleStep(m, dt, t) {
+    var o = m.mo, mp = molePos(), V = (m.k === 4 ? 24 : 32) * (m.v || 1) * dt, a, q;
+    if (!mp) {
+        m.mo = null;
+        return false;
+    }
+    var back = !MF || MF.end;
+    if (back && (o.ph === 'main' || o.ph === 'nest' || o.ph === 'down' || o.ph === 'fight')) {
+        if (o.ph === 'main')
+            o.ph = 'mainB';
+        else if (o.ph === 'nest')
+            o.ph = 'nestB';
+        else if (o.ph === 'fight') {
+            o.ph = 'up';
+            o.i = 3;
+            o.s = 1;
+        }
+        else
+            o.ph = 'up';
+    }
+    if (o.ph === 'main') {
+        m.p = Math.min(1, m.p + V / Math.max(1, LEN));
+        m.d = 1;
+        m.act = 'Marching to the Mole\'s Cavern';
+        if (m.p >= 1) {
+            o.ph = 'nest';
+            a = at(1);
+            m.px = a.x;
+            m.py = a.y;
+        }
+        return true;
+    }
+    if (o.ph === 'nest' || o.ph === 'nestB') {
+        if (o.ph === 'nest') {
+            a = at(0, mp.qs[0]);
+            m.act = 'Marching to the Mole\'s Cavern';
+            if (walkTo(m, a.x, a.y, V)) {
+                o.ph = 'down';
+                o.i = 0;
+                o.s = 0;
+            }
+        }
+        else {
+            m.act = 'Heading back to guard duty';
+            if (walkTo(m, QX, QY, V)) {
+                m.p = 1;
+                m.d = -1;
+                o.ph = 'mainB';
+            }
+        }
+        return true;
+    }
+    if (o.ph === 'fight') {
+        // a ring around the mole, darting in to bite
+        var an = o.slot * 2.39996, rr = 47 + (o.slot % 3) * 6, lunge = Math.max(0, Math.sin(t * 3 + o.slot)) * 6;
+        m.px = mp.x + Math.cos(an) * (rr - lunge);
+        m.py = mp.y + 4 + Math.sin(an) * (rr - lunge) * .5;
+        m.ang = Math.atan2(mp.y - m.py, mp.x - m.px);
+        m.act = MF && MF.fight ? 'Fighting the Giant Mole' : 'Waiting for the battle';
+        return true;
+    }
+    if (o.ph === 'down' || o.ph === 'up') {
+        q = mp.qs[o.i];
+        o.s += (o.ph === 'down' ? 1 : -1) * V / Math.max(1, q.LEN);
+        if (o.ph === 'down' && o.s >= 1) {
+            if (o.i < 3) {
+                o.i++;
+                o.s = 0;
+            }
+            else {
+                o.s = 1;
+                o.ph = 'fight';
+            }
+        }
+        else if (o.ph === 'up' && o.s <= 0) {
+            if (o.i > 0) {
+                o.i--;
+                o.s = 1;
+            }
+            else {
+                o.s = 0;
+                o.ph = 'nestB';
+            }
+        }
+        q = mp.qs[o.i];
+        a = at(Math.max(0, Math.min(1, o.s)), q);
+        m.px = a.x;
+        m.py = a.y;
+        m.ang = o.ph === 'down' ? a.ang : a.ang + Math.PI;
+        m.act = o.ph === 'down' ? 'Marching to the Mole\'s Cavern' : 'Heading back to guard duty';
+        return true;
+    }
+    m.mo = null;
+    return false;
+}
+// the cavern, the mole and (after the win) the Great Hall
+function drawMole(now) {
+    var mp = molePos(), t = now * .001, sc, i, hp, fight = MF && MF.fight && !MF.end, br;
+    if (!mp)
+        return;
+    cx.save();
+    cx.translate(0, -cam);
+    cx.fillStyle = '#0d0907';
+    cx.beginPath();
+    cx.ellipse(mp.x, mp.y - 4, 74, 36, 0, 0, 7);
+    cx.fill();
+    cx.fillStyle = '#3a2d24';
+    cx.beginPath();
+    cx.ellipse(mp.x, mp.y - 4, 71, 33, 0, 0, 7);
+    cx.fill();
+    var gg = cx.createRadialGradient(mp.x, mp.y - 10, 4, mp.x, mp.y, 70);
+    gg.addColorStop(0, '#6b5240');
+    gg.addColorStop(1, '#3a2d24');
+    cx.fillStyle = gg;
+    cx.beginPath();
+    cx.ellipse(mp.x, mp.y - 4, 68, 30, 0, 0, 7);
+    cx.fill();
+    if (!S.moleWon) {
+        // the Giant Mole: a velvet body, spade claws and a pink star nose. Asleep it breathes slowly; awake it swipes.
+        br = 1 + Math.sin(t * (fight ? 4 : 1.2)) * .03;
+        var sw = fight ? (MF.swp > 0 ? Math.sin((1 - MF.swp / .45) * Math.PI) * 2.2 : Math.sin(t * 5) * .6) : 0, x0 = mp.x - 4 + (fight && MF.swp > 0 ? Math.sin((1 - MF.swp / .45) * Math.PI) * 5 : 0), y0 = mp.y + 4;
+        cx.fillStyle = 'rgba(0,0,0,.35)';
+        cx.beginPath();
+        cx.ellipse(x0, y0 + 14, 40, 6, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = '#2d2622';
+        cx.beginPath();
+        cx.ellipse(x0, y0, 34 * br, 18 * br, 0, 0, 7);
+        cx.fill();
+        cx.strokeStyle = 'rgba(255,215,185,.28)';
+        cx.lineWidth = 1.4;
+        cx.stroke();
+        cx.fillStyle = 'rgba(255,255,255,.08)';
+        cx.beginPath();
+        cx.ellipse(x0 - 6, y0 - 8, 20, 6, -.1, 0, 7);
+        cx.fill();
+        cx.fillStyle = '#e9a7a0';
+        [[-1, 0], [1, 0]].forEach(function (d) {
+            cx.save();
+            cx.translate(x0 + 24, y0 + 8 + d[0] * 2);
+            cx.rotate(.5 + d[0] * .2 + sw * .5 * d[0]);
+            cx.beginPath();
+            cx.ellipse(6, 0, 9, 5, 0, 0, 7);
+            cx.fill();
+            cx.fillStyle = '#f4e6dc';
+            for (var c2 = 0; c2 < 4; c2++) {
+                cx.beginPath();
+                cx.moveTo(13, -4 + c2 * 2.6);
+                cx.lineTo(19, -3.6 + c2 * 2.6);
+                cx.lineTo(13, -2.4 + c2 * 2.6);
+                cx.fill();
+            }
+            cx.fillStyle = '#e9a7a0';
+            cx.restore();
+        });
+        cx.fillStyle = '#2d2622';
+        cx.beginPath();
+        cx.ellipse(x0 + 30, y0 - 3, 11, 9, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = '#ef8fa0';
+        for (i = 0; i < 10; i++) {
+            var a2 = i / 10 * 6.283 + Math.sin(t * 6) * .1;
+            cx.beginPath();
+            cx.ellipse(x0 + 42 + Math.cos(a2) * 3.2, y0 - 3 + Math.sin(a2) * 3.2, 2.4, 1, a2, 0, 7);
+            cx.fill();
+        }
+        cx.fillStyle = '#0a0706';
+        cx.beginPath();
+        cx.arc(x0 + 33, y0 - 7, 1, 0, 7);
+        cx.fill();
+        if (!fight) {
+            cx.font = '700 9px system-ui';
+            cx.fillStyle = 'rgba(255,255,255,' + (.4 + .3 * Math.sin(t * 1.2)) + ')';
+            cx.fillText('z', x0 + 38, y0 - 18 - (t * 4 % 8));
+        }
+        if (fight && MF.hf > 0) {
+            cx.save();
+            cx.globalCompositeOperation = 'lighter';
+            glow(x0 + 10, y0, 46, '255,245,230', Math.min(.5, MF.hf * 3.5));
+            cx.restore();
+        }
+        hp = moleHp() / MOLE_MAX;
+        cx.fillStyle = 'rgba(0,0,0,.65)';
+        rrect(mp.x - 36, mp.y - 34, 72, 6, 3);
+        cx.fill();
+        cx.fillStyle = '#c43fe0';
+        rrect(mp.x - 35, mp.y - 33, 70 * hp, 4, 2);
+        cx.fill();
+    }
+    else {
+        // the Great Hall: one more pillar and lamp per level
+        var lv = S.hall || 0;
+        for (i = 0; i < 4; i++) {
+            var px = mp.x - 45 + i * 30;
+            cx.fillStyle = i < lv ? '#c9a46a' : 'rgba(201,164,106,.18)';
+            cx.fillRect(px - 3, mp.y - 22, 6, 30);
+            cx.fillRect(px - 5, mp.y - 24, 10, 3);
+            if (i < lv) {
+                cx.save();
+                cx.globalCompositeOperation = 'lighter';
+                glow(px, mp.y - 26, 12, '255,200,90', .25 + .06 * Math.sin(t * 3 + i));
+                cx.restore();
+            }
+        }
+    }
+    sc = .7 / (K * uz);
+    cx.font = '700 ' + (8 * sc) + 'px system-ui';
+    cx.textAlign = 'center';
+    cx.lineWidth = 2 * sc;
+    cx.strokeStyle = 'rgba(0,0,0,.65)';
+    cx.fillStyle = 'rgba(255,235,210,.95)';
+    var lab = S.moleWon ? 'The Great Hall' : 'The Mole\'s Cavern';
+    cx.strokeText(lab, mp.x, mp.y - 40 - 4 * sc);
+    cx.fillText(lab, mp.x, mp.y - 40 - 4 * sc);
+    cx.restore();
+}
+
+// the Crystal Caves: the chamber at the end of the deep-dark shaft
+function cavesOn() { return (S.deep || 0) >= 3; }
+function cavesPos() {
+    var qs = [trunkQ(0), trunkQ(1), trunkQ(2)];
+    if (!qs[0] || !qs[1] || !qs[2])
+        return null;
+    var pe = qs[2].PT[qs[2].PT.length - 1];
+    return { qs: qs, x: pe[0], y: pe[1] };
+}
+function drawCaves(now) {
+    var cp = cavesPos(), sc, i, gl;
+    if (!cp)
+        return;
+    cx.save();
+    cx.translate(0, -cam);
+    cx.save();
+    cx.globalCompositeOperation = 'lighter';
+    gl = .22 + .08 * Math.sin(now * .0018);
+    glow(cp.x, cp.y, 34, '120,170,255', gl);
+    cx.restore();
+    var P3 = [[-11, 7, 2, 8], [-6, 8, 2.6, 12], [-1, 8, 3.2, 16], [5, 8, 2.4, 11], [10, 7, 1.8, 7]];
+    for (i = 0; i < P3.length; i++)
+        prism(cp.x + P3[i][0], cp.y + P3[i][1], P3[i][2], P3[i][3], i);
+    sc = .7 / (K * uz);
+    cx.font = '700 ' + (8 * sc) + 'px system-ui';
+    cx.textAlign = 'center';
+    cx.lineWidth = 2 * sc;
+    cx.strokeStyle = 'rgba(0,0,0,.65)';
+    cx.fillStyle = 'rgba(220,235,255,.95)';
+    cx.strokeText('The Crystal Caves', cp.x, cp.y - 18 * sc);
+    cx.fillText('The Crystal Caves', cp.x, cp.y - 18 * sc);
+    cx.restore();
+}
+// Six shards make one jelly, at most 4 jelly a day (S.crS shards, S.crD day, S.crN jelly given that day)
+function crystalFind(x, y) {
+    var d = new Date().toDateString();
+    S.crS = (S.crS || 0) + 1;
+    fx.push({ x: x, y: y - 8, vx: 0, vy: -16, l: 1.2, t: '+1 crystal', f: 11, c: '#a9c8ff', g: 0 });
+    if (!S.crSeen) {
+        S.crSeen = 1;
+        toast('A scout brought back a crystal shard from the Crystal Caves. Every six shards make 1 royal jelly.');
+    }
+    if (S.crD !== d) {
+        S.crD = d;
+        S.crN = 0;
+    }
+    if (S.crS >= 6) {
+        if (S.crN < 4) {
+            S.crS -= 6;
+            S.crN++;
+            gainJelly(1);
+            toast('Six crystal shards polished into 1 royal jelly.');
+        }
+        else
+            S.crS = 6;
+    }
+}
+// a scout walks down the main tunnel, across the nest and down all three shafts, maps the caves, then climbs back
+function crystalStep(m, dt, t) {
+    var c = m.cr, cp = cavesPos(), V = 30 * (m.v || 1) * dt, a, q;
+    if (!cp) {
+        m.cr = null;
+        return false;
+    }
+    if (c.ph === 'main') {
+        m.p = Math.min(1, m.p + V / Math.max(1, LEN));
+        m.d = 1;
+        m.act = 'Heading down to the Crystal Caves';
+        if (m.p >= 1) {
+            c.ph = 'nest';
+            a = at(1);
+            m.px = a.x;
+            m.py = a.y;
+        }
+        return true;
+    }
+    if (c.ph === 'nest') {
+        a = at(0, cp.qs[0]);
+        m.act = 'Heading down to the Crystal Caves';
+        if (walkTo(m, a.x, a.y, V)) {
+            c.ph = 'down';
+            c.i = 0;
+            c.s = 0;
+        }
+        return true;
+    }
+    if (c.ph === 'map') {
+        c.wt -= dt;
+        m.act = 'Mapping the Crystal Caves';
+        m.px = cp.x + Math.cos(t * .7 + m.ph) * 11;
+        m.py = cp.y + 1 + Math.sin(t * 1.1 + m.ph) * 4;
+        m.ang = Math.atan2(Math.cos(t * 1.1 + m.ph) * 4.4, -Math.sin(t * .7 + m.ph) * 7.7);
+        if (Math.random() < dt * .6)
+            fx.push({ x: m.px, y: m.py - 6, vx: 0, vy: -12, l: .8, t: '\u2726', f: 9, c: '#a9c8ff', g: 0 });
+        if (c.wt <= 0) {
+            crystalFind(m.px, m.py);
+            c.ph = 'up';
+            c.i = 2;
+            c.s = 1;
+        }
+        return true;
+    }
+    if (c.ph === 'down' || c.ph === 'up') {
+        q = cp.qs[c.i];
+        c.s += (c.ph === 'down' ? 1 : -1) * V / Math.max(1, q.LEN);
+        if (c.ph === 'down' && c.s >= 1) {
+            if (c.i < 2) {
+                c.i++;
+                c.s = 0;
+            }
+            else {
+                c.s = 1;
+                c.ph = 'map';
+                c.wt = 18 + Math.random() * 10;
+            }
+        }
+        else if (c.ph === 'up' && c.s <= 0) {
+            if (c.i > 0) {
+                c.i--;
+                c.s = 1;
+            }
+            else {
+                c.s = 0;
+                c.ph = 'nestB';
+            }
+        }
+        q = cp.qs[c.i];
+        a = at(Math.max(0, Math.min(1, c.s)), q);
+        m.px = a.x;
+        m.py = a.y;
+        m.ang = c.ph === 'down' ? a.ang : a.ang + Math.PI;
+        m.act = c.ph === 'down' ? 'Heading down to the Crystal Caves' : 'Climbing back up from the Crystal Caves';
+        return true;
+    }
+    if (c.ph === 'nestB') {
+        m.act = 'Climbing back up from the Crystal Caves';
+        if (walkTo(m, QX, QY, V)) {
+            m.p = 1;
+            m.d = -1;
+            c.ph = 'mainB';
+        }
+        return true;
+    }
+    m.cr = null;
+    m.ccool = t + 60 + Math.random() * 60;
+    return false;
+}
+
+// the Larder: the chamber at the end of the clay layer's main shaft, ready once that shaft is dug
+function larderOn() { return (S.deep || 0) >= 1; }
+function larderPos() {
+    var o = null;
+    deepList().forEach(function (e) { if (!o && e.f.L === 0 && e.f.t && e.pr >= 1) o = e; });
+    if (!o)
+        return null;
+    var q = o.f.q, pe = q.PT[q.PT.length - 1];
+    return { q: q, x: pe[0], y: pe[1] };
+}
+function drawLarder(now) {
+    var lp = larderPos(), i, sc;
+    if (!lp)
+        return;
+    cx.save();
+    cx.translate(0, -cam);
+    for (i = 0; i < 9; i++) {
+        cx.fillStyle = i % 3 ? '#b07a3c' : '#8d5e2a';
+        cx.beginPath();
+        cx.ellipse(lp.x - 11 + (i % 5) * 5 + (i > 4 ? 2.5 : 0), lp.y + 6 - (i > 4 ? 3 : 0), 2.4, 1.7, i, 0, 7);
+        cx.fill();
+    }
+    sc = .7 / (K * uz);
+    cx.font = '700 ' + (8 * sc) + 'px system-ui';
+    cx.textAlign = 'center';
+    cx.lineWidth = 2 * sc;
+    cx.strokeStyle = 'rgba(0,0,0,.65)';
+    cx.fillStyle = 'rgba(255,245,220,.92)';
+    cx.strokeText('The Larder', lp.x, lp.y - 15 * sc);
+    cx.fillText('The Larder', lp.x, lp.y - 15 * sc);
+    cx.restore();
+}
+
+// a few nurses carry food from the nest down the clay shaft to the Larder and come back
+function larderStep(m, dt, t) {
+    var ld = m.ld, lp = larderPos(), V = 34 * (m.v || 1) * dt, c, a;
+    if (!lp) {
+        m.ld = null;
+        m.carry = 0;
+        return false;
+    }
+    c = cav();
+    var top = at(0, lp.q);
+    m.tend = 0;
+    if (ld.ph === 'go') {
+        m.carry = 2;
+        m.act = 'Carrying food down to the Larder';
+        if (walkTo(m, top.x, top.y, V)) {
+            ld.ph = 'down';
+            ld.s = 0;
+        }
+    }
+    else if (ld.ph === 'down' || ld.ph === 'up') {
+        ld.s += (ld.ph === 'down' ? 1 : -1) * V / Math.max(1, lp.q.LEN);
+        if (ld.ph === 'down' && ld.s >= 1) {
+            ld.s = 1;
+            ld.ph = 'stay';
+            ld.wt = 4 + Math.random() * 5;
+        }
+        if (ld.ph === 'up' && ld.s <= 0) {
+            ld.s = 0;
+            ld.ph = 'home';
+        }
+        a = at(ld.s, lp.q);
+        m.px = a.x + a.nx * (m.l || 0) * 2;
+        m.py = a.y + a.ny * (m.l || 0) * 2;
+        m.ang = ld.ph === 'down' ? a.ang : a.ang + Math.PI;
+        m.act = ld.ph === 'down' ? 'Carrying food down to the Larder' : 'Heading back up to the nest';
+    }
+    else if (ld.ph === 'stay') {
+        m.carry = 0;
+        m.act = 'Stacking seeds in the Larder';
+        ld.wt -= dt;
+        m.ang += Math.sin(t * 3 + m.ph) * dt;
+        if (ld.wt <= 0)
+            ld.ph = 'up';
+    }
+    else {
+        m.act = 'Heading back up to the nest';
+        if (walkTo(m, c.x + (m.l || 0) * 30, QY + 30, V)) {
+            m.ld = null;
+            m.lcool = t + 40 + Math.random() * 40;
+        }
+    }
+    return true;
 }
 
 function drawRooms(now) {
@@ -3757,6 +5270,9 @@ function cavParams() {
     CAVP.b = [];
     for (i = 0; i < 5; i++)
         CAVP.b.push({ a: Math.PI * (1.08 + .84 * (i + .2 + r() * .6) / 5), w: .09 + r() * .08, h: .025 + r() * .03 });
+    CAVP.f = [];
+    for (i = 0; i < 7; i++)
+        CAVP.f.push({ a: Math.PI * (.06 + .88 * (i + .15 + r() * .7) / 7), w: .07 + r() * .09, h: (r() < .6 ? 1 : -.7) * (.03 + r() * .045) });
     return CAVP;
 }
 // how far the cave wall bulges out past the plain oval at angle a
@@ -3767,7 +5283,25 @@ function cavM(a) {
         d = (a - P2.b[i].a) / P2.b[i].w;
         m += P2.b[i].h * Math.exp(-d * d);
     }
-    return 1 + m * (.25 + .75 * up);
+    var dn = Math.max(0, Math.sin(a)), fm = 0;
+    if (dn > 0 && P2.f) {
+        // the floor and lower walls get their own lumps so the bottom isn't a clean oval
+        fm += .02 * Math.sin(5 * a + P2.p[1]) + .014 * Math.sin(11 * a + P2.p[2]);
+        for (i = 0; i < P2.f.length; i++) {
+            d = (a - P2.f[i].a) / P2.f[i].w;
+            fm += P2.f[i].h * Math.exp(-d * d);
+        }
+    }
+    return 1 + m * (.25 + .75 * up) + fm * Math.min(1, dn * 1.6);
+}
+// floor height at world x
+function cavBot(x) {
+    var c = cav(), u = Math.max(-.98, Math.min(.98, (x - c.x) / c.rx)), a = Math.acos(u), i, m = cavM(a);
+    for (i = 0; i < 3; i++) {
+        a = Math.atan2(Math.sqrt(Math.max(0, 1 - (u / m) * (u / m))), u / m);
+        m = cavM(a);
+    }
+    return c.y + Math.sin(a) * c.ry * m;
 }
 function cavPath(grow) {
     var c = cav(), n = 120, i, a, m;
@@ -3824,8 +5358,9 @@ function cavernIn() {
     cavPath(-3);
     cx.stroke();
     var r = rng(S.seed + 77), cl = rng(S.seed + 5150);
-    for (i = 0; i < 26; i++) {
-        var px = W * .06 + r() * W * .88, py = QY + 30 + r() * (WH - QY - 36), pr = 1 + r() * 2.2;
+    var nbot = c.y + c.ry - QY - 40, npb = Math.round(26 * Math.max(1, nbot / Math.max(60, WH - QY - 36)) * 1.6);
+    for (i = 0; i < npb; i++) {
+        var px = c.x + (r() * 1.8 - .9) * c.rx, py = QY + 30 + r() * nbot, pr = 1 + r() * 2.2;
         cx.fillStyle = 'rgba(60,36,20,.45)';
         cx.beginPath();
         cx.ellipse(px, py, pr * 1.6, pr, 0, 0, 7);
@@ -3876,6 +5411,95 @@ function cavernIn() {
         cx.lineTo(sx + .3, sy + sl);
         cx.closePath();
         cx.fill();
+    }
+    // the floor: soil layers, rubble, stalagmites, a puddle and mushrooms so the bottom has as much life as the top
+    var fl = rng(S.seed + 6161), fbx, fby, fh, fr, fg = cx.createLinearGradient(0, c.y + c.ry * .3, 0, c.y + c.ry);
+    fg.addColorStop(0, 'rgba(24,12,6,0)');
+    fg.addColorStop(1, 'rgba(24,12,6,.34)');
+    cx.fillStyle = fg;
+    cavPath(0);
+    cx.fill();
+    cx.strokeStyle = 'rgba(40,24,12,.22)';
+    cx.lineWidth = 1.3;
+    for (i = 0; i < 9; i++) {
+        fbx = c.x + (fl() * 1.5 - .75) * c.rx;
+        fby = c.y - c.ry * .15 + fl() * c.ry * 1.05;
+        fh = 26 + fl() * 50;
+        cx.beginPath();
+        cx.moveTo(fbx - fh, fby + 2);
+        cx.quadraticCurveTo(fbx, fby - 5 - fl() * 4, fbx + fh, fby + 1);
+        cx.stroke();
+    }
+    // shallow puddle
+    fbx = c.x + (fl() * .9 - .45) * c.rx;
+    fby = cavBot(fbx) - 12 - c.ry * .05;
+    cx.fillStyle = 'rgba(30,22,16,.5)';
+    cx.beginPath();
+    cx.ellipse(fbx, fby, 17 + fl() * 9, 4.2, 0, 0, 7);
+    cx.fill();
+    cx.fillStyle = 'rgba(150,185,215,.22)';
+    cx.beginPath();
+    cx.ellipse(fbx - 2, fby - .6, 12, 2.4, 0, 0, 7);
+    cx.fill();
+    // rubble piles and pebbles resting on the floor
+    for (i = 0; i < 26; i++) {
+        fbx = c.x + (fl() * 1.76 - .88) * c.rx;
+        fby = cavBot(fbx) - 1.5 - fl() * 16;
+        fr = 1.3 + fl() * 3.6;
+        cx.fillStyle = 'rgba(30,18,10,.55)';
+        cx.beginPath();
+        cx.ellipse(fbx, fby + 1, fr * 1.5, fr * .8, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = ['#8a7a68', '#6f6050', '#9a8a74', '#7a5f44'][i & 3];
+        cx.beginPath();
+        cx.ellipse(fbx, fby, fr * 1.2, fr * .8, 0, 0, 7);
+        cx.fill();
+        cx.fillStyle = 'rgba(255,245,225,.25)';
+        cx.beginPath();
+        cx.ellipse(fbx - fr * .3, fby - fr * .3, fr * .5, fr * .26, 0, 0, 7);
+        cx.fill();
+    }
+    // stalagmites rising from the floor
+    for (i = 0; i < 9; i++) {
+        fbx = c.x + (fl() * 1.7 - .85) * c.rx;
+        fby = cavBot(fbx);
+        fh = 6 + fl() * 14;
+        cx.fillStyle = 'rgba(78,52,32,.96)';
+        cx.beginPath();
+        cx.moveTo(fbx - 3.4, fby + 1);
+        cx.lineTo(fbx + 3.4, fby + 1);
+        cx.lineTo(fbx + .4, fby - fh);
+        cx.closePath();
+        cx.fill();
+        cx.fillStyle = 'rgba(255,230,190,.14)';
+        cx.beginPath();
+        cx.moveTo(fbx - 1.2, fby);
+        cx.lineTo(fbx + .3, fby - fh * .85);
+        cx.lineTo(fbx - 2.8, fby);
+        cx.closePath();
+        cx.fill();
+    }
+    // pale mushrooms in little clusters
+    for (i = 0; i < 6; i++) {
+        fbx = c.x + (fl() * 1.6 - .8) * c.rx;
+        fby = cavBot(fbx) - 3 - fl() * 6;
+        for (var mi = 0; mi < 3; mi++) {
+            var mx = fbx + mi * 4.2 - 4, mh = 3 + fl() * 4, my = fby + (mi & 1);
+            cx.fillStyle = 'rgba(214,196,160,.9)';
+            cx.fillRect(mx - .6, my - mh, 1.2, mh);
+            cx.fillStyle = i % 2 ? '#d9b6a0' : '#c9c0d8';
+            cx.beginPath();
+            cx.ellipse(mx, my - mh, 2.4 + mi * .3, 1.5, 0, Math.PI, 0);
+            cx.fill();
+        }
+    }
+    cx.restore();
+    // soft glow from fungus on the floor
+    cx.save();
+    cx.globalCompositeOperation = 'lighter';
+    for (i = 0; i < 4; i++) {
+        fbx = c.x + (fl() * 1.6 - .8) * c.rx;
+        glow(fbx, cavBot(fbx) - 8, 12, i % 2 ? '120,230,170' : '170,200,255', .12 + .04 * Math.sin(performance.now() * .002 + i * 2.1));
     }
     cx.restore();
     // glowing fungus clumps on the wall
@@ -4551,7 +6175,7 @@ function drawCrowd(now, ex) {
 
 // normal ants are drawn from small cached pictures when there are lots of them, which is much faster
 function antDraw(x, y, ang, sz, leaf, ph, kd, fast) {
-    if (!fast || kd === 3 || kd === 7 || sz > 8) {
+    if (!fast || kd === 3 || kd === 7 || sz > 8 || BITE) {
         drawAnt(x, y, ang, sz, leaf, ph, kd);
         return;
     }
@@ -4600,7 +6224,7 @@ function drawAnt(x, y, ang, sz, leaf, ph, kd) {
         cx.lineCap = 'round';
         cx.beginPath();
         for (var j2 = -1; j2 <= 1; j2++) {
-            var s2 = Math.sin(ph + j2 * 2.1) * u2 * .4, b2 = j2 * u2 * .55 + u2 * .1;
+            var s2 = Math.sin(ph + (j2 === 0 ? Math.PI : 0)) * u2 * .45, b2 = j2 * u2 * .55 + u2 * .1;
             cx.moveTo(b2, 0);
             cx.lineTo(b2 + u2 * .6 + s2, u2 * 1.5);
             cx.moveTo(b2, 0);
@@ -4628,19 +6252,23 @@ function drawAnt(x, y, ang, sz, leaf, ph, kd) {
     cx.beginPath();
     cx.ellipse(-u * .3, u * .55, u * 2.3, u * .9, 0, 0, 7);
     cx.fill();
+    cx.rotate(Math.sin(ph) * .045);
     cx.strokeStyle = '#120a05';
     cx.lineWidth = Math.max(.3, u * .4);
     cx.lineJoin = 'round';
     cx.beginPath();
     for (j = -1; j <= 1; j++) {
-        s = Math.sin(ph + j * 2.1) * u * .45;
-        var bx = j * u * .55 + u * .1;
+        // tripod gait: this side's front and rear legs move with the other side's middle leg
+        var gpj = ph + (j === 0 ? Math.PI : 0), sw = Math.sin(gpj), lf = Math.max(0, Math.cos(gpj)), bx = j * u * .32 + u * .05, spr = j === 1 ? .75 : j === -1 ? -.85 : -.05;
+        s = sw * u * .5;
+        // left side (sw), then right side (-sw, so the lift is on the other phase)
         cx.moveTo(bx, 0);
-        cx.lineTo(bx + u * .5 + s, u * L);
-        cx.lineTo(bx + u * .2 + s * 1.6, u * L * 1.7);
+        cx.lineTo(bx + u * (.5 + spr) + s, u * L);
+        cx.lineTo(bx + u * (.2 + spr * 1.6) + s * 1.6, u * L * 1.7 * (1 - .16 * lf));
+        var lr = Math.max(0, -Math.cos(gpj));
         cx.moveTo(bx, 0);
-        cx.lineTo(bx + u * .5 - s, -u * L);
-        cx.lineTo(bx + u * .2 - s * 1.6, -u * L * 1.7);
+        cx.lineTo(bx + u * (.5 + spr) - s, -u * L);
+        cx.lineTo(bx + u * (.2 + spr * 1.6) - s * 1.6, -u * L * 1.7 * (1 - .16 * lr));
     }
     var aw = Math.sin(ph * .5) * u * .3;
     cx.moveTo(u * 1.5, -u * .3);
@@ -4718,13 +6346,16 @@ function drawAnt(x, y, ang, sz, leaf, ph, kd) {
         cx.fill();
     }
     if ((so || kd === 8) && kd !== 7) {
+        var bo = BITE * .55;
         cx.strokeStyle = '#e8d9c0';
         cx.lineWidth = u * .28;
         cx.beginPath();
         cx.moveTo(u * 1.9, -u * .25);
-        cx.lineTo(u * 2.5, -u * .65);
+        cx.lineTo(u * (2.5 + bo * .3), -u * (.65 + bo));
+        cx.lineTo(u * (2.85 + bo * .2), -u * (.3 + bo * .6));
         cx.moveTo(u * 1.9, u * .25);
-        cx.lineTo(u * 2.5, u * .65);
+        cx.lineTo(u * (2.5 + bo * .3), u * (.65 + bo));
+        cx.lineTo(u * (2.85 + bo * .2), u * (.3 + bo * .6));
         cx.stroke();
     }
     cx.fillStyle = '#fff';
@@ -5019,6 +6650,20 @@ function queen(s, ph) {
 }
 
 function drawFoe(x, y, ang, sz, tp, ph) {
+    var st = FOEST;
+    if (st && st.hf > 0) {
+        drawFoe0(x, y, ang, sz, tp, ph);
+        cx.save();
+        cx.globalCompositeOperation = 'lighter';
+        cx.translate(x, y);
+        cx.rotate(ang);
+        glow(-sz * .2, 0, sz * 2, '255,250,235', Math.min(.75, st.hf * 4.5));
+        cx.restore();
+        return;
+    }
+    drawFoe0(x, y, ang, sz, tp, ph);
+}
+function drawFoe0(x, y, ang, sz, tp, ph) {
     cx.save();
     cx.translate(x, y);
     cx.rotate(ang);
@@ -5125,7 +6770,7 @@ function drawFoe(x, y, ang, sz, tp, ph) {
     }
     var sp = tp === 1;
     n = sp ? 4 : 3;
-    L = sz * (sp ? 1.7 : 1.2);
+    L = sz * (sp ? 1.7 : 1.2) * (FOEST && FOEST.dead ? .55 : 1);
     cx.strokeStyle = '#0c0705';
     cx.lineWidth = sp ? 1.2 : 1.8;
     cx.beginPath();
@@ -5168,13 +6813,14 @@ function drawFoe(x, y, ang, sz, tp, ph) {
             cx.arc(sz * .85, (j - 1.5) * sz * .16, Math.max(.7, sz * .08), 0, 7);
             cx.fill();
         }
+        var fo = FOEST ? FOEST.atk : 0;
         cx.strokeStyle = '#e8d9c0';
         cx.lineWidth = 1;
         cx.beginPath();
         cx.moveTo(sz * 1, -sz * .15);
-        cx.lineTo(sz * 1.3, -sz * .25);
+        cx.lineTo(sz * (1.3 + fo * .2), -sz * (.25 + fo * .35));
         cx.moveTo(sz * 1, sz * .15);
-        cx.lineTo(sz * 1.3, sz * .25);
+        cx.lineTo(sz * (1.3 + fo * .2), sz * (.25 + fo * .35));
         cx.stroke();
     }
     else {
@@ -5212,10 +6858,11 @@ function drawFoe(x, y, ang, sz, tp, ph) {
         cx.strokeStyle = '#0e1626';
         cx.lineWidth = 2.2;
         cx.beginPath();
+        var ho = FOEST ? FOEST.atk * .45 : 0;
         cx.moveTo(sz * 1.8, -sz * .2);
-        cx.quadraticCurveTo(sz * 2.6, -sz * .7, sz * 2.5, -sz * .1);
+        cx.quadraticCurveTo(sz * 2.6, -sz * (.7 + ho), sz * 2.5, -sz * (.1 + ho));
         cx.moveTo(sz * 1.8, sz * .2);
-        cx.quadraticCurveTo(sz * 2.6, sz * .7, sz * 2.5, sz * .1);
+        cx.quadraticCurveTo(sz * 2.6, sz * (.7 + ho), sz * 2.5, sz * (.1 + ho));
         cx.stroke();
     }
     cx.restore();
@@ -5249,7 +6896,7 @@ function queueForagers() {
     if (queueForagers.n % 2)
         return;
     var G = {}, gap = 5 / LEN;
-    marchers.forEach(function (m) { if (m.k !== 1 || m.inj || m.wait > 0 || m.tp == null || m.gt > 0)
+    marchers.forEach(function (m) { if (m.k !== 1 || m.inj || m.wait > 0 || m.tp == null || m.gt > 0 || m.sf)
         return; var key = (m.d > 0 ? 'h' : 'o') + (m.l > .33 ? 2 : m.l < -.33 ? 0 : 1); (G[key] || (G[key] = [])).push(m); });
     Object.keys(G).forEach(function (key) {
         var L = G[key], home = key[0] === 'h';
@@ -5391,10 +7038,17 @@ function drawArmy(now) {
             if (m.tend)
                 y += Math.sin(now * .012 + m.ph * 4) * .5;
         }
-        else if (m.ex) {
+        else if (m.ex || (m.dr && m.dr.ph !== 'main' && m.dr.ph !== 'mainB') || (m.cr && m.cr.ph !== 'main' && m.cr.ph !== 'mainB') || (m.mo && m.mo.ph !== 'main' && m.mo.ph !== 'mainB')) {
             x = m.px;
             y = m.py;
             ang = m.ang;
+        }
+        else if (m.tr && m.tr.ph !== 'main' && BP[17]) {
+            var tb = BP[17], tl = ((m.tr.slot % 3) - 1) * tw * .32, lg = trm.fT > 0 && m.tr.slot < 6 ? Math.max(0, Math.sin(now * .013 + m.ph * 5)) * 2.5 / tb.LEN : 0;
+            a = at(Math.max(0, Math.min(1, m.tr.s + lg)), tb);
+            x = a.x + a.nx * tl;
+            y = a.y + a.ny * tl;
+            ang = m.tr.dir < 0 ? a.ang + Math.PI : a.ang;
         }
         else if (k === 3 && m.xf && m.mp != null) {
             a = at(m.mp);
@@ -5416,7 +7070,7 @@ function drawArmy(now) {
             ang = m.sf.back ? rq.ang + Math.PI : rq.ang;
             if (m.sf.pk > 0)
                 ang += Math.sin(now * .01 + m.ph) * .25;
-            leaf = m.cg ? ((m.ph * 13) % 1 < .25 ? 3 : 1) : false;
+            leaf = m.cg ? (m.sf.side ? 4 : (m.ph * 13) % 1 < .25 ? 3 : 1) : false;
         }
         else {
             a = at(m.p);
@@ -5424,7 +7078,7 @@ function drawArmy(now) {
             x = a.x + a.nx * o;
             y = a.y + a.ny * o;
             ang = m.d === 1 ? a.ang : a.ang + Math.PI;
-            leaf = k === 1 && m.cg && m.d === 1 ? (m.si >= 0 ? 2 : ((m.ph * 13) % 1 < .25 ? 3 : 1)) : false;
+            leaf = k === 1 && m.cg && m.d === 1 ? (m.si >= 0 ? 2 : m.si <= -2 ? 4 : ((m.ph * 13) % 1 < .25 ? 3 : 1)) : false;
             if (k === 1 && m.pk > 0 && m.si >= 0 && S.foodSpots[m.si]) {
                 var sdp = S.foodSpots[m.si].side;
                 x = a.x + a.nx * sdp * tw * .3;
@@ -5447,10 +7101,20 @@ function drawArmy(now) {
                         m.eng = 0;
                 }
                 if (f && m.eng) {
-                    var side = m.fi % 2 ? -1 : 1, rank = Math.floor(m.u * 8), fsz = foeSz(f), lunge = rank < 2 ? Math.max(0, Math.sin(now * .012 + m.ph * 5)) * 3 : 0, pq = Math.max(0, Math.min(1, f.p + side * (fsz * 1.15 + rank * 4.5 - lunge) / LEN)), bq = at(pq), ln2 = (((m.u * 5.7) % 1) * 2 - 1) * tw * .3;
+                    var side = m.fi % 2 ? -1 : 1, rank = Math.floor(m.u * 8), fsz = foeSz(f), lw0 = Math.sin(now * .012 + m.ph * 5), lunge = rank < 2 ? Math.max(0, lw0) * 4.5 : 0, pq = Math.max(0, Math.min(1, f.p + side * (fsz * (side > 0 ? 2.25 : 1.95) + rank * 4.5 - lunge) / LEN)), bq = at(pq), ln2 = (((m.u * 5.7) % 1) * 2 - 1) * tw * .3;
                     x = bq.x + bq.nx * ln2;
                     y = bq.y + bq.ny * ln2;
                     ang = side > 0 ? bq.ang + Math.PI : bq.ang;
+                    m.bite = rank < 2 ? Math.max(0, lw0) : rank < 4 ? .35 + .35 * Math.sin(now * .02 + m.ph * 3) : 0;
+                    // a spark where the jaws land, once per lunge
+                    if (rank < 2 && lw0 > .96 && !(m.lsp > now - 300) && fx.length < 260) {
+                        m.lsp = now;
+                        var hx2 = x + Math.cos(ang) * 4.5, hy2 = y + Math.sin(ang) * 4.5;
+                        fx.push({ x: hx2, y: hy2, vx: 0, vy: 0, l: .22, star: 3.2 + Math.random() * 1.6, c: '#fff4c2', g: 0 });
+                        for (var sk2 = 0; sk2 < 2; sk2++)
+                            fx.push({ x: hx2, y: hy2, vx: Math.cos(ang + (Math.random() - .5) * 2) * 40, vy: Math.sin(ang + (Math.random() - .5) * 2) * 40 - 10, l: .25, c: '#ffd35a', s: 1.6, g: 60 });
+                        f.hf = Math.max(f.hf || 0, .12);
+                    }
                 }
             }
         }
@@ -5475,14 +7139,19 @@ function drawArmy(now) {
         }
         cx.globalAlpha = m.al == null ? 1 : m.al;
         var grown = !m.born || now - m.born >= 700;
+        var hs = m.hero != null ? HSC : 1;
+        BITE = m.eng && foes.length && m.bite ? m.bite : 0;
         if (grown)
-            antDraw(x, y, ang, SZ[k], leaf, ph, KD[k], fast);
+            antDraw(x, y, ang, SZ[k] * hs, leaf, ph, KD[k], fast && m.hero == null);
         else
-            drawAnt(x, y, ang, SZ[k] * (.35 + .65 * Math.min(1, (now - m.born) / 700)), leaf, ph, KD[k]);
+            drawAnt(x, y, ang, SZ[k] * hs * popIn(Math.min(1, (now - m.born) / 700)), leaf, ph, KD[k]);
+        BITE = 0;
         cx.globalAlpha = 1;
+        if (m.hero != null)
+            heroMark(x, y, m, now, ang);
         if (m.carry && k === 0 && !m.inj) {
             var ex = x + Math.cos(ang) * SZ[0] * .95, ey = y + Math.sin(ang) * SZ[0] * .95;
-            cx.fillStyle = '#f3ead2';
+            cx.fillStyle = m.carry === 2 ? '#b07a3c' : '#f3ead2';
             cx.beginPath();
             cx.ellipse(ex, ey, 2.6, 1.9, ang, 0, 7);
             cx.fill();
@@ -5546,6 +7215,37 @@ function drawSpoil() {
     });
 }
 
+function dirtKick(a, x, y, ang, now) {
+    a.dft = now;
+    if (fx.length > 240)
+        return;
+    var hx = x + Math.cos(ang) * 4, hy = y + Math.sin(ang) * 4, cols = ['#8a6340', '#6b4a2c', '#a8814f'];
+    for (var k = 0; k < 2; k++) {
+        var ba = ang + Math.PI + (Math.random() - .5) * 1.4, sp = 26 + Math.random() * 26;
+        fx.push({ x: hx, y: hy, vx: Math.cos(ba) * sp, vy: Math.sin(ba) * sp - 14, l: .32 + Math.random() * .15, c: cols[(Math.random() * 3) | 0], s: 1.5 + Math.random(), g: 110 });
+    }
+}
+// two workers chewing at the end of each tunnel being dug
+var DIGO = {};
+function drawFarDig(now) {
+    if (!DIGF.length)
+        return;
+    cx.save();
+    cx.translate(0, -cam);
+    DIGF.forEach(function (e, n) {
+        var st = e.deep ? S.ddg : S.fdg, pr = Math.max(.002, Math.min(1, st[e.i] || 0)), a = at(pr, e.q);
+        if (a.x < VR.x0 || a.x > VR.x1 || a.y < VR.y0 || a.y > VR.y1)
+            return;
+        for (var k = 0; k < 2; k++) {
+            var id = (e.deep ? 'd' : 'f') + e.i + '_' + k, o = DIGO[id] || (DIGO[id] = {}), dw = Math.sin(now * .011 + k * 2.3 + n), back = 3 + k * 4.5, side = (k ? -1 : 1) * 1.6;
+            var x = a.x - Math.cos(a.ang) * (back - Math.max(0, dw) * 1.8) + a.nx * side, y = a.y - Math.sin(a.ang) * (back - Math.max(0, dw) * 1.8) + a.ny * side, an = a.ang + Math.max(0, dw) * Math.sin(now * .04 + k) * .12;
+            if (dw > .95 && !(o.dft > now - 300))
+                dirtKick(o, x, y, an, now);
+            drawAnt(x, y, an, SZ[6], false, now * .01 + k * 3, KD[6]);
+        }
+    });
+    cx.restore();
+}
 function drawCrew(now) {
     cx.save();
     cx.translate(0, -cam);
@@ -5561,6 +7261,8 @@ function drawCrew(now) {
             ang = outT || a.st === 'twork' ? q.ang : q.ang + Math.PI;
             if (a.st === 'twork') {
                 var sdT = a.side || 1, scr = Math.max(0, Math.sin(now * .012 + i)) * 1.2;
+                if (scr > 1.15 && !(a.dft > now - 400))
+                    dirtKick(a, q.x + q.nx * sdT * tunW() * .3, q.y + q.ny * sdT * tunW() * .3, q.ang + sdT * 1.4, now);
                 x = q.x + q.nx * sdT * tunW() * .3 + Math.cos(q.ang + sdT * 1.4) * scr;
                 y = q.y + q.ny * sdT * tunW() * .3 + Math.sin(q.ang + sdT * 1.4) * scr;
                 ang = q.ang + sdT * 1.4;
@@ -5585,10 +7287,13 @@ function drawCrew(now) {
         else if (a.st === 'dig') {
             slotN[a.si] = (slotN[a.si] || 0) + 1;
             q = s.fa(slotN[a.si] - 1);
-            var nud = Math.max(0, Math.sin(now * .011 + i * 1.7)) * 1.4;
+            var dw = Math.sin(now * .011 + i * 1.7), nud = Math.max(0, dw) * 1.8;
             x = q.x + Math.cos(q.ang) * nud;
             y = q.y + Math.sin(q.ang) * nud;
-            ang = q.ang + Math.sin(now * .006 + i) * .06;
+            ang = q.ang + Math.sin(now * .006 + i) * .06 + Math.max(0, dw) * Math.sin(now * .04 + i) * .12;
+            // each push into the face kicks a little soil back past the digger
+            if (dw > .95 && !(a.dft > now - 260))
+                dirtKick(a, x, y, ang, now);
         }
         else {
             q = routeAt(s.rt, a.d);
@@ -5621,7 +7326,7 @@ function eggs(now) {
     cx.save();
     cx.translate(0, -cam);
     S.eggs.forEach(function (e, i) {
-        var p = eggPos(i), s = Math.max(0, Math.min(1, (now - (e.b || 0)) / 400)), w = e.t < 5 ? Math.sin(now * .02 * (6 - e.t)) * .35 * (1 - e.t / 8) : 0, gd = e.c === 4, sh = gd ? '#ffd23f' : '#f4efe0';
+        var p = eggPos(i), s = popIn(Math.max(0, Math.min(1, (now - (e.b || 0)) / 450))), w = e.t < 5 ? Math.sin(now * .02 * (6 - e.t)) * .35 * (1 - e.t / 8) : 0, gd = e.c === 4, sh = gd ? '#ffd23f' : '#f4efe0';
         cx.save();
         cx.translate(p.x, p.y);
         cx.rotate(w);
@@ -5708,7 +7413,7 @@ function hudColony() {
     $('hpb').style.width = Math.max(0, S.queenHp / hpMax() * 100) + '%';
     $('stb').style.width = (Math.max(0, 1 - S.layTimer / gap) * 100) + '%';
     $('stt').textContent = pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : Math.ceil(S.layTimer) + 's';
-    $('hint').textContent = 'Ants ' + pop + ' of ' + cap + '. Eggs ' + S.eggs.length + '. ' + (S.dug < 1 ? (S.workers < 1 ? 'You need a worker to dig. Keep hatching eggs. ' : 'Your workers are digging out. ') : 'Foragers bring food, soldiers guard the nest. ') + 'Tap the queen to hurry the next egg.';
+    $('hint').textContent = restTxt() + 'Ants ' + pop + ' of ' + cap + '. Eggs ' + S.eggs.length + '. ' + (S.dug < 1 ? (S.workers < 1 ? 'You need a worker to dig. Keep hatching eggs. ' : 'Your workers are digging out. ') : 'Foragers bring food, soldiers guard the nest. ') + 'Tap the queen to hurry the next egg.';
     $('tst').innerHTML = S.dug < 1 ? (S.workers < 1 ? 'No workers left to dig. Hatch a <b>worker</b> to continue.' : (S.dug >= .8 && digCap() < 1 ? 'The tunnel is held just below the surface. Reach the ' + T[2].n + ' with 40 ants to break through. Until then your ants gather food underground.' : 'Your workers are digging up to the surface: <b>' + Math.floor(S.dug * 100) + '%</b>')) : foes.length ? '<b>Invaders in the tunnel: ' + foes.length + '</b>' : 'The tunnel is open. Foragers are out gathering food.';
     $('tdf').textContent = 'Digging through ' + SOILN[soilAt(frontY())].toLowerCase() + (S.tier < 2 ? '' : SOILM[soilAt(frontY())] < 1 ? ' (slow)' : SOILM[soilAt(frontY())] > 1 ? ' (fast)' : '') + '. Soldiers ' + S.soldiers + ', foragers ' + S.foragers + '. Defense ' + fmt(dps()) + ' damage/s. Wave ' + (S.wave + 1) + ' is next.';
     var nt = T[S.tier + 1], tb = $('tierbtn');
@@ -5727,6 +7432,7 @@ function hudColony() {
         questsUi();
         shopUi();
         storeUi();
+        heroUi();
         $('ach').innerHTML = achHtml();
     }
     var g = gain();
@@ -5759,36 +7465,59 @@ function nextUp() {
         add('cav', 'Nest cavern level ' + ((S.cavLevel || 0) + 2), f >= cavCost().f && j >= cavCost().j, cavCost().f, cavCost().j, 'rooms', 'More room for ants. Costs ' + fmt(cavCost().f) + ' food, ' + cavCost().j + ' jelly.');
     if (S.tier >= 3 && (S.reach || 0) < 2 && S.tier >= 3 + (S.reach || 0))
         add('rch', 'Dig sideways', f >= reachCost().f && j >= reachCost().j, reachCost().f, reachCost().j, 'rooms', 'New ground to explore. Costs ' + fmt(reachCost().f) + ' food, ' + reachCost().j + ' jelly.');
-    if (S.tier >= 3 && (S.deep || 0) < 4 && S.tier >= ((S.deep || 0) < 2 ? 3 : 4))
+    if (S.tier >= 3 && (S.deep || 0) < 4 && deepGenOk(S.deep || 0) && S.tier >= ((S.deep || 0) < 2 ? 3 : 4))
         add('dp', 'Dig deeper', f >= deepCost().f && j >= deepCost().j, deepCost().f, deepCost().j, 'rooms', 'A new soil layer below the queen. Costs ' + fmt(deepCost().f) + ' food, ' + deepCost().j + ' jelly.');
     var ready = c.filter(function (x) { return x.ok; });
     if (ready.length)
-        return { t: ready[0].n, d: ready[0].x, ready: true, more: ready.length - 1, to: ready[0].to };
+        return { t: ready[0].n, d: ready[0].x, ready: true, more: ready.length - 1, to: ready[0].to, k: ready[0].k };
     c.sort(function (a, b) { return b.pf - a.pf; });
     if (!c.length)
         return { t: 'Everything is built', d: 'Take a royal flight to start a stronger colony.', ready: false, more: 0, to: null };
-    return { t: 'Saving up: ' + c[0].n, d: Math.round(c[0].pf * 100) + '% there. ' + (c[0].x || ''), ready: false, more: 0, to: c[0].to };
+    return { t: 'Saving up: ' + c[0].n, d: Math.round(c[0].pf * 100) + '% there. ' + (c[0].x || ''), ready: false, more: 0, to: c[0].to, k: c[0].k };
 }
 
 function nextUpUi() {
     var el = $('nextup'), nu = nextUp(), h;
     if (!el)
         return;
-    h = '<button class="card' + (nu.ready ? ' dig' : '') + '" style="margin:0 0 10px;display:block;width:100%;text-align:left" ' + (nu.to ? 'onclick="nextGo(\'' + nu.to + '\')"' : '') + '><span><span class="mute" style="font-size:12px;letter-spacing:.12em">' + (nu.ready ? 'READY NOW' : 'NEXT UP') + '</span><br><b>' + nu.t + '</b><span class="mute">' + nu.d + (nu.more ? ' ' + nu.more + ' more thing' + (nu.more > 1 ? 's' : '') + ' ready too.' : '') + '</span></span></button>';
+    h = '<button class="card' + (nu.ready ? ' dig' : '') + '" style="margin:0 0 10px;display:block;width:100%;text-align:left" ' + (nu.to ? 'onclick="nextGo(\'' + nu.to + '\',\'' + (nu.k || '') + '\')"' : '') + '><span><span class="mute" style="font-size:12px;letter-spacing:.12em">' + (nu.ready ? 'READY NOW' : 'NEXT UP') + '</span><br><b>' + nu.t + '</b><span class="mute">' + nu.d + (nu.more ? ' ' + nu.more + ' more thing' + (nu.more > 1 ? 's' : '') + ' ready too.' : '') + '</span></span></button>';
     if (el.getAttribute('data-h') !== h) {
         el.setAttribute('data-h', h);
         el.innerHTML = h;
     }
 }
 
-function nextGo(to) {
-    var t = $(to === 'rooms' ? 'rooms' : to === 'build' ? 'build' : to === 'bl' ? 'bl' : 'tier');
+function nextGo(to, k) {
+    var t = $(to === 'rooms' ? 'rooms' : to === 'build' ? 'build' : to === 'bl' ? 'bl' : 'tier'), g = to === 'bl' ? 'ants' : 'build', tb, sec, el = null, f;
     if (!t)
         return;
-    var sec = t.closest ? t.closest('.sec') : null;
+    tb = document.querySelector('#ctabs button[data-c="' + g + '"]');
+    if (tb && $('p-col').getAttribute('data-g') !== g)
+        tb.click();
+    sec = t.closest ? t.closest('.sec') : null;
     if (sec && sec.style.display === 'none' && sec.previousSibling)
         sec.previousSibling.click();
-    t.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    k = k || '';
+    // the button for this exact upgrade
+    if (k === 'nest')
+        el = $('tierbtn');
+    else if (k.indexOf('cl') === 0)
+        el = $('ro-' + k.slice(2));
+    else {
+        f = k[0] === 'b' ? 'startBuild(' + k.slice(1) + ')' : k[0] === 'r' && k !== 'rch' ? 'upRoom(' + k.slice(1) + ')' : k === 'cav' ? 'upCav()' : k === 'rch' ? 'upReach()' : k === 'dp' ? 'upDeep()' : '';
+        if (f)
+            el = $('p-col').querySelector('button[onclick="' + f + '"]');
+    }
+    el = el || t;
+    setTimeout(function () {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (el.tagName === 'BUTTON') {
+            el.classList.remove('flashme');
+            void el.offsetWidth;
+            el.classList.add('flashme');
+            setTimeout(function () { el.classList.remove('flashme'); }, 2200);
+        }
+    }, 60);
 }
 
 function hudClasses() {
@@ -5817,8 +7546,9 @@ function hudClasses() {
         rt += '<button class="card dig" ' + (rc >= 2 || lockedR || S.food < rcc.f || S.jelly < rcc.j ? 'disabled ' : '') + 'onclick="upReach()" style="margin:0 0 6px"><span><b>' + ico('reach') + 'Dig sideways ' + (rc + 1) + ' of 2</b><span class="mute">' + (rc >= 2 ? 'The whole underground is open' : lockedR ? 'Needs ' + T[3 + rc].n : 'Opens new ground west and east') + '</span></span><span class="r">' + (rc >= 2 ? 'Maxed' : fmt(rcc.f) + ' food, ' + rcc.j + ' jelly') + '</span></button>';
     }
     if (S.tier >= 3 || S.deep) {
-        var dl2 = S.deep || 0, dcc = deepCost(), lockedD = S.tier < (dl2 < 2 ? 3 : 4);
-        rt += '<button class="card dig" ' + (dl2 >= 4 || lockedD || S.food < dcc.f || S.jelly < dcc.j ? 'disabled ' : '') + 'onclick="upDeep()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Dig deeper ' + Math.min(4, dl2 + 1) + ' of 4' + (dl2 < 4 ? ': ' + DLAY[dl2].n : '') + '</b><span class="mute">' + (dl2 >= 4 ? 'You have reached bedrock' : lockedD ? 'Needs ' + T[4].n : 'A new soil layer below the queen, with 8% more food storage') + '</span></span><span class="r">' + (dl2 >= 4 ? 'Maxed' : fmt(dcc.f) + ' food, ' + dcc.j + ' jelly') + '</span></button>';
+        var dl2 = S.deep || 0, dcc = deepCost(), lockedD = S.tier < (dl2 < 2 ? 3 : 4), genLk = dl2 < 4 && !deepGenOk(dl2);
+        rt += '<button class="card dig" ' + (dl2 >= 4 || lockedD || genLk || S.food < dcc.f || S.jelly < dcc.j ? 'disabled ' : '') + 'onclick="upDeep()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Dig deeper ' + Math.min(4, dl2 + 1) + ' of 4' + (dl2 < 4 ? ': ' + DLAY[dl2].n : '') + '</b><span class="mute">' + (dl2 >= 4 ? 'You have reached bedrock' : genLk ? deepGenTxt(dl2) : lockedD ? 'Needs ' + T[4].n : (dl2 === 0 ? 'The Larder: food store +25% and ants work 10 hours while you are away' : dl2 === 1 ? 'The Armoury: a quarter fewer soldier injuries, and termite raids are fought 20% harder' : dl2 === 2 ? 'The Crystal Caves: scouts bring back crystal for up to 4 jelly a day, and golden eggs are 50% more likely' : dl2 === 3 ? 'Bedrock: the bottom of the world, and the Giant Mole\'s cavern' : 'A new soil layer below the queen, with 8% more food storage')) + '</span></span><span class="r">' + (dl2 >= 4 ? 'Maxed' : fmt(dcc.f) + ' food, ' + dcc.j + ' jelly') + '</span></button>';
+        rt += moleCard();
     }
     if (S.tier >= 1) {
         var abr = Ads.ready('boost', 15);
@@ -5833,7 +7563,7 @@ function hudClasses() {
     ORD.forEach(function (c, n) { ch += '<span class="chip"><i style="background:' + CC[c] + '"></i>' + CN[c] + ' ' + CW[n] + '%</span>'; });
     ch += '<span class="chip gold"><i style="background:' + CC[4] + '"></i>Golden ' + (GOLD * 100).toFixed(2) + '% (1 in ' + Math.round(1 / GOLD) + ')</span>';
     $('chance').innerHTML = ch;
-    $('hint').textContent = 'Ants ' + pop + ' of ' + capN() + ', eggs ' + S.eggs.length + '. ' + (S.dug < 1 ? 'Your ants are digging out. ' : 'Foragers bring food, soldiers guard the tunnel. ') + (ij ? ij + ' injured ants are resting. ' : '') + 'Tap the queen to hurry the next egg.';
+    $('hint').textContent = restTxt() + 'Ants ' + pop + ' of ' + capN() + ', eggs ' + S.eggs.length + '. ' + (S.dug < 1 ? 'Your ants are digging out. ' : 'Foragers bring food, soldiers guard the tunnel. ') + (ij ? ij + ' injured ants are resting. ' : '') + 'Tap the queen to hurry the next egg.';
     var nw = Math.ceil((nf - performance.now()) / 1000);
     $('tst').innerHTML = (RAID ? '<b>Raid on the hill: ' + RT[RAID.t].n + ' (' + Math.max(0, Math.round(RAID.hp / RAID.mhp * 100)) + '% health left)</b><br>' : '') + (S.dug < 1 ? (S.dug >= .8 && digCap() < 1 ? 'The tunnel is held just below the surface. Reach the ' + T[2].n + ' with 40 ants to break through. Until then your ants gather food underground.' : 'Your workers are digging up to the surface: <b>' + Math.floor(S.dug * 100) + '%</b>') : foes.length ? '<b>Invaders in the tunnel: ' + foes.length + '</b>' : (healthy(3) > 0 && nw > 0 ? 'Scouts report the next wave in about <b>' + nw + 's</b>.' : 'The tunnel is open. ' + (healthy(3) > 0 ? 'Scouts are watching.' : 'Hatch a scout to get warning of waves.')));
     $('tdf').textContent = 'Soldiers ' + healthy(2) + (S.superMajors ? ', super majors ' + healthy(4) : '') + ', foragers ' + healthy(1) + ', scouts ' + healthy(3) + '. Defense ' + fmt(dps()) + ' damage per second.';
@@ -5857,7 +7587,18 @@ function goalText() {
     if (S.hillLevel < 5)
         return '<b>Goal:</b> your nest is fully dug. Build the next anthill level on the Colony tab. Raiders will come for it, so keep your soldiers strong.';
     var gn = GREAT.filter(function (g) { return !g.ok(); })[0];
-    return gn ? '<b>Great Colony:</b> ' + gn.t + ' (' + gn.n() + '). See the Colony tab.' : '<b>The Great Colony stands.</b> Master every ant class, or start a Royal Flight.';
+    if (gn)
+        return '<b>Great Colony:</b> ' + gn.t + ' (' + gn.n() + '). See the Colony tab.';
+    var dl = S.deep || 0;
+    if (moleOn() && !S.moleWon)
+        return '<b>Goal:</b> the Giant Mole sleeps in the Bedrock (' + Math.ceil(moleHp() / MOLE_MAX * 100) + '% health). Grow your soldiers and attack it from the Colony tab.';
+    if (S.moleWon && (S.hall || 0) < 4)
+        return '<b>Goal:</b> the Giant Mole is beaten. Raise the Great Hall to level 4 on the Colony tab.';
+    if (dl < 4 && deepGenOk(dl))
+        return '<b>Goal:</b> dig down to the ' + ['Clay', 'Stone', 'Deep dark', 'Bedrock'][dl] + ' layer on the Colony tab.';
+    if (dl < 4)
+        return '<b>The Great Colony stands.</b> Take a Royal Flight to reach the ' + ['Clay', 'Stone', 'Deep dark', 'Bedrock'][dl] + ' layer next generation.';
+    return '<b>The Great Colony stands.</b> Master every ant class, or start a Royal Flight.';
 }
 
 var GREAT = [
@@ -5931,6 +7672,16 @@ function giftCheck() {
         return;
     if ($('intro').classList.contains('on') || ($('away') && $('away').classList.contains('on')) || $('endscr').classList.contains('on') || $('gift').classList.contains('on'))
         return;
+    if ((P.wn || 0) < WN_V) {
+        P.wn = WN_V;
+        save();
+        IP = IP_NEW;
+        introWasDead = dead;
+        dead = true;
+        $('intro').classList.add('on');
+        introShow(0);
+        return;
+    }
     giftShow();
 }
 
@@ -6011,7 +7762,7 @@ function energyStep(m, dt) {
         m.home = 1;
     if (k === 1 && !m.cg && !m.sf && m.p >= .985)
         rest = true;
-    if ((k === 2 || k === 4) && Math.abs(m.p - (1 - .006 - (m.fi % 14) * .004)) < .012)
+    if ((k === 2 || k === 4) && Math.abs(m.p - Math.max(1 - .006 - (m.fi % 14) * .004, 1 - S.dug * .9)) < .012)
         rest = true;
     if (k === 1 && m.sf && m.en <= 1)
         rest = false;
@@ -6025,6 +7776,14 @@ function antIdent(s) {
     var o = s.o;
     if (o.ident)
         return o.ident;
+    if (s.t === 'f') {
+        var h = 0, ki;
+        for (ki = 0; ki < o.key.length; ki++)
+            h = (h * 31 + o.key.charCodeAt(ki)) % 100003;
+        return (o.ident = { name: NAMES[(h + S.seed % 97) % NAMES.length], id: 3000 + h % 6000, k: o.k, birth: (S.days || 0) * o.u * .9 });
+    }
+    if (o.hero != null && S.heroes && S.heroes[o.hero])
+        return (o.ident = { name: S.heroes[o.hero].n + ' ' + S.heroes[o.hero].t, id: 900 + o.hero, k: o.k, birth: S.heroes[o.hero].bd || 0, hero: S.heroes[o.hero] });
     var k = s.t === 'a' ? 5 : o.k, list = s.t === 'a' ? crewA : marchers, ord = 0, tot = 0, i, d = S.days || 0;
     for (i = 0; i < list.length; i++) {
         if (s.t !== 'a' && list[i].k !== k)
@@ -6039,6 +7798,10 @@ function antIdent(s) {
 
 function antWhere(o) {
     var x = o.wx, y = o.wy, i, p, q, best = 1e9, bn = '', dd;
+    if (S.deep && y >= deepTop())
+        return 'The ' + DLAY[Math.max(0, Math.min(S.deep - 1, Math.floor((y - deepTop()) / LH())))].n.toLowerCase() + ' layer';
+    if (o.fa)
+        return 'The far tunnels';
     if (y < 22)
         return 'On the surface';
     if (y > QY - 34)
@@ -6084,15 +7847,17 @@ function antInfo(s) {
 
 function antInfo0(s) {
     var o = s.o, t, a;
+    if (s.t === 'f')
+        return [CN[o.k], o.deep ? ['Tending the deep stores', 'Carrying crumbs down to the deep chambers', 'Patrolling the deep tunnels'][o.k] : ['Tidying the far tunnels', 'Bringing food along the far tunnels', 'Patrolling the far tunnels'][o.k]];
     if (s.t === 'a')
-        return ['Worker', { dig: 'Chewing at the tunnel face', out: 'Carrying dirt away', drop: 'Tossing dirt onto the spoil pile', back: 'Heading back to dig', idle: 'Resting between jobs', tgo: o.then ? 'Walking to a new digging spot' : o.pile ? 'Going to clear a spoil pile' : 'Going to smooth the tunnel walls', twork: o.pile ? 'Shovelling up loose dirt' : 'Scraping the tunnel walls smooth', tret: S.dug >= 1 ? 'Carrying dirt up to the anthill' : 'Carrying dirt to the spoil heap', tdump: S.dug >= 1 ? 'Tipping dirt onto the anthill' : 'Tipping dirt onto the spoil heap' }[o.st] || ''];
+        return ['Worker', { dig: o.kind === 'cav' ? 'Widening the nest cavern' : 'Chewing at the tunnel face', out: 'Carrying dirt away', drop: 'Tossing dirt onto the spoil pile', back: 'Heading back to dig', idle: 'Resting between jobs', tgo: o.then ? 'Walking to a new digging spot' : o.pile ? 'Going to clear a spoil pile' : 'Going to smooth the tunnel walls', twork: o.pile ? 'Shovelling up loose dirt' : 'Scraping the tunnel walls smooth', tret: S.dug >= 1 ? 'Carrying dirt up to the anthill' : 'Carrying dirt to the spoil heap', tdump: S.dug >= 1 ? 'Tipping dirt onto the anthill' : 'Tipping dirt onto the spoil heap' }[o.st] || ''];
     t = CN[o.k];
     if (o.inj)
         return [t, o.st === 2 ? 'Resting while nurses heal it' : 'Limping to the infirmary'];
     if (o.ex)
         return [t, 'Surveying the new chamber'];
     if (o.k === 1 && o.sf)
-        return [t, o.sf.pk > 0 ? 'Snipping a leaf on the surface' : o.sf.back ? 'Carrying a leaf back to the entrance' : 'Heading out across the grass'];
+        return [t, o.sf.side ? (o.sf.pk > 0 ? 'Gathering food in a side chamber' : o.sf.back ? 'Carrying food out of a side chamber' : 'Heading down a side tunnel') : o.sf.pk > 0 ? 'Snipping a leaf on the surface' : o.sf.back ? 'Carrying a leaf back to the entrance' : 'Heading out across the grass'];
     if (o.k === 1 && o.pk > 0)
         return [t, 'Picking food from the wall'];
     if (o.gt > 0)
@@ -6100,17 +7865,17 @@ function antInfo0(s) {
     if (o.k === 0)
         a = o.act || 'Tidying the nest';
     else if (o.k === 1)
-        a = o.wait > 0 ? 'Waiting for a food spot' : o.cg ? (o.si >= 0 ? 'Carrying food from an underground spot' : 'Carrying a leaf home') : o.d === -1 ? 'Heading out to forage' : 'Heading home';
+        a = o.wait > 0 ? 'Waiting for a food spot' : o.cg ? (o.si >= 0 ? 'Carrying food from an underground spot' : o.si <= -2 ? 'Carrying food from a side chamber' : 'Carrying a leaf home') : o.d === -1 ? 'Heading out to forage' : 'Heading home';
     else if (o.k === 3)
-        a = 'Exploring the side tunnels';
+        a = o.cr && o.act ? o.act : 'Exploring the side tunnels';
     else
-        a = foes.length ? 'Fighting invaders' : 'Standing guard';
+        a = (o.dr || o.mo) && o.act ? o.act : foes.length ? 'Fighting invaders' : 'Standing guard';
     return [t, a];
 }
 
 function updateSel() {
     var el = antLbl;
-    if (!sel || tab === 'col' || (sel.t === 'm' ? marchers.indexOf(sel.o) < 0 : crewA.indexOf(sel.o) < 0) || sel.o.wx == null) {
+    if (!sel || tab === 'col' || (sel.t === 'f' ? FAO[sel.o.key] !== sel.o || performance.now() - sel.o.seen > 1500 : sel.t === 'm' ? marchers.indexOf(sel.o) < 0 : crewA.indexOf(sel.o) < 0) || sel.o.wx == null) {
         sel = null;
         el.style.display = 'none';
         return;
@@ -6125,7 +7890,9 @@ function updateSel() {
     el.style.left = (r.left + (r.width - Math.min(r.width - 16, 300)) / 2) + 'px';
     el.style.top = Math.max(r.top + 8, r.bottom - 205) + 'px';
     var st = inf[1] || 'Busy';
-    el.innerHTML = '<b>' + id.name + '</b><span class="asub">' + role + ' \u00b7 ID #' + ids + '</span>' +
+    var hh = id.hero;
+    el.innerHTML = (hh ? '<b style="color:' + hh.c + '">' + id.name + '</b><span class="asub">Hero ' + role.toLowerCase() + ' \u00b7 ' + HTRAIT[hh.k].t + '</span>' : '<b>' + id.name + '</b><span class="asub">' + role + ' \u00b7 ID #' + ids + '</span>') +
+        (hh ? '<p style="margin:4px 0 6px;font-size:12px;opacity:.85">' + hh.s + '</p>' : '') +
         '<div class="arow"><i>Age</i><span>' + (age < 1 ? 'Newly hatched' : age + (age === 1 ? ' day' : ' days')) + '</span></div>' +
         '<div class="arow"><i>Status</i><span>' + st + '</span></div>' +
         '<div class="arow"><i>Location</i><span>' + antWhere(o2) + '</span></div>' +
@@ -6480,8 +8247,8 @@ function storeUi(force) {
         return '<button class="card dig" ' + (dis ? 'disabled ' : '') + 'onclick="storeBuy(\'' + kind + '\',\'' + id + '\')" style="margin:0 0 6px;' + (state === 'on' ? 'outline:2px solid #ffd23f' : '') + '"><span><b>' + (extra || '') + name + '</b><span class="mute">' + desc + '</span></span><span class="r">' + (state === 'on' ? 'Equipped' : state === 'own' ? (kind === 'map' ? 'Owned' : 'Equip') : price + ' crown' + (price > 1 ? 's' : '')) + '</span></button>';
     }
     function dot(c) { return '<i style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + c + ';margin-right:6px;vertical-align:-1px;border:1px solid rgba(255,255,255,.4)"></i>'; }
-    var h = '<div style="border:1px solid var(--line);border-radius:16px;padding:12px;margin:10px 0 6px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b style="font-size:22px">' + cr + ' crown' + (cr === 1 ? '' : 's') + '</b><br><span class="mute">You have ' + fmt(S.jelly) + ' royal jelly.</span></span></div>';
-    h += '<p class="mute" style="margin:0 0 6px">Turn royal jelly into crowns. ' + CROWN_RATE + ' jelly makes 1 crown.</p><div style="display:flex;gap:6px;margin-bottom:6px"><button class="card dig" ' + (S.jelly < CROWN_RATE ? 'disabled ' : '') + 'onclick="crownBuy(1)" style="margin:0;justify-content:center"><b>1 crown</b> <span class="r">' + CROWN_RATE + ' jelly</span></button><button class="card dig" ' + (S.jelly < CROWN_RATE * 5 ? 'disabled ' : '') + 'onclick="crownBuy(5)" style="margin:0;justify-content:center"><b>5 crowns</b> <span class="r">' + CROWN_RATE * 5 + ' jelly</span></button></div>';
+    var h = '<h2>Crowns</h2><div style="border:1px solid var(--line);border-radius:16px;padding:12px;margin:10px 0 6px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b style="font-size:22px">' + cr + ' crown' + (cr === 1 ? '' : 's') + '</b><br><span class="mute">You have ' + fmt(S.jelly) + ' royal jelly.</span></span></div>';
+    h += '<p class="mute" style="margin:0 0 6px">Crowns buy looks and maps. Turn royal jelly into crowns: ' + CROWN_RATE + ' jelly makes 1 crown.</p><div style="display:flex;gap:6px;margin-bottom:6px"><button class="card dig" ' + (S.jelly < CROWN_RATE ? 'disabled ' : '') + 'onclick="crownBuy(1)" style="margin:0;justify-content:center"><b>1 crown</b> <span class="r">' + CROWN_RATE + ' jelly</span></button><button class="card dig" ' + (S.jelly < CROWN_RATE * 5 ? 'disabled ' : '') + 'onclick="crownBuy(5)" style="margin:0;justify-content:center"><b>5 crowns</b> <span class="r">' + CROWN_RATE * 5 + ' jelly</span></button></div>';
     h += '<h2>Ant skins</h2>' + SKIN_DEF.map(function (k) {
         var own = k.cr === 0 || owns('skin' + k.id), on = (P.skin || 'classic') === k.id;
         return card('skin', k.id, k.n, 'Changes the colour of your ants.', k.cr, on ? 'on' : own ? 'own' : 'buy', dot(k.c));
@@ -6496,9 +8263,545 @@ function storeUi(force) {
         var own = k.cr === 0 || owns('theme' + k.id), on = (P.theme || 'meadow') === k.id;
         return card('theme', k.id, k.n, 'Changes the colour of the soil around your nest.', k.cr, on ? 'on' : own ? 'own' : 'buy', dot(k.top || '#4a3322'));
     }).join('');
-    h += '<h2>Boosts</h2>' + BOOST_DEF.map(function (k) { return card('boost', k.id, k.n, k.d, k.cr, 'buy'); }).join('');
     el.innerHTML = h;
 }
+
+/* Heroes: a few named ants earn a place in the colony. Each is one of the real marching ants, picked out with a coloured glow and name. S.heroes = [{ n, t, k, c, g, s, bd }] */
+var HMILE = [60, 300, 1000, 3000];
+var HNAMES = ['Aurelia', 'Brutus', 'Cassia', 'Dorian', 'Esme', 'Flint', 'Gwendolyn', 'Hector', 'Isolde', 'Jasper', 'Kestrel', 'Linnea', 'Magnus', 'Nyx', 'Orion', 'Persephone'];
+var HCOL = [['#ffd23f', '255,210,63'], ['#8fe3ff', '143,227,255'], ['#ff8fb3', '255,143,179'], ['#a9f08a', '169,240,138'], ['#c9a3ff', '201,163,255'], ['#ff9b54', '255,155,84']];
+var HTRAIT = {
+    1: { t: 'Pathfinder: +3% food', ep: ['Pathfinder', 'Seedbearer', 'Longstride'], st: ['once carried a seed four times her size across the whole meadow.', 'knows every shortcut in the grass and never gets lost.', 'is always first to find the good crumbs.'] },
+    2: { t: 'Ironjaw: +4% defence', ep: ['Ironjaw', 'the Unbroken', 'Shieldbreaker'], st: ['held the tunnel alone until the others arrived.', 'has the scars to prove every invader regretted it.', 'sleeps standing up, just in case.'] },
+    3: { t: 'Lucky: beetles come sooner', ep: ['Eagle-eye', 'Stargazer', 'the Lucky'], st: ['spotted the golden beetle before anyone else did.', 'swears the grass whispers where the treasure is.', 'has never once come back empty-handed.'] }
+};
+function heroB(k) {
+    var n = 0, i, H = S.heroes;
+    if (!H)
+        return 1;
+    for (i = 0; i < H.length; i++)
+        if (H[i].k === k)
+            n++;
+    return 1 + (k === 3 ? .1 : k === 2 ? .04 : .03) * n;
+}
+function heroBorn() {
+    var H = S.heroes || (S.heroes = []), avail = [], k, i, n;
+    [[1, S.foragers], [2, S.soldiers], [3, S.scouts]].forEach(function (c) { if (c[1] > 0)
+        avail.push(c[0]); });
+    if (!avail.length)
+        return false;
+    avail.sort(function (a, b) { return H.filter(function (h) { return h.k === a; }).length - H.filter(function (h) { return h.k === b; }).length; });
+    k = avail[0];
+    var used = H.map(function (h) { return h.n; }), ni = ((S.seed || 0) + H.length * 5) % HNAMES.length;
+    for (i = 0; i < HNAMES.length && used.indexOf(HNAMES[ni]) >= 0; i++)
+        ni = (ni + 1) % HNAMES.length;
+    n = HNAMES[ni];
+    var tr = HTRAIT[k], c = HCOL[H.length % HCOL.length], same = H.filter(function (h) { return h.k === k; }).length;
+    H.push({ n: n, t: tr.ep[same % 3], k: k, c: c[0], g: c[1], s: n + ' ' + tr.st[(ni + same) % 3], bd: S.days || 0 });
+    SFX.win();
+    toast('A hero hatched: ' + n + ' ' + tr.ep[same % 3] + '! Find her in the Colony tab.');
+    save();
+    heroUi(true);
+    return true;
+}
+var hrT = 0;
+function heroTick(dt) {
+    hrT -= dt;
+    if (hrT > 0)
+        return;
+    hrT = 2;
+    var H = S.heroes || [];
+    if (H.length < HMILE.length && S.totalHatched >= HMILE[H.length])
+        heroBorn();
+    H = S.heroes || [];
+    H.forEach(function (h, i) {
+        var has = marchers.some(function (m) { return m.hero === i; });
+        if (has)
+            return;
+        var pool = marchers.filter(function (m) { return m.k === h.k && m.hero == null && !m.inj && m.wx != null; });
+        if (pool.length) {
+            var m = pool[Math.floor(Math.random() * pool.length)];
+            m.hero = i;
+            m.ident = null;
+        }
+    });
+}
+var HSC = 2.2;
+function heroMark(x, y, m, now, ang) {
+    var h = S.heroes && S.heroes[m.hero];
+    if (!h)
+        return;
+    cx.save();
+    cx.globalCompositeOperation = 'lighter';
+    glow(x, y, 22, h.g, .3 + .1 * Math.sin(now * .006 + m.ph));
+    cx.restore();
+    heroGear(x, y, ang || 0, m, now, h);
+    if (K * uz >= 1) {
+        cx.font = '700 8px sans-serif';
+        cx.textAlign = 'center';
+        cx.lineWidth = 2;
+        cx.strokeStyle = 'rgba(20,10,4,.8)';
+        cx.strokeText(h.n, x, y - SZ[m.k] * HSC * .8 - 4);
+        cx.fillStyle = h.c;
+        cx.fillText(h.n, x, y - SZ[m.k] * HSC * .8 - 4);
+    }
+}
+
+/* each hero wears gear for her job and trails embers in her own colour */
+function heroGear(x, y, ang, m, now, h) {
+    var k = m.k, u = SZ[k] * HSC * .31, t = now * .006 + m.ph, rg = h.g, i, j, sd, w = Math.sin(t * 1.4) * u * .35;
+    cx.save();
+    cx.translate(x, y);
+    cx.rotate(ang);
+    cx.globalCompositeOperation = 'lighter';
+    for (i = 0; i < 6; i++) {
+        var f = (now * .0013 + i * .17 + m.ph) % 1;
+        cx.fillStyle = 'rgba(' + rg + ',' + (.75 * (1 - f)) + ')';
+        cx.beginPath();
+        cx.arc(-u * (1.6 + f * 3.4), Math.sin(i * 2.3 + now * .004) * u * 1.1 * f, u * .26 * (1 - f) + .15, 0, 7);
+        cx.fill();
+    }
+    cx.globalCompositeOperation = 'source-over';
+    cx.lineJoin = 'round';
+    cx.lineCap = 'round';
+    if (k === 1) {
+        cx.fillStyle = 'rgba(' + rg + ',.88)';
+        cx.strokeStyle = 'rgba(20,10,4,.7)';
+        cx.lineWidth = u * .1;
+        cx.beginPath();
+        cx.moveTo(u * .55, -u * .6);
+        cx.quadraticCurveTo(-u * 1.6, -u * 1.7 + w, -u * 4.4, -u * 1.5 + w * 1.4);
+        cx.lineTo(-u * 3.6, -u * .5 + w * 1.1);
+        cx.lineTo(-u * 4.0, w * .8);
+        cx.lineTo(-u * 3.6, u * .5 + w * 1.2);
+        cx.lineTo(-u * 4.4, u * 1.5 + w * 1.5);
+        cx.quadraticCurveTo(-u * 1.6, u * 1.7 + w, u * .55, u * .6);
+        cx.closePath();
+        cx.fill();
+        cx.stroke();
+        for (sd = -1; sd <= 1; sd += 2) {
+            cx.fillStyle = '#23272e';
+            cx.strokeStyle = '#d0d3d8';
+            cx.lineWidth = u * .12;
+            cx.beginPath();
+            cx.arc(u * 1.4, sd * u * .4, u * .3, 0, 7);
+            cx.fill();
+            cx.stroke();
+            cx.fillStyle = h.c;
+            cx.beginPath();
+            cx.arc(u * 1.45, sd * u * .4, u * .16, 0, 7);
+            cx.fill();
+        }
+    }
+    else if (k === 2) {
+        for (sd = -1; sd <= 1; sd += 2) {
+            for (i = 0; i < 4; i++) {
+                var sx = -u * 2.3 + i * u * .6;
+                cx.fillStyle = '#c7ccd4';
+                cx.strokeStyle = '#1a1d22';
+                cx.lineWidth = u * .06;
+                cx.beginPath();
+                cx.moveTo(sx - u * .17, sd * u * .55);
+                cx.lineTo(sx + u * .17, sd * u * .55);
+                cx.lineTo(sx - u * .02, sd * u * 1.15);
+                cx.closePath();
+                cx.fill();
+                cx.stroke();
+            }
+            cx.strokeStyle = '#14161a';
+            cx.lineWidth = u * .34;
+            cx.beginPath();
+            cx.moveTo(u * 1.05, sd * u * .45);
+            cx.quadraticCurveTo(u * 1.8, sd * u * 1.3, u * 2.7, sd * u * 1.15);
+            cx.stroke();
+            cx.strokeStyle = '#d9dde3';
+            cx.lineWidth = u * .2;
+            cx.stroke();
+        }
+        cx.fillStyle = 'rgba(160,166,176,.85)';
+        cx.strokeStyle = '#14161a';
+        cx.lineWidth = u * .1;
+        cx.beginPath();
+        cx.ellipse(u * .15, 0, u * .72, u * .6, 0, 0, 7);
+        cx.fill();
+        cx.stroke();
+    }
+    else {
+        cx.strokeStyle = h.c;
+        cx.lineWidth = u * .24;
+        cx.beginPath();
+        cx.moveTo(u * .8, u * .5);
+        for (j = 1; j <= 9; j++)
+            cx.lineTo(u * .8 - j * u * .5, u * .5 + Math.sin(t * 2 + j * .7) * u * .3 * j / 4);
+        cx.stroke();
+        cx.fillStyle = '#10202c';
+        cx.beginPath();
+        cx.ellipse(u * 1.45, 0, u * .45, u * .66, 0, 0, 7);
+        cx.fill();
+        cx.strokeStyle = h.c;
+        cx.lineWidth = u * .14;
+        cx.beginPath();
+        cx.moveTo(u * 1.6, -u * .52);
+        cx.lineTo(u * 1.6, u * .52);
+        cx.stroke();
+        cx.globalCompositeOperation = 'lighter';
+        cx.fillStyle = h.c;
+        for (sd = -1; sd <= 1; sd += 2) {
+            cx.beginPath();
+            cx.arc(u * 2.9, sd * u * .62, u * .2, 0, 7);
+            cx.fill();
+        }
+        cx.globalCompositeOperation = 'source-over';
+    }
+    cx.globalCompositeOperation = 'lighter';
+    cx.fillStyle = k === 2 ? '#ff4a3a' : h.c;
+    for (sd = -1; sd <= 1; sd += 2) {
+        cx.beginPath();
+        cx.arc(u * 1.6, sd * u * .28, u * .15, 0, 7);
+        cx.fill();
+    }
+    cx.restore();
+}
+function heroFollow(i) {
+    var m = marchers.filter(function (q) { return q.hero === i && q.wx != null; })[0];
+    if (!m)
+        return toast('She is out of sight for a moment. Try again in a few seconds.');
+    go('tun');
+    sel = { t: 'm', o: m };
+    selFollow = true;
+    setZoom(2.4);
+}
+var hrKey = '';
+function heroUi(force) {
+    var el = $('heroes');
+    if (!el)
+        return;
+    var H = S.heroes || [], key = H.length + ':' + (H.length < HMILE.length ? Math.min(99, Math.floor(S.totalHatched / HMILE[H.length] * 100)) : 100);
+    if (!force && key === hrKey)
+        return;
+    hrKey = key;
+    var h = H.map(function (q, i) {
+        return '<div class="card" style="margin:0 0 6px;display:block;cursor:default"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b><i style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + q.c + ';margin-right:7px;vertical-align:-1px"></i>' + q.n + ' ' + q.t + '</b><button class="link" onclick="heroFollow(' + i + ')">Find</button></div><div class="mute" style="margin-top:3px">' + CN[q.k] + ' &middot; ' + HTRAIT[q.k].t + '</div><div style="margin-top:4px;font-size:13px">' + q.s + '</div></div>';
+    }).join('');
+    if (H.length < HMILE.length)
+        h += '<p class="mute" style="margin:0 0 6px">' + (H.length ? 'Next hero' : 'Your first hero') + ' hatches after ' + HMILE[H.length] + ' ants (' + Math.min(S.totalHatched, HMILE[H.length]) + ' so far).</p>';
+    el.innerHTML = h;
+}
+
+/* Colony map: every tunnel at once, with a dot for each ant. Tap it to jump the tunnel view to that spot. */
+var mapT = 0, mapG = null, mapV = { z: 1, cx: null, cy: null }, mapP = {}, mapMv = 0;
+function mapOpen() {
+    var o = $('mapov'), nv = document.querySelector('.nav'), h = Math.round((nv ? nv.getBoundingClientRect().top : innerHeight - 100) - 6);
+    o.classList.add('on');
+    o.style.height = h + 'px';
+    mapV = { z: 1, cx: null, cy: null };
+    mapChips();
+    var c = $('mapcv'), d = Math.min(2, window.devicePixelRatio || 1);
+    c.width = Math.round(innerWidth * d);
+    c.height = Math.round(h * d);
+    c.style.height = h + 'px';
+    mapDraw();
+    clearInterval(mapT);
+    mapT = setInterval(mapDraw, 300);
+}
+// the map reaches down past the nest floor (the cavern bulges below the old world bottom)
+function mapY1() { var c = cav(); return Math.max(WHX(), QY + 80, c.y + c.ry * 1.12 + 10); }
+function mapView(ya, yb) {
+    var c = $('mapcv'), cw = c.clientWidth, vh = c.clientHeight - 34, x0 = wideL() - 12, x1 = wideR() + 12, y0 = -SK + 40, y1 = mapY1(), sc0 = Math.min((cw - 28) / (x1 - x0), (vh - 28) / (y1 - y0));
+    if (ya == null) {
+        mapV = { z: 1, cx: null, cy: null };
+    }
+    else {
+        var t = Math.min((cw - 28) / (x1 - x0), (vh - 28) / (yb - ya));
+        mapV = { z: Math.max(1, Math.min(12, t / sc0)), cx: (x0 + x1) / 2, cy: (ya + yb) / 2 };
+    }
+    mapDraw();
+}
+function mapChips() {
+    var el = $('mapch'), h = '<button class="card" data-m="a">All</button><button class="card" data-m="n">Nest</button>', L;
+    for (L = 0; L < (S.deep || 0); L++)
+        h += '<button class="card" data-m="' + L + '">Deep ' + (L + 1) + '</button>';
+    el.innerHTML = h;
+    [].forEach.call(el.children, function (b) {
+        b.onclick = function () {
+            var m = b.getAttribute('data-m');
+            if (m === 'a')
+                mapView();
+            else if (m === 'n')
+                mapView(-SK + 40, S.deep ? deepTop() : mapY1());
+            else
+                mapView(deepTop() + +m * LH(), deepTop() + (+m + 1) * LH());
+        };
+    });
+}
+function mapClose() {
+    clearInterval(mapT);
+    $('mapov').classList.remove('on');
+}
+function mapPath(q, pr, from) {
+    var n = Math.max(4, Math.floor(q.LEN * (pr - from) / 8)), i, a, o = [];
+    for (i = 0; i <= n; i++) {
+        a = at(from + (pr - from) * i / n, q);
+        o.push([a.x, a.y]);
+    }
+    return o;
+}
+var MAPC = null;
+function mapKey(cw, ch, d) {
+    var t = 0, k;
+    for (k = 0; k < S.sideTunnels && k < BP.length; k++)
+        t += Math.round((S.sideDug[k] == null ? 1 : S.sideDug[k]) * 50);
+    farmList().forEach(function (e) { t += Math.round(e.pr * 50) + 7; });
+    deepList().forEach(function (e) { t += Math.round(e.pr * 50) + 3; });
+    var c0 = cav();
+    return [layoutV, cw, ch, d, mapV.z.toFixed(3), Math.round(mapV.cx), Math.round(mapV.cy), t, Math.round(S.dug * 200), Math.round(c0.rx), P.theme || 0, S.biome || 0].join('|');
+}
+function mapDraw() {
+    var c = $('mapcv');
+    if (!c || !$('mapov').classList.contains('on') || !MAIN)
+        return;
+    var g = c.getContext('2d'), cw = c.clientWidth, ch = c.clientHeight, d = c.width / cw;
+    var x0 = wideL() - 12, x1 = wideR() + 12, y0 = -SK + 40, y1 = mapY1(), pad = 14;
+    var vh = ch - 34, sc0 = Math.min((cw - pad * 2) / (x1 - x0), (vh - pad * 2) / (y1 - y0));
+    if (mapV.cx == null) {
+        mapV.cx = (x0 + x1) / 2;
+        mapV.cy = (y0 + y1) / 2;
+    }
+    var sc = sc0 * mapV.z, vx = cw / 2, vy = vh / 2;
+    mapG = { sc: sc, cx: mapV.cx, cy: mapV.cy, vx: vx, vy: vy, sc0: sc0 };
+    function X(x) { return vx + (x - mapV.cx) * sc; }
+    function Y(y) { return vy + (y - mapV.cy) * sc; }
+    // the tunnels only change when something is dug or the view moves: draw them once into a cache, then just add the ants on top
+    var mk = mapKey(cw, ch, d);
+    if (!MAPC || MAPC.k !== mk) {
+        MAPC = MAPC || { c: document.createElement('canvas') };
+        MAPC.k = mk;
+        MAPC.c.width = c.width;
+        MAPC.c.height = c.height;
+        var gMain = g;
+        g = MAPC.c.getContext('2d');
+        g.setTransform(d, 0, 0, d, 0, 0);
+        g.clearRect(0, 0, cw, ch);
+        var bp = bio(), gr = g.createLinearGradient(0, Y(22), 0, Y(y1));
+        gr.addColorStop(0, bp.top || '#4a3322');
+        gr.addColorStop(1, bp.bot || '#241710');
+        g.fillStyle = '#150d07';
+        g.fillRect(0, 0, cw, ch);
+        g.save();
+        g.beginPath();
+        g.rect(0, 0, cw, vh);
+        g.clip();
+        g.fillStyle = gr;
+        g.fillRect(X(x0), Y(22), (x1 - x0) * sc, (y1 - 22) * sc);
+        g.fillStyle = bp.sky ? bp.sky[1] : '#a9d3df';
+        g.globalAlpha = .55;
+        g.fillRect(X(x0), Y(y0), (x1 - x0) * sc, (22 - y0) * sc);
+        g.globalAlpha = 1;
+        g.fillStyle = bp.grass || '#4f9a3c';
+        g.fillRect(X(x0), Y(18), (x1 - x0) * sc, 5 * sc + 1);
+        // the whole nest cavern, floor included, in its real lumpy shape
+        var cv0 = cav(), ca, cm;
+        g.beginPath();
+        for (i = 0; i <= 72; i++) {
+            ca = Math.PI * 2 * i / 72;
+            cm = cavM(ca);
+            var cxp = X(cv0.x + Math.cos(ca) * cv0.rx * cm), cyp = Y(cv0.y + Math.sin(ca) * cv0.ry * cm);
+            if (i)
+                g.lineTo(cxp, cyp);
+            else
+                g.moveTo(cxp, cyp);
+        }
+        g.closePath();
+        g.fillStyle = 'rgba(150,108,66,.35)';
+        g.fill();
+        g.strokeStyle = 'rgba(255,220,160,.45)';
+        g.lineWidth = 1.5;
+        g.stroke();
+        function line(pts, w, col) {
+            g.beginPath();
+            pts.forEach(function (p, i) { if (i)
+                g.lineTo(X(p[0]), Y(p[1]));
+            else
+                g.moveTo(X(p[0]), Y(p[1])); });
+            g.lineCap = 'round';
+            g.lineJoin = 'round';
+            g.strokeStyle = 'rgba(10,5,2,.7)';
+            g.lineWidth = w + 3;
+            g.stroke();
+            g.strokeStyle = col;
+            g.lineWidth = w;
+            g.stroke();
+        }
+        var i, k, e, pr;
+        var tw = Math.min(16, Math.max(2, 5 * sc));
+        for (k = 0; k < S.sideTunnels && k < BP.length; k++) {
+            pr = S.sideDug[k] == null ? 1 : S.sideDug[k];
+            if (pr > .02)
+                line(mapPath(BP[k], pr, 0), tw, '#cfa46a');
+        }
+        farmList().forEach(function (e2) { line(mapPath(e2.f.q, e2.pr, 0), tw, '#c49a62'); if (e2.pr >= 1 && e2.f.ch) {
+            var l = e2.f.q.PT[e2.f.q.PT.length - 1];
+            g.fillStyle = '#7fd08a';
+            g.beginPath();
+            g.arc(X(l[0]), Y(l[1]), Math.max(3, 7 * sc), 0, 7);
+            g.fill();
+        } });
+        deepList().forEach(function (e2) { line(mapPath(e2.f.q, e2.pr, 0), tw, '#9a8a78'); });
+        line(mapPath(MAIN, 1, Math.max(0, 1 - S.dug)), tw * 1.25, '#e0b878');
+        g.fillStyle = '#e8b04a';
+        g.beginPath();
+        g.arc(X(QX), Y(QY), Math.max(4, 9 * sc), 0, 7);
+        g.fill();
+        g.strokeStyle = '#fff3c4';
+        g.lineWidth = 1.5;
+        g.stroke();
+        g.restore();
+        g = gMain;
+    }
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.clearRect(0, 0, c.width, c.height);
+    g.drawImage(MAPC.c, 0, 0);
+    g.setTransform(d, 0, 0, d, 0, 0);
+    g.save();
+    g.beginPath();
+    g.rect(0, 0, cw, vh);
+    g.clip();
+    var R = Math.min(6, Math.max(1.3, 2.2 * sc)), heroes = [];
+    function dot(x, y, col, r) {
+        g.fillStyle = col;
+        g.beginPath();
+        g.arc(X(x), Y(y), r || R, 0, 7);
+        g.fill();
+    }
+    farmAnts(performance.now(), function (fa, fwd, k) { dot(fa.x, fa.y, CC[k]); });
+    crewA.forEach(function (a) { if (a.wx != null)
+        dot(a.wx, a.wy, '#e8cf9a'); });
+    marchers.forEach(function (m) {
+        if (m.wx == null)
+            return;
+        if (m.hero != null && S.heroes && S.heroes[m.hero])
+            heroes.push(m);
+        else
+            dot(m.wx, m.wy, CC[m.k] || '#fff', m.k === 4 ? R * 1.8 : R);
+    });
+    foes.forEach(function (f) {
+        if (f.p < 0)
+            return;
+        var a = at(Math.min(1, f.p));
+        g.fillStyle = '#ff3b2b';
+        g.strokeStyle = '#fff';
+        g.lineWidth = 1;
+        g.beginPath();
+        g.arc(X(a.x), Y(a.y), R * (f.boss ? 3 : 1.8), 0, 7);
+        g.fill();
+        g.stroke();
+    });
+    if (gold && gold.x != null)
+        dot(gold.x, gold.y, '#ffd23f', R * 2);
+    g.font = '700 11px sans-serif';
+    g.textAlign = 'left';
+    heroes.forEach(function (m) {
+        var h = S.heroes[m.hero];
+        g.save();
+        g.shadowColor = h.c;
+        g.shadowBlur = 8;
+        dot(m.wx, m.wy, h.c, R * 2.4);
+        g.restore();
+        g.lineWidth = 3;
+        g.strokeStyle = 'rgba(20,10,4,.85)';
+        g.strokeText(h.n, X(m.wx) + 7, Y(m.wy) + 4);
+        g.fillStyle = h.c;
+        g.fillText(h.n, X(m.wx) + 7, Y(m.wy) + 4);
+    });
+    g.strokeStyle = 'rgba(255,255,255,.75)';
+    g.lineWidth = 1.5;
+    g.strokeRect(X(camX), Y(camT), W / uz * sc, H / uz * sc);
+    g.restore();
+    var lg = [['Workers', '#e8cf9a'], ['Nurses', CC[0]], ['Foragers', CC[1]], ['Soldiers', CC[2]], ['Scouts', CC[3]], ['Invaders', '#ff3b2b']], lx = 12;
+    g.font = '600 11px sans-serif';
+    lg.forEach(function (l) {
+        dot2(lx + 4, ch - 16, l[1]);
+        g.fillStyle = '#e8d9bd';
+        g.fillText(l[0], lx + 11, ch - 12);
+        lx += 18 + g.measureText(l[0]).width;
+    });
+    function dot2(x, y, col) { g.fillStyle = col; g.beginPath(); g.arc(x, y, 3.5, 0, 7); g.fill(); }
+}
+function mapJump(px, py) {
+    if (!mapG)
+        return;
+    var wx = (px - mapG.vx) / mapG.sc + mapG.cx, wy = (py - mapG.vy) / mapG.sc + mapG.cy;
+    mapClose();
+    go('tun');
+    setZoom(Math.max(uz, 1.6));
+    camX = camXc(wx - W / (2 * uz));
+    camT = camClamp(wy - H / (2 * uz));
+    selFollow = false;
+    sel = null;
+    follow = performance.now() + 8000;
+}
+function mapZoomAt(f, px, py) {
+    if (!mapG)
+        return;
+    var wx = (px - mapG.vx) / mapG.sc + mapG.cx, wy = (py - mapG.vy) / mapG.sc + mapG.cy;
+    mapV.z = Math.max(1, Math.min(14, mapV.z * f));
+    var sc = mapG.sc0 * mapV.z;
+    mapV.cx = wx - (px - mapG.vx) / sc;
+    mapV.cy = wy - (py - mapG.vy) / sc;
+    mapDraw();
+}
+(function () {
+    var c = $('mapcv'), pts = {}, last = 0, moved = false, d0 = 0;
+    function rel(e) { var r = c.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+    c.addEventListener('pointerdown', function (e) {
+        pts[e.pointerId] = rel(e);
+        moved = false;
+        d0 = 0;
+        try {
+            c.setPointerCapture(e.pointerId);
+        }
+        catch (er) { }
+    });
+    c.addEventListener('pointermove', function (e) {
+        var p = pts[e.pointerId], n = rel(e), k = Object.keys(pts);
+        if (!p || !mapG)
+            return;
+        if (k.length >= 2) {
+            var o = pts[k[0] === '' + e.pointerId ? k[1] : k[0]], dOld = Math.hypot(p.x - o.x, p.y - o.y);
+            pts[e.pointerId] = n;
+            var dNew = Math.hypot(n.x - o.x, n.y - o.y);
+            if (dOld > 0)
+                mapZoomAt(dNew / dOld, (n.x + o.x) / 2, (n.y + o.y) / 2);
+            moved = true;
+            return;
+        }
+        var dx = n.x - p.x, dy = n.y - p.y;
+        if (Math.hypot(dx, dy) < 1)
+            return;
+        pts[e.pointerId] = n;
+        d0 += Math.hypot(dx, dy);
+        if (d0 > 6)
+            moved = true;
+        if (moved) {
+            mapV.cx -= dx / mapG.sc;
+            mapV.cy -= dy / mapG.sc;
+            mapDraw();
+        }
+    });
+    function up(e) {
+        var p = pts[e.pointerId], n = Object.keys(pts).length;
+        delete pts[e.pointerId];
+        if (p && n === 1 && !moved)
+            mapJump(p.x, p.y);
+    }
+    c.addEventListener('pointerup', up);
+    c.addEventListener('pointercancel', function (e) { delete pts[e.pointerId]; });
+    c.addEventListener('wheel', function (e) { e.preventDefault(); var p = rel(e); mapZoomAt(e.deltaY < 0 ? 1.25 : .8, p.x, p.y); }, { passive: false });
+})();
+$('tmap').onclick = mapOpen;
+$('mapx').onclick = function (e) { e.stopPropagation(); mapClose(); };
+window.addEventListener('keydown', function (e) { if (e.key === 'Escape')
+    mapClose(); });
 
 // active abilities for fights
 var rallyT = 0, rallyCd = 0, alarmCd = 0, abT = 0;
@@ -6578,7 +8881,7 @@ function goldTick(dt) {
     if (!gold) {
         if (popn() < 8)
             return;
-        goldNext -= dt;
+        goldNext -= dt * heroB(3);
         if (goldNext > 0)
             return;
         var gd = Math.random() < .5 ? 1 : -1;
@@ -6725,7 +9028,7 @@ function foldSections() {
             n = nx;
         }
         h2.parentNode.insertBefore(body, h2.nextSibling);
-        var open = sv[name] != null ? sv[name] : (name === 'Next nest' || name === 'Build and upgrade' || name === 'Quests' || name === 'Your ants and queen' || ((name === 'The Anthill' || name === 'The Great Colony') && S.tier >= 4));
+        var open = sv[name] != null ? sv[name] : (name === 'Next nest' || name === 'Build and upgrade' || name === 'Quests' || name === 'Your ants and queen' || name === 'Heroes' || ((name === 'The Anthill' || name === 'The Great Colony') && S.tier >= 4));
         h2.className = 'fold';
         h2.tabIndex = 0;
         h2.setAttribute('role', 'button');
@@ -6741,9 +9044,37 @@ function foldSections() {
             tg();
         } };
     });
+
+    var CG = { 'Quests': 'today', 'Next nest': 'build', 'Build and upgrade': 'build', 'The Anthill': 'build', 'The Great Colony': 'build', 'Colony orders': 'build', 'Your ants and queen': 'ants', 'Heroes': 'ants', 'Achievements': 'more', 'Royal flight': 'more' };
+    [].slice.call(root.querySelectorAll('h2.fold')).forEach(function (h) {
+        var g = CG[h.textContent.trim()] || 'more';
+        h.setAttribute('data-g', g);
+        if (h.nextSibling)
+            h.nextSibling.setAttribute('data-g', g);
+    });
+    $('daily').setAttribute('data-g', 'today');
+    var bar = $('ctabs'), TL = [['build', 'Build'], ['ants', 'Ants'], ['today', 'Today'], ['more', 'More']], cg = 'build';
+    try {
+        cg = localStorage.getItem('thecolony_ct') || 'build';
+    }
+    catch (e) { }
+    if (!CG.Quests || !TL.some(function (t) { return t[0] === cg; }))
+        cg = 'build';
+    function showG(g) {
+        root.setAttribute('data-g', g);
+        [].forEach.call(bar.children, function (b) { b.classList.toggle('on', b.getAttribute('data-c') === g); });
+        try {
+            localStorage.setItem('thecolony_ct', g);
+        }
+        catch (e) { }
+    }
+    bar.innerHTML = TL.map(function (t) { return '<button data-c="' + t[0] + '">' + t[1] + '</button>'; }).join('');
+    [].forEach.call(bar.children, function (b) { b.onclick = function () { showG(b.getAttribute('data-c')); }; });
+    showG(cg);
 }
 
 function goTab(t) {
+    mapClose();
     tab = t === 'store' ? 'col' : t;
     cv.classList.toggle('tunmode', t === 'tun');
     cv.classList.toggle('nestmode', t !== 'tun');
@@ -6799,6 +9130,10 @@ function colony(dt) {
     greetTick(dt);
     wormTick(dt);
     goldTick(dt);
+    heroTick(dt);
+    cavTick(dt);
+    moleTick(dt);
+    restTick(dt);
     abilityTick(dt);
     dlyT -= dt;
     if (dlyT <= 0) {
@@ -6854,7 +9189,7 @@ function colony(dt) {
         S.injuryTimer -= dt;
         if (S.injuryTimer <= 0) {
             S.injuryTimer = 4 / eng;
-            if (Math.random() < .75)
+            if (Math.random() < .75 * (armouryOn() ? .75 : 1))
                 injure();
         }
     }
@@ -6868,6 +9203,8 @@ function colony(dt) {
         }
     }
     moveArmy(dt, t);
+    cricTick(dt);
+    farDigTick(dt);
     if (pop === 0 && !S.eggs.length)
         lose();
 }
@@ -6995,7 +9332,7 @@ function achHtml() {
 function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); }
 
 function frame(n) {
-    var fpsCap = tab === 'col' ? 12 : battery ? 30 : 0;
+    var fpsCap = fpsCapNow();
     if (fpsCap && n - lt < 1000 / fpsCap - 2) {
         requestAnimationFrame(frame);
         return;
@@ -7040,16 +9377,26 @@ function frame(n) {
                     S.queenHp -= (1 + S.wave * .15) * (f.boss ? 2.5 : 1) * dt;
                 if (f.tm <= 0) {
                     f.tm = .45;
-                    fx.push({ x: a.x + a.nx * f.o + Math.random() * 16 - 8, y: a.y - 14, vx: 0, vy: -34, l: .8, t: fmt(f.acc), f: 13, c: '#ffd35a', g: 0 });
+                    var big = f.acc > f.max * .08;
+                    fx.push({ x: a.x + a.nx * f.o + Math.random() * 16 - 8, y: a.y - 12, vx: (Math.random() - .5) * 18, vy: -38, l: .85, t: fmt(Math.max(1, Math.round(f.acc))), f: big ? 14 : 11, c: big ? '#ffe27a' : '#ffd35a', g: 30, pop: 1 });
                     f.acc = 0;
+                    f.hf = .16;
+                    f.kb = Math.min(3.5, (f.kb || 0) + 2.2);
                 }
                 if (f.at <= 0) {
                     f.at = .7 + Math.random() * .4;
+                    f.atk = .32;
                     shake = Math.max(shake, f.boss ? .3 : .1);
                     SFX.hit();
-                    for (var j = 0; j < 6; j++)
-                        fx.push({ x: a.x, y: a.y, vx: Math.random() * 120 - 60, vy: Math.random() * 120 - 60, l: .35, c: '#e0553f', g: 0 });
+                    var hx3 = a.x + Math.cos(a.ang) * foeSz(f) * 1.8, hy3 = a.y + Math.sin(a.ang) * foeSz(f) * 1.8;
+                    fx.push({ x: hx3, y: hy3, vx: 0, vy: 0, l: .3, slash: foeSz(f) * 1.3, ang: a.ang, c: '#ff8a6a', g: 0 });
+                    for (var j = 0; j < 4; j++)
+                        fx.push({ x: hx3, y: hy3, vx: Math.random() * 90 - 45, vy: Math.random() * 90 - 55, l: .3, c: '#b8342a', s: 2.2, g: 120 });
                 }
+                f.hf = Math.max(0, (f.hf || 0) - dt);
+                f.atk = Math.max(0, (f.atk || 0) - dt);
+                f.kb = Math.max(0, (f.kb || 0) - dt * 14);
+                f.hd = f.hd == null ? f.hp : Math.max(f.hp, f.hd - f.max * .5 * dt);
             }
             if (f.hp <= 0) {
                 for (var k = 0; k < 16; k++)
@@ -7060,11 +9407,19 @@ function frame(n) {
                     SFX.boom();
                 }
                 lastP = f.p;
-                carc.push({ x: a.x, y: a.y, t: 10, tp: f.tp, v: Math.ceil((4 + S.tier * 5) * (f.boss ? 4 : 1)) });
+                // flips over, twitches and sinks; the carcass is left once it has settled
+                dyingF.push({ p: f.p, o: f.o, tp: f.tp, sz: foeSz(f), boss: f.boss, t: 0, c: { x: a.x, y: a.y, t: 10, tp: f.tp, v: Math.ceil((4 + S.tier * 5) * (f.boss ? 4 : 1)) } });
                 return false;
             }
             return true;
         });
+        for (var di = dyingF.length - 1; di >= 0; di--) {
+            dyingF[di].t += dt;
+            if (dyingF[di].t >= 1.1) {
+                carc.push(dyingF[di].c);
+                dyingF.splice(di, 1);
+            }
+        }
         if (wvi.w && !foes.length) {
             wvi.w = 0;
             loot(lastP, wvi);
@@ -7095,7 +9450,11 @@ function frame(n) {
         return; if (m.k === 1) {
         forageStep(m, dt, .06);
         return;
-    } m.p += m.d * m.v * sp * .45 * dt; if (m.p > 1) {
+    } if (m.k === 2 || m.k === 4 || m.cr) {
+        // soldiers and super majors are walked to their guard posts in moveArmy; this old end-to-end march only made them shuttle
+        m.ph += dt * 8 * m.v;
+        return;
+    } m.p += m.d * m.v * (still ? 0 : 26 / Math.max(1, LEN)) * dt; if (m.p > 1) {
         m.p = 1;
         m.d = -1;
     }
@@ -7112,10 +9471,13 @@ function frame(n) {
     }
     queueForagers();
     cam += (camT - cam) * Math.min(1, dt * 8);
-    if (tab !== 'col')
+    if (tab !== 'col' && !mapIsOpen())
         drawT(n);
     updateSel();
-    ui();
+    if (!(n - (frame.ut || 0) < 160)) {
+        frame.ut = n;
+        ui();
+    }
     requestAnimationFrame(frame);
 }
 
@@ -7171,10 +9533,11 @@ function drawDeadQueen() {
     cx.restore();
 }
 
-function drawT(now) { drawWorld(now); drawTrails(now); drawRooms(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawSel(now); deco(now); }
+function drawT(now) { drawWorld(now); drawTrails(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); }
 
 // ---- offline progress (the colony keeps working while you are away) ----
 var earnAcc = 0, digPrev = null, AWAY_MAX = 8 * 3600;
+function awayMax() { return (larderOn() ? 10 : 8) * 3600; }
 
 function trackRates(el) {
     if (dead || el <= 0 || el > 5) {
@@ -7196,8 +9559,8 @@ function trackRates(el) {
 function catchUp(secs) {
     if (dead || !(secs >= 60) || (S.totalHatched < 1 && S.dug < .02))
         return null;
-    var capped = secs > AWAY_MAX;
-    secs = Math.min(secs, AWAY_MAX);
+    var capped = secs > awayMax();
+    secs = Math.min(secs, awayMax());
     var rate = S.foodRate != null ? S.foodRate : Math.max(0, S.foragers) * leaf() / 70, r = { secs: secs, capped: capped, f0: S.food, got: 0, born: [0, 0, 0, 0, 0, 0, 0], gold: 0, dg0: S.dug, healed: 0, full: false, hungry: false }, t = 0, lay = Math.max(0, S.layTimer || 0);
     while (t < secs) {
         var dt = Math.min(30, secs - t);
@@ -7227,6 +9590,7 @@ function catchUp(secs) {
         }
         if (S.dug < digCap() && S.workers > 0 && S.digRate)
             S.dug = Math.min(digCap(), S.dug + S.digRate * dt);
+        farDigTick(dt);
     }
     S.layTimer = Math.min(layGap(), Math.max(1, lay));
     S.injured.forEach(function (n) { r.healed += n; });
@@ -7239,6 +9603,9 @@ function catchUp(secs) {
         gainJelly(10 * r.gold);
     if (r.dg0 < 1 && S.dug >= 1)
         breakthrough();
+    r.rest = restMins(r.secs);
+    if (r.rest)
+        S.restT = Math.max(S.restT || 0, r.rest * 60);
     S.savedAt = Date.now();
     sync();
     ui();
@@ -7252,7 +9619,7 @@ function awayText(r) {
         total += n;
         parts.push(n + ' ' + CN[c].toLowerCase() + (n > 1 ? 's' : ''));
     } });
-    var s = '<h3>While you were away</h3><p class="mute" style="margin-top:-4px">' + dur + (r.capped ? ' (your ants work for up to 8 hours)' : '') + '</p>';
+    var s = '<h3>While you were away</h3><p class="mute" style="margin-top:-4px">' + dur + (r.capped ? ' (your ants work for up to ' + awayMax() / 3600 + ' hours)' : '') + '</p>';
     s += '<p>Your foragers gathered <b>' + fmt(Math.round(r.got)) + ' food</b>.</p>';
     s += total ? '<p>The queen raised <b>' + total + ' new ant' + (total > 1 ? 's' : '') + '</b>: ' + parts.join(', ') + '.</p>' : '';
     if (r.gold)
@@ -7264,10 +9631,15 @@ function awayText(r) {
     if (r.healed)
         s += '<p>Nurses healed <b>' + r.healed + ' injured ant' + (r.healed > 1 ? 's' : '') + '</b>.</p>';
     s += '<p>The queen is rested and the food spots have grown back.</p>';
+    if (r.rest)
+        s += '<p style="border-left:3px solid var(--accent2);padding-left:9px"><b>Rested colony!</b> Your foragers carry <b>25% more food</b> for the next ' + r.rest + ' minutes.</p>';
     if (r.full)
         s += '<p class="mute">The nest filled up. Dig a bigger nest to keep growing.</p>';
     else if (r.hungry)
         s += '<p class="mute">The colony ran short of food for eggs. More foragers would help.</p>';
+    var dl = diaryLines();
+    if (dl.length)
+        s += '<p class="mute" style="margin-bottom:4px"><b>From the colony diary</b></p>' + dl.map(function (l) { return '<p class="mute" style="margin:0 0 6px;font-style:italic">' + l + '</p>'; }).join('');
     return s;
 }
 
@@ -7546,23 +9918,46 @@ function musicStart() {
 }
 
 // ---- settings: backups, loading a backup, battery saver ----
-var battery = false;
+// power: 'auto' (default: 30 frames a second once the colony is big, 60 while it's small), 'smooth' (always 60), 'saver' (30 and a lighter picture)
+var battery = false, power = 'auto';
 try {
-    battery = localStorage.getItem('thecolony_battery') === '1';
+    power = localStorage.getItem('thecolony_power') || (localStorage.getItem('thecolony_battery') === '1' ? 'saver' : 'auto');
 }
 catch (e) { }
+battery = power === 'saver';
 
-function setBattery(on) {
-    battery = on;
+function setBattery(on) { setPower(on ? 'saver' : 'auto'); }
+function setPower(m) {
+    power = m;
+    battery = m === 'saver';
     try {
-        localStorage.setItem('thecolony_battery', on ? '1' : '0');
+        localStorage.setItem('thecolony_power', m);
     }
     catch (e) { }
+    if (battery && rqStep < 1) {
+        rqStep = 1;
+        dpr = rqDpr();
+        cv.width = Math.round((sizeT.cw || cv.clientWidth) * dpr);
+        cv.height = Math.round((parseFloat(cv.style.height) || cv.clientHeight) * dpr);
+    }
     batteryLabel();
 }
+// frames-a-second cap for the main loop (0 = no cap)
+function fpsCapNow() {
+    if (tab === 'col')
+        return 12;
+    if (mapIsOpen())
+        return 20;
+    if (power === 'saver')
+        return 30;
+    if (power === 'smooth')
+        return 0;
+    return popn() > 200 ? 30 : 0;
+}
+function mapIsOpen() { var o = $('mapov'); return !!(o && o.classList.contains('on')); }
 
 function batteryLabel() { var b = $('setbat'); if (b)
-    b.textContent = battery ? 'On: 30 frames a second, uses less battery' : 'Off: smooth 60 frames a second'; }
+    b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 function saveCode() { return 'COLONY:' + btoa(unescape(encodeURIComponent(saveText()))); }
 
@@ -7695,14 +10090,19 @@ function devPanel() {
             ['Max cavern + hill', function () { S.cavLevel = 10; S.hillLevel = 5; }],
             ['Far lands', null],
             ['Open far lands + all tunnels', function () { devStage(4); S.reach = 2; S.sideTunnels = 19; for (var k = 0; k < 19; k++) S.sideDug[k] = 1; genPebs(); go('tun'); }],
-            ['Unlock next deep layer', function () { S.tier = Math.max(S.tier, 4); S.food = foodCap(); S.jelly += 100; upDeep(); go('tun'); camT = camClamp(deepTop() - H * .3); }],
+            ['Unlock next deep layer', function () { P.gen = Math.max(P.gen || 0, (S.deep || 0) + 1); S.tier = Math.max(S.tier, 4); S.food = foodCap(); S.jelly += 100; upDeep(); go('tun'); camT = camClamp(deepTop() - H * .3); }],
             ['All 4 deep layers', function () { S.tier = Math.max(S.tier, 4); S.deep = 4; S.deepAt = [0, 0, 0, 0]; layoutV++; genDeep(); genPebs(); go('tun'); camT = camClamp(deepTop() - H * .3); }],
             ['Go to deep layers', function () { go('tun'); camT = camClamp(deepTop() - H * .3); }],
+            ['Finish all tunnel digging', function () { farInit(); for (var r = 0; r < 60; r++) { farmList(); deepList(); var q = DQ.concat(FQ); if (!q.length) break; q.forEach(function (e) { (e.deep ? S.ddg : S.fdg)[e.i] = 1; }); FDV++; } toast('All unlocked tunnels dug.'); }],
+            ['Cave crickets now', function () { if (!armouryOn()) { toast('Unlock the Stone layer first.'); return; } cricT = 0; cric.length = 0; foes.length = 0; trm.length = 0; go('tun'); }],
             ['Termite raid now', function () { devStage(4); S.reach = 2; S.sideTunnels = 19; for (var k = 0; k < 19; k++) S.sideDug[k] = 1; S.rare.nbf = 1; trmT = 0; genPebs(); go('tun'); }],
             ['Events', null],
             ['Good surprise', function () { EV_GOOD[Math.floor(Math.random() * EV_GOOD.length)].f(); }],
             ['Trouble', function () { EV_BAD[Math.floor(Math.random() * EV_BAD.length)].f(); }],
             ['A choice', function () { evShow(EV_CHOICE[Math.floor(Math.random() * EV_CHOICE.length)]); }],
+            ['Welcome back', null],
+            ['Pretend I was away 3 hours', function () { dead = false; foes.length = 0; $('devp').classList.remove('on'); S.savedAt = Date.now() - 3 * 3600 * 1000; resumeFromAway(); }],
+            ['Pretend I was away 8 hours', function () { dead = false; foes.length = 0; $('devp').classList.remove('on'); S.savedAt = Date.now() - 8 * 3600 * 1000; resumeFromAway(); }],
             ['Time of day', null],
             ['Day', function () { S.days = .58; }],
             ['Night', function () { S.days = 2.28; }],
@@ -7738,7 +10138,8 @@ function devPanel() {
 
 function devNote(m) { $('devnote').textContent = m; }
 
-var FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER = 'v26';
+// APP_VER is what players see and goes up with each public update; BUILD counts every build we make
+var APP_VER = '1.0', BUILD = 56, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER = APP_VER + ' (build ' + BUILD + ')';
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -7763,7 +10164,7 @@ function openSettings() {
             '<textarea id="setcode" rows="3" placeholder="Paste a save code here, or choose a backup file" style="width:100%;font:12px monospace;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px"></textarea>' +
             '<div class="irow" style="margin-top:6px;flex-wrap:wrap"><label class="card" style="margin:0;justify-content:center;cursor:pointer">Choose file<input id="setfile" type="file" accept=".json,.txt,application/json,text/plain" style="display:none"></label><button class="card" id="setload">Load this backup</button></div>' +
             (DEV ? '<p style="margin:12px 0 4px"><b>Preview tools</b></p><button class="card" id="setdev">Open preview tools</button>' : '') +
-            '<p style="margin:12px 0 4px"><b>Battery saver</b></p>' +
+            '<p style="margin:12px 0 4px"><b>Power</b> <span class="mute">(tap to change)</span></p>' +
             '<button class="card" id="setbat"></button>' +
             (FEEDBACK_EMAIL.indexOf('CHANGE-ME') === 0 ? '' : (
             '<p style="margin:12px 0 4px"><b>Send feedback</b></p>' +
@@ -7771,6 +10172,7 @@ function openSettings() {
             '<textarea id="fbtext" rows="3" placeholder="What happened, or what would you like to see?" style="width:100%;font:13px sans-serif;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px"></textarea>' +
             '<button class="card" id="fbsend" style="margin-top:6px">Send feedback</button>')) +
             '<p id="setnote" class="mute" style="min-height:1.4em;margin:10px 0" aria-live="polite"></p>' +
+            '<p class="mute" style="font-size:12px;text-align:center;margin:4px 0 0">Antropolis version ' + APP_VER + ' \u00b7 build ' + BUILD + '</p>' +
             '<div class="irow"><button class="card dig" id="setok">Done</button></div></div>';
         document.body.appendChild(el);
         ['snd', 'mus', 'help'].forEach(function (id) { var b = $(id); b.className = 'card'; b.style.cssText = 'margin:0;justify-content:center;flex:1;min-width:90px'; $('setquick').appendChild(b); });
@@ -7781,7 +10183,7 @@ function openSettings() {
         $('setcode').oninput = function () { pendingLoad = null; $('setload').textContent = 'Load this backup'; };
         $('setfile').onchange = function () { var f = this.files && this.files[0]; if (!f)
             return; var r = new FileReader(); r.onload = function () { $('setcode').value = String(r.result); pendingLoad = null; tryLoadSave($('setcode').value); }; r.readAsText(f); };
-        $('setbat').onclick = function () { setBattery(!battery); };
+        $('setbat').onclick = function () { setPower(power === 'auto' ? 'saver' : power === 'saver' ? 'smooth' : 'auto'); };
         if ($('fbsend'))
             $('fbsend').onclick = sendFeedback;
         if (DEV)
@@ -8725,7 +11127,7 @@ function springCount() { var fy = frontY(), n = 0; feat().far.forEach(function (
 
 var lastSoil = -1, tradeT = 90, featInit = false;
 var FARN = { geode: 'a glittering geode', roots: 'a tangle of nutritious roots', bones: 'ancient bones', honey: 'a hidden honey store', spring: 'an underground spring' };
-var trm = [], trmT = 120;
+var trm = [], trmT = 120, trmDef = -1;
 
 function farDecor(now) {
     var r = rng(S.seed + 4242), n = 16 * (S.reach || 0) * 2, i, span = (S.reach || 0) * W, side, x, y, t, k;
@@ -8789,6 +11191,14 @@ function farNest() {
 
 function termRaidTick(dt, quiet) {
     var B = BP[17];
+    if (trm.length && !termOpen()) {
+        // a raid can't outlive its tunnel
+        trm.length = 0;
+        trm.res = 0;
+        trm.ms = null;
+        trm.fT = 0;
+        trm.chT = 0;
+    }
     if (!B || !S.reach)
         return;
     if (!S.rare.nbf) {
@@ -8807,10 +11217,17 @@ function termRaidTick(dt, quiet) {
         trmT = 240 + Math.random() * 180;
         var size = 14 + S.tier * 8 + Math.floor(popn() / 70) + Math.floor(Math.random() * 8), n = Math.min(30, 12 + Math.floor(size / 5));
         for (var i = 0; i < n; i++)
-            trm.push({ p: 1, w: i * .55, back: 0, size: size });
+            trm.push({ p: 1, w: i * .55, back: 0, size: size, i: i });
         toast('Termite raiders are marching down the far east tunnel!');
     }
-    var sp = 38 / Math.max(1, B.LEN) * dt;
+    var sp = 38 / Math.max(1, B.LEN) * dt, def = quiet ? -1 : trmDef;
+    if (trm.fT > 0) {
+        trm.fT -= dt;
+        if (trm.fT <= 0)
+            trmResolve(B);
+    }
+    if (trm.chT > 0)
+        trm.chT -= dt;
     for (var j = trm.length - 1; j >= 0; j--) {
         var t = trm[j];
         if (t.w > 0) {
@@ -8818,25 +11235,24 @@ function termRaidTick(dt, quiet) {
             continue;
         }
         if (!t.back) {
+            var stop = trm.ms != null ? trm.ms + (8 + (t.i || 0) * 3.2) / B.LEN : def >= 0 ? def + 8 / B.LEN : -1;
+            if (stop >= 0 && t.p - sp <= stop) {
+                t.p = Math.max(t.p - sp, Math.min(t.p, stop));
+                t.hold = 1;
+                if (trm.ms == null && !trm.res) {
+                    trm.ms = def;
+                    trm.fT = 6 + Math.min(4, t.size / 20);
+                    toast('Your soldiers met the termites in the far east tunnel!');
+                    SFX.hit && SFX.hit();
+                }
+                continue;
+            }
+            t.hold = 0;
             t.p -= sp;
             if (t.p <= .04) {
                 t.back = 1;
                 if (!trm.res) {
-                    trm.res = 1;
-                    var str = S.soldiers * (1 + .25 * S.classLevel[2]) + S.superMajors * 10, cap = foodCap();
-                    if (str >= t.size * 6) {
-                        S.termWins = (S.termWins || 0) + 1;
-                        var loot = Math.ceil(cap * .05);
-                        S.food = Math.min(cap, S.food + loot);
-                        toast('Your soldiers drove the termites back and took ' + fmt(loot) + ' food from them.');
-                        if (Math.random() < .25)
-                            gainJelly(1);
-                    }
-                    else {
-                        var lost = Math.min(S.food, Math.ceil(cap * .06));
-                        S.food -= lost;
-                        toast('The termites stole ' + fmt(lost) + ' food before running off. More soldiers would stop them.');
-                    }
+                    trmResolve(B);
                 }
             }
         }
@@ -8846,8 +11262,36 @@ function termRaidTick(dt, quiet) {
                 trm.splice(j, 1);
         }
     }
-    if (!trm.length)
+    if (!trm.length) {
         trm.res = 0;
+        trm.ms = null;
+        trm.fT = 0;
+        trm.chT = 0;
+    }
+}
+
+// the outcome is settled by numbers, as before; the soldiers on the line only show it
+function trmResolve(B) {
+    if (trm.res)
+        return;
+    trm.res = 1;
+    trm.fT = 0;
+    trm.forEach(function (t) { t.back = 1; t.hold = 0; });
+    var sz = trm.length ? trm[0].size : 0, str = (S.soldiers * (1 + .25 * S.classLevel[2]) + S.superMajors * 10) * (armouryOn() ? 1.2 : 1), cap = foodCap();
+    if (str >= sz * 6) {
+        trm.chT = trm.ms != null ? 5 : 0;
+        S.termWins = (S.termWins || 0) + 1;
+        var loot = Math.ceil(cap * .05);
+        S.food = Math.min(cap, S.food + loot);
+        toast('Your soldiers drove the termites back and took ' + fmt(loot) + ' food from them.');
+        if (Math.random() < .25)
+            gainJelly(1);
+    }
+    else {
+        var lost = Math.min(S.food, Math.ceil(cap * .06));
+        S.food -= lost;
+        toast('The termites stole ' + fmt(lost) + ' food before running off. More soldiers would stop them.');
+    }
 }
 
 function drawRaid() {
@@ -8857,8 +11301,8 @@ function drawRaid() {
     trm.forEach(function (t) {
         if (t.w > 0)
             return;
-        var q = at(Math.max(0, Math.min(1, t.p)), B);
-        critter(q.x, q.y, q.ang + (t.back ? 0 : Math.PI), 2.6, false);
+        var jg = t.hold && trm.fT > 0 && (t.i || 0) < 6 ? -Math.max(0, Math.sin(performance.now() * .012 + (t.i || 0) * 1.7)) * 2.2 / B.LEN : 0, q = at(Math.max(0, Math.min(1, t.p + jg)), B);
+        critter(q.x, q.y, q.ang + (t.back ? 0 : Math.PI) + (t.hold ? Math.sin(performance.now() * .009 + (t.i || 0)) * .3 : 0), 2.6, false);
     });
 }
 
@@ -9247,9 +11691,12 @@ var IP_FULL = ['<h3>Welcome to Antropolis</h3><p>You are a queen ant starting a 
     '<h3>Five kinds of ant</h3><p>' + chipRow([6, 0, 1, 2, 3]) + '</p><p><b>Workers</b> dig. <b>Nurses</b> heal. <b>Foragers</b> fetch food. <b>Soldiers</b> fight. <b>Scouts</b> find treasure.</p><p>Every egg hatches into a random one. Rarely, a golden egg hatches a mighty Super Major.</p>',
     '<h3>Food</h3><p>Foragers bring food home. Eggs, upgrades and digging all cost food, and ants starve without it.</p><p>Keep some foragers working.</p>',
     '<h3>Defend your nest</h3><p>Once your tunnel reaches the surface, invaders attack in waves. Soldiers fight them. Nurses heal the hurt.</p><p>Watch the fights on the <b>Tunnel</b> tab.</p>',
-    '<h3>Grow</h3><p>On the <b>Colony</b> tab, dig a bigger nest and spend <b>royal jelly</b> to level up your ants.</p><p>The <b>Goal</b> card always shows what to do next. Tap any ant to follow it.</p>'];
+    '<h3>Grow</h3><p>On the <b>Colony</b> tab, dig a bigger nest and spend <b>royal jelly</b> to level up your ants.</p><p>The <b>Goal</b> card always shows what to do next. Tap any ant to follow it.</p>',
+    '<h3>Going deeper</h3><p>Each new generation (after a <b>Royal Flight</b>) lets you dig one layer deeper below the nest.</p><p><b>Clay:</b> the Larder. <b>Stone:</b> the Armoury, and cave crickets. <b>Deep dark:</b> the Crystal Caves. <b>Bedrock:</b> the Giant Mole.</p><p>Beat the mole to build the Great Hall.</p>'];
 var IP_QUICK = ['<h3>Welcome to Antropolis</h3><p>You are a queen ant starting a new colony underground.</p><p><b>Tap the queen</b> on the Nest tab to lay eggs faster.</p>',
     '<h3>Grow your colony</h3><p>Your ants dig, find food and fight invaders.</p><p>Follow the <b>Goal</b> card. It always shows what to do next.</p><p class="mute">Need more help? Open the menu and tap How to play.</p>'];
+// shown once to returning players after an update; new players skip it
+var WN_V = 50, IP_NEW = ['<h3>What\u2019s new</h3><p><b>Deep layers:</b> each generation digs one layer deeper. Find the Larder, the Armoury, the Crystal Caves and, at the very bottom, the <b>Giant Mole</b>. Beat it to build the Great Hall.</p><p><b>Your army has jobs:</b> soldiers drill in the Armoury, march out to fight termite raids and fight off cave crickets. Scouts map the Crystal Caves.</p><p><b>Also:</b> the nest grows as workers dig it out, foragers spread to every tunnel, and the Ready now card jumps straight to the upgrade.</p>'];
 IP = IP_QUICK;
 $('inext').onclick = function () { if (ii >= IP.length - 1)
     introClose();
@@ -9304,8 +11751,10 @@ $('snd').addEventListener('click', function () { musicStart(); musicSync(); });
 document.addEventListener('pointerdown', function first() { document.removeEventListener('pointerdown', first); musicStart(); });
 document.addEventListener('visibilitychange', musicSync);
 try {
-    if (!localStorage.getItem('thecolony_intro'))
+    if (!localStorage.getItem('thecolony_intro')) {
+        P.wn = WN_V;
         introOpen();
+    }
 }
 catch (e) {
     introOpen();
@@ -9321,6 +11770,8 @@ catch (e) {
     $('tgo').textContent = S.totalHatched > 0 || S.dug > 0 ? 'CONTINUE' : 'PLAY';
     function go() { t.className = 'off'; setTimeout(function () { t.style.display = 'none'; }, 800); musicStart(); }
     $('tgo').onclick = go;
+    if ($('tver'))
+        $('tver').textContent = 'Version ' + APP_VER + ' \u00b7 build ' + BUILD;
     $('thelp').onclick = function () { go(); setTimeout(function () { introOpen(true); }, 300); };
 })();
 if (S.totalHatched === 0 && S.dug === 0)
