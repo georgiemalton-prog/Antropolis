@@ -81,6 +81,13 @@ GitHub runs the build check and lint on every push and pull request (`.github/wo
    next visit (the service worker cache name changes with `BUILD`).
 4. For the Android app: Actions → "Build Android app" → Run workflow.
 
+## Play stats
+
+`src/js/core/stats.js` sends anonymous milestones (stage reached, generation, deep layers, the mole,
+play time, coming back after 1/2/3/7/14/30 days) to GoatCounter, once per device each. No cookies,
+no save data, nothing personal. It is off while `STATS_CODE` is empty, in `dev.html`, and when the
+player turns it off in the Menu. The numbers are at https://STATS_CODE.goatcounter.com.
+
 ## To do
 
 - `FEEDBACK_EMAIL` in `src/js/ui/settings.js` is still a placeholder.

@@ -232,6 +232,9 @@ $('tstw').onclick = function () { $('tinfo').classList.toggle('on'); };
 // ---- main/input ----
 initFollowButton();
 
+// ---- core/stats ----
+statsLoad();
+
 // ---- main/loop ----
 try {
     var lastTab = localStorage.getItem('thecolony_tab');

@@ -81,6 +81,7 @@ function openSettings() {
             (DEV ? '<p style="margin:12px 0 4px"><b>Preview tools</b></p><button class="card" id="setdev">Open preview tools</button>' : '') +
             '<p style="margin:12px 0 4px"><b>Power</b> <span class="mute">(tap to change)</span></p>' +
             '<button class="card" id="setbat"></button>' +
+            (STATS_CODE && !DEV ? '<p style="margin:12px 0 4px"><b>Anonymous play stats</b> <span class="mute">(helps us improve the game)</span></p><button class="card" id="setstats"></button>' : '') +
             (FEEDBACK_EMAIL.indexOf('CHANGE-ME') === 0 ? '' : (
             '<p style="margin:12px 0 4px"><b>Send feedback</b></p>' +
             '<div class="irow" style="margin-bottom:6px"><select id="fbtype" style="flex:1;padding:8px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)"><option>Bug</option><option>Idea</option><option>Something confusing</option></select></div>' +
@@ -99,6 +100,8 @@ function openSettings() {
         $('setfile').onchange = function () { var f = this.files && this.files[0]; if (!f)
             return; var r = new FileReader(); r.onload = function () { $('setcode').value = String(r.result); pendingLoad = null; tryLoadSave($('setcode').value); }; r.readAsText(f); };
         $('setbat').onclick = function () { setPower(power === 'auto' ? 'saver' : power === 'saver' ? 'smooth' : 'auto'); };
+        if ($('setstats'))
+            $('setstats').onclick = statsToggle;
         if ($('fbsend'))
             $('fbsend').onclick = sendFeedback;
         if (DEV)
@@ -106,5 +109,6 @@ function openSettings() {
         $('setok').onclick = function () { el.classList.remove('on'); pendingLoad = null; $('setload').textContent = 'Load this backup'; setNote(''); };
     }
     batteryLabel();
+    statsLabel();
     el.classList.add('on');
 }

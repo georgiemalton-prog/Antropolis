@@ -10,6 +10,7 @@ function frame(n) {
     }
     var dt = Math.min((n - lt) / 1000, .1);
     lt = n;
+    statsTick(dt);
     if (tab !== 'col' && !battery)
         rqTick(dt);
     if (!dead) {
