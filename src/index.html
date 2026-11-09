@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Antropolis</title>
+<meta name="theme-color" content="#0b0603">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Antropolis"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+<!-- @css: src/styles.css goes here -->
+</style></head>
+<body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
+<div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
+<div class="top"><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
+<div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
+<div id="goals"></div><p id="goal" class="gline"></p>
+<div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food · <b id="jel">0</b> jelly</small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
+ <div id="tzoom"><button class="card" id="tmap">Map</button><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
+ <div id="tbot"><div id="abil" style="display:none;gap:6px"><button class="card" id="abR">Rally</button><button class="card" id="abA">Sound the alarm</button></div>
+ <div id="wrow" style="display:none;gap:6px"><button class="card" id="jw">&#9664; West</button><button class="card" id="jh">Home</button><button class="card" id="je">East &#9654;</button></div>
+ <div style="display:flex;gap:6px"><button class="card" id="j0">Surface</button><button class="card" id="j1">Front line</button><button class="card" id="j2">Nest</button></div></div></div></div>
+
+<div class="pn on" id="p-nest">
+ <div class="row"><b>Queen’s health</b><span id="hpt"></span></div><div class="bar"><i id="hpb" style="background:#c0452d"></i></div>
+ <div class="row"><b>Next egg</b><span id="stt"></span></div><div class="bar"><i id="stb" style="background:#6fbf4a"></i></div>
+ <div class="mute" style="margin-top:12px">Egg chances</div><div class="chips" id="chance"></div>
+ <p class="mute" id="hint"></p>
+</div>
+<div class="pn" id="p-tun"></div>
+<div class="pn" id="p-col">
+ <div id="daily"></div>
+ <div id="nextup"></div>
+ <div id="ctabs"></div>
+ <h2>Next nest</h2><div id="tier"></div>
+ <h2>Build and upgrade</h2><div id="rooms" style="margin:0 0 4px"></div><div id="build"></div>
+ <h2>Quests</h2><div id="quests"></div>
+ <h2>Heroes</h2><div id="heroes"></div>
+ <h2>Your ants and queen</h2><p class="mute" style="margin:0 0 4px">Tap a card to level up with royal jelly. Earn jelly from waves, bosses, finds and daily tasks.</p><div id="bl"></div>
+ <h2>The Anthill</h2><p class="mute" id="hilltx" style="margin:0 0 6px"></p><button class="card dig" id="hillbtn" style="margin:0 0 10px">Build</button>
+ <h2>The Great Colony</h2><div id="great"></div>
+ <h2>Colony orders</h2><div id="orders"></div><p class="mute" id="thr" style="margin:6px 0 0"></p>
+ <h2>Achievements</h2><div id="ach" style="margin:0 0 8px"></div><h2>Royal flight</h2><p class="mute" id="prinfo" style="margin:0"></p><div id="pr"></div>
+ <button class="link" id="reset">Erase everything</button>
+</div>
+<div id="mapov"><canvas id="mapcv"></canvas><div id="mapch"></div><button class="card" id="mapx">Close map</button></div>
+<div class="pn" id="p-store"><h2>Boosts</h2><div id="shop"></div><div id="store"></div></div>
+</main>
+<nav class="nav"><button data-t="nest" class="on"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkN"><rect width="96" height="96" fill="#fff"/><path d="M36 84V68C36 55 60 55 60 68V84Z" fill="#000"/></mask></defs><g mask="url(#mkN)"><path d="M10 84H86" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M15 84C15 56 29 32 48 32S81 56 81 84Z"/></g><path d="M68 30q2-9 9-12M72 31q7-5 13-3" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span>Nest</button><button data-t="tun"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkT"><rect width="96" height="96" fill="#fff"/><path d="M42 12V46C42 60 56 58 56 72V90M42 46H30" stroke="#000" stroke-width="11" fill="none"/><circle cx="25" cy="46" r="9" fill="#000"/></mask></defs><g mask="url(#mkT)"><rect x="12" y="14" width="72" height="72" rx="14"/></g></svg></span>Tunnel</button><button data-t="col"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><defs><mask id="mkC"><rect width="96" height="96" fill="#fff"/><circle cx="30" cy="30" r="6" fill="#000"/><circle cx="66" cy="30" r="6" fill="#000"/><circle cx="48" cy="70" r="7.5" fill="#000"/></mask></defs><path d="M30 30H66M30 30L48 70M66 30L48 70" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/><g mask="url(#mkC)"><circle cx="30" cy="30" r="14"/><circle cx="66" cy="30" r="14"/><circle cx="48" cy="70" r="16"/></g></svg></span>Colony</button><button data-t="store"><span><svg viewBox="0 0 96 96" aria-hidden="true" fill="currentColor"><path d="M12 72L8 28L30 46L48 18L66 46L88 28L84 72Z"/><rect x="12" y="78" width="72" height="9" rx="3"/></svg></span>Store</button></nav>
+<div class="over" id="gen" style="background:radial-gradient(ellipse at center,rgba(70,50,10,.9),rgba(8,4,2,.96))"><div style="font-size:13px;letter-spacing:.2em;color:#e8b04a">A NEW AGE</div><h2 id="gent" style="font-size:38px;margin:0;color:#ffd23f"></h2><div id="genp" style="max-width:330px;max-height:62vh;overflow-y:auto;text-align:left;font-size:15px;line-height:1.35"></div><button class="card dig" id="gencont" style="max-width:340px"><b>Begin the new generation</b></button></div>
+<div class="over" id="adov" style="z-index:30;background:rgba(8,4,2,.94)"><div style="font-size:12px;letter-spacing:.2em;color:#e8b04a">REWARDED AD</div><h2 id="adt" style="font-size:26px;margin:0"></h2><p id="adp" style="max-width:320px;margin:0"></p><button class="card dig" id="adgo" style="max-width:340px" disabled><b id="adgot">Please wait...</b></button><button class="card" id="adno" style="max-width:340px;justify-content:center">No thanks</button></div>
+<div class="over" id="evt" style="z-index:25;background:rgba(8,4,2,.9)"><div style="font-size:12px;letter-spacing:.2em;color:#e8b04a">SOMETHING HAPPENED</div><h2 id="evtt" style="font-size:26px;margin:0"></h2><p id="evtp" style="max-width:330px;margin:0"></p><button class="card dig" id="evta" style="max-width:340px"></button><button class="card dig" id="evtb" style="max-width:340px"></button></div>
+<div class="over" id="over"><h2 style="font-size:32px;margin:0">The nest has fallen</h2><p id="overp" style="max-width:320px"></p><button class="card dig" id="adrev" style="max-width:340px"><b>Watch an ad to save the queen</b></button><button class="card dig" id="again"><b>Found a new colony</b></button></div>
+<div class="intro" id="intro" role="dialog" aria-modal="true"><div class="icard"><div id="ipg"></div><div class="idots" id="idots"></div><div class="irow"><button class="card" id="iback">Back</button><button class="card dig" id="inext">Next</button></div></div></div>
+<div class="over" id="endscr"><h2 style="font-size:40px;margin:0">THE GREAT COLONY</h2><p style="max-width:330px">From one queen and a handful of ants, you built a Metropolis under the grass. The tunnels never sleep, and the whole meadow knows your name.</p><p class="mute" style="max-width:330px">You are now a <b>Founder</b>. Keep playing, master every ant class, or start a Royal Flight and found a new colony.</p><button class="card dig" id="endok"><b>Keep playing</b></button></div>
+<div class="intro" id="gift" role="dialog" aria-modal="true"><div class="icard"><div id="giftt"></div><div class="irow"><button class="card dig" id="giftok">Claim</button></div></div></div>
+<div class="gold" id="gold" aria-live="polite">✦ GOLDEN EGG ✦<small>A Super Major has hatched!</small></div>
+<div class="toast" id="toast"></div>
+
+<script>
+<!-- @js: the files listed in src/js/ORDER go here -->
+</script></body></html>
