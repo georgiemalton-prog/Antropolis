@@ -61,6 +61,11 @@ function initTapToSelect() {
         tdn = null;
         if (moved > 8 || dtp > 450)
             return;
+        var r0 = cv.getBoundingClientRect(), ri = roomAt(camX + (e.clientX - r0.left) / (K * uz), cam + (e.clientY - r0.top) / (K * uz));
+        if (ri >= 0) {
+            roomCard(ri);
+            return;
+        }
         if (tab !== 'tun') {
             sel = null;
             return;

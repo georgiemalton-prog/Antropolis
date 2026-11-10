@@ -6788,6 +6788,24 @@ function drawRooms(now) {
         }
         cx.strokeText(rlab, x, y - 15 * sc);
         cx.fillText(rlab, x, y - 15 * sc);
+        if (roomCanUp(i)) {
+            // a gold arrow by the name: this chamber can be upgraded now (tap it)
+            var aw = cx.measureText(rlab).width / 2 + 7 * sc, ax = x + aw, ay = y - 18 * sc + Math.sin(t * 4) * 1.5 * sc;
+            cx.fillStyle = '#ffd35a';
+            cx.strokeStyle = 'rgba(0,0,0,.7)';
+            cx.lineWidth = 1.5 * sc;
+            cx.beginPath();
+            cx.moveTo(ax, ay - 5 * sc);
+            cx.lineTo(ax + 4.5 * sc, ay + 1 * sc);
+            cx.lineTo(ax + 1.6 * sc, ay + 1 * sc);
+            cx.lineTo(ax + 1.6 * sc, ay + 5 * sc);
+            cx.lineTo(ax - 1.6 * sc, ay + 5 * sc);
+            cx.lineTo(ax - 1.6 * sc, ay + 1 * sc);
+            cx.lineTo(ax - 4.5 * sc, ay + 1 * sc);
+            cx.closePath();
+            cx.stroke();
+            cx.fill();
+        }
     }
     var fl = rng(S.seed + 11);
     for (i = 2; i < PT.length - 1; i += 2) {
@@ -11408,7 +11426,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 64, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 65, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -11701,6 +11719,55 @@ function openingPlay(done) {
     el.tabIndex = 0;
     try { el.focus(); } catch (e) { }
     requestAnimationFrame(step);
+}
+
+/* ui/roomcard.js
+   Tap a chamber in the Nest or Tunnel view to upgrade it right there: a small card with its level,
+   bonus and cost. Chambers you can afford to upgrade show a gold arrow by their name (render/chambers.js).
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+// where chamber i sits in the world (the same spot drawRooms uses)
+function roomXY(i) { var q = PT[CI[i]]; return q ? { x: q[0] + (i % 2 ? -34 : 34), y: q[1] } : null; }
+
+function roomCanUp(i) { var c = roomCost(i); return S.tier > i && rl(i) < 4 && S.food >= c.f && S.jelly >= c.j; }
+
+// the chamber under a tap at world point (wx, wy), or -1
+function roomAt(wx, wy) {
+    var best = -1, bd = 30, i, p;
+    for (i = 0; i < S.tier && i < 4; i++) {
+        p = roomXY(i);
+        if (!p)
+            continue;
+        var d = Math.hypot(p.x - wx, p.y - wy);
+        if (d < bd) { bd = d; best = i; }
+    }
+    return best;
+}
+
+function roomCard(i) {
+    var el = $('roomcard');
+    if (!el) {
+        el = document.createElement('div');
+        el.className = 'intro';
+        el.id = 'roomcard';
+        el.setAttribute('role', 'dialog');
+        el.setAttribute('aria-modal', 'true');
+        el.innerHTML = '<div class="icard"><div id="rcbody"></div><div class="irow"><button class="card" id="rcclose">Close</button><button class="card dig" id="rcup">Upgrade</button></div></div>';
+        document.body.appendChild(el);
+        $('rcclose').onclick = function () { el.classList.remove('on'); };
+        el.addEventListener('click', function (e) { if (e.target === el) el.classList.remove('on'); });
+    }
+    function fill() {
+        var lv = rl(i), c = roomCost(i), max = lv >= 4, bt = ROOMT[i].replace('%s', Math.round(ROOMB[i] * (1 + .2 * lv) * 100) + '%'),
+            nx = max ? '' : ROOMT[i].replace('%s', Math.round(ROOMB[i] * (1 + .2 * (lv + 1)) * 100) + '%');
+        $('rcbody').innerHTML = '<h3>' + ico(RICO[i]) + ROOMS[i].n + '</h3><p>Level ' + (lv + 1) + ' of 5. Right now ' + bt + '.</p>' +
+            (max ? '<p class="mute">This chamber is fully upgraded.</p>' : '<p>Next level: ' + nx + '.</p><p class="mute">Costs ' + fmt(c.f) + ' food and ' + c.j + ' royal jelly. You have ' + fmt(S.food) + ' food and ' + S.jelly + ' jelly.</p>');
+        $('rcup').style.display = max ? 'none' : '';
+        $('rcup').disabled = !roomCanUp(i);
+    }
+    $('rcup').onclick = function () { upRoom(i); fill(); };
+    fill();
+    el.classList.add('on');
 }
 
 /* ui/ads.js
@@ -12194,6 +12261,11 @@ function initTapToSelect() {
         tdn = null;
         if (moved > 8 || dtp > 450)
             return;
+        var r0 = cv.getBoundingClientRect(), ri = roomAt(camX + (e.clientX - r0.left) / (K * uz), cam + (e.clientY - r0.top) / (K * uz));
+        if (ri >= 0) {
+            roomCard(ri);
+            return;
+        }
         if (tab !== 'tun') {
             sel = null;
             return;

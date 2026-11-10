@@ -347,6 +347,24 @@ function drawRooms(now) {
         }
         cx.strokeText(rlab, x, y - 15 * sc);
         cx.fillText(rlab, x, y - 15 * sc);
+        if (roomCanUp(i)) {
+            // a gold arrow by the name: this chamber can be upgraded now (tap it)
+            var aw = cx.measureText(rlab).width / 2 + 7 * sc, ax = x + aw, ay = y - 18 * sc + Math.sin(t * 4) * 1.5 * sc;
+            cx.fillStyle = '#ffd35a';
+            cx.strokeStyle = 'rgba(0,0,0,.7)';
+            cx.lineWidth = 1.5 * sc;
+            cx.beginPath();
+            cx.moveTo(ax, ay - 5 * sc);
+            cx.lineTo(ax + 4.5 * sc, ay + 1 * sc);
+            cx.lineTo(ax + 1.6 * sc, ay + 1 * sc);
+            cx.lineTo(ax + 1.6 * sc, ay + 5 * sc);
+            cx.lineTo(ax - 1.6 * sc, ay + 5 * sc);
+            cx.lineTo(ax - 1.6 * sc, ay + 1 * sc);
+            cx.lineTo(ax - 4.5 * sc, ay + 1 * sc);
+            cx.closePath();
+            cx.stroke();
+            cx.fill();
+        }
     }
     var fl = rng(S.seed + 11);
     for (i = 2; i < PT.length - 1; i += 2) {

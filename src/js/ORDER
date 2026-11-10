@@ -49,6 +49,7 @@ ui/buildings.js
 ui/settings.js
 ui/intro.js
 ui/opening.js
+ui/roomcard.js
 ui/ads.js
 ui/music.js
 dev/preview-tools.js
