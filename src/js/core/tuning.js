@@ -10,7 +10,8 @@ var TUNING = {
         loadsGoal: 30,        // the "Bring home N loads of food" goal (was 40)
         firstFoes: 2,         // wood lice in the early first fight (Burrow stage, 2+ soldiers, tunnel 15% dug)
         firstFoesHp: 5,       // their health, in seconds of the colony's soldier damage
-        firstFoesDelay: 20    // seconds after those conditions are met
+        firstFoesDelay: 20,   // seconds after those conditions are met
+        queenBig: 1.3         // queen drawn this much bigger at the Dirt hole stage (halfway there at Burrow)
     },
     // Giant Mole (threats/mole.js) and the Great Hall built after beating it
     mole: {

@@ -5,7 +5,9 @@
 // the queen wanders slowly around her chamber and goes back to her bed now and then
 var Q = { ox: 7, oy: -3, tx: 7, ty: -3, fx: 1, tf: 1, ph: 0, wait: 4, tilt: 0, n: 0, sv: 0 };
 function qPos() { return { x: QX + Q.ox, y: QY + Q.oy }; }
-function qRear() { var s = 17 / Math.sqrt(ZM[S.tier]); return { x: QX + Q.ox - Q.fx * s * 2.3, y: QY + Q.oy + 5 }; }
+// the queen's drawn size: bigger while the colony is small, so she is the star of the early nest
+function qSize() { return 17 * (S.tier === 0 ? TUNING.start.queenBig : S.tier === 1 ? (1 + TUNING.start.queenBig) / 2 : 1); }
+function qRear() { var s = qSize() / Math.sqrt(ZM[S.tier]); return { x: QX + Q.ox - Q.fx * s * 3.2, y: QY + Q.oy }; }
 function queenWalk(dt) {
     var dx, dy, d, v = 0, vt = 0, sg, tr, wx, mv;
     if (still) { Q.ox = 7; Q.oy = -3; Q.sv = 0; return; }

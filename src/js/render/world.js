@@ -210,7 +210,7 @@ function drawWorld(now) {
         cx.fill();
     }
     drawCushion(now);
-    var qp = qPos(); drawAnt(qp.x, qp.y, Q.tilt, 17 + pulse * 3, false, Q.ph, 3);
+    var qp = qPos(); drawAnt(qp.x, qp.y, Q.tilt, qSize() + pulse * 3, false, Q.ph, 3);
     cx.globalAlpha = 1;
     cx.restore();
 }
