@@ -134,7 +134,7 @@ def layout(b):
     pg.close()
 
 def main():
-    subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'build.py'), '--check'], check=True)
+    subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'build.py')], check=True, stdout=subprocess.DEVNULL)   # also makes dev.html
     if SHOTS: os.makedirs(OUT, exist_ok=True)
     with sync_playwright() as p:
         b = p.chromium.launch()
