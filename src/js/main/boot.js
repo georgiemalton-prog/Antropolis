@@ -6,7 +6,7 @@
 // ---- core/helpers ----
 patchCanvasEllipse();
 window.onerror = function (m, s, l) { if (!l && /^Script error\.?$/.test(m))
-    return true; /* no details: comes from the browser or an extension, not the game */ var d = document.createElement('div'); d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99;background:#7a1f12;color:#fff;padding:8px 12px;font:13px system-ui'; d.textContent = 'The Colony hit an error: ' + m + ' (line ' + l + '). Please screenshot this and send it to the developer.'; document.body.appendChild(d); };
+    return true; /* no details: comes from the browser or an extension, not the game */ var d = document.createElement('div'); d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99;background:#7a1f12;color:#fff;padding:8px 12px;font:13px system-ui'; d.textContent = 'Antropolis hit an error: ' + m + ' (line ' + l + '). Please screenshot this and send it to the developer.'; document.body.appendChild(d); try { statsError(l); } catch (e) { } };
 
 // ---- core/state ----
 S = fresh();

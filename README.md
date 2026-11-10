@@ -13,6 +13,9 @@ python3 tools/build.py              # build index.html, the-colony.html, sw.js a
 python3 -m http.server 8000         # then open http://localhost:8000/dev.html
 python3 tools/lint.py               # ESLint over the joined script (needs eslint: npm install eslint)
 python3 tools/test/check.py         # replay a fixed game session and compare with the baseline
+python3 tools/test/smoke.py         # every screen opens with no errors; tunnel layout same on every phone (also runs on GitHub)
+python3 tools/test/oldsave.py       # a save from the live build still loads here with nothing lost
+python3 tools/test/bot.py 10        # a pretend new player for 10 minutes; read tools/test/out/bot/log.txt
 ```
 
 `dev.html` is the same game with the preview tools turned on (a panel for jumping ahead, giving

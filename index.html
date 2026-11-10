@@ -433,6 +433,7 @@ var TUNING = {
    Anonymous play stats, so we can see how far players get and where they stop.
    Sends a tiny "this happened" ping to GoatCounter (goatcounter.com): no cookies, no names,
    no save data, nothing that identifies the player. Each milestone is sent once per device.
+   Also counts script errors (build number and line only), so a broken build does not go unseen.
    Off when STATS_CODE is empty, in dev.html, or when the player turns it off in the Menu.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
@@ -495,6 +496,16 @@ function statsOnce(name) {
     catch (e) { }
 }
 
+// the game hit a script error: count it (build and line only, never the player's data), at most three
+// different ones per device and build, so a broken build shows up in the stats instead of going unseen
+function statsError(line) {
+    if (!ST)
+        statsLoad();
+    var b = 'error-build-' + BUILD, n = Object.keys(ST.sent).filter(function (k) { return k.indexOf(b) === 0; }).length;
+    if (n < 3)
+        statsOnce(b + '-line-' + (line || 0));
+}
+
 // called from the main loop with the real time step; checks milestones every few seconds
 function statsTick(rdt) {
     if (!statsOn())
@@ -518,6 +529,10 @@ function statsTick(rdt) {
             statsOnce('finished-how-to-play');
     }
     catch (e) { }
+    // how far through the opening goals; a save that skipped them (goalIndex 99) is not counted
+    if (S.goalIndex <= GOALS.length)
+        for (var gi = 1; gi <= S.goalIndex; gi++)
+            statsOnce('goal-' + gi);
     for (var i = 1; i <= S.tier && i < T.length; i++)
         statsOnce('stage-' + i + '-' + T[i].n.toLowerCase().replace(/ /g, '-'));
     for (i = 2; i <= Math.min(genNum(), 10); i++)
@@ -12500,7 +12515,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 76, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 77, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -13737,7 +13752,7 @@ var lastTouchEnd = 0;
 // ---- core/helpers ----
 patchCanvasEllipse();
 window.onerror = function (m, s, l) { if (!l && /^Script error\.?$/.test(m))
-    return true; /* no details: comes from the browser or an extension, not the game */ var d = document.createElement('div'); d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99;background:#7a1f12;color:#fff;padding:8px 12px;font:13px system-ui'; d.textContent = 'The Colony hit an error: ' + m + ' (line ' + l + '). Please screenshot this and send it to the developer.'; document.body.appendChild(d); };
+    return true; /* no details: comes from the browser or an extension, not the game */ var d = document.createElement('div'); d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99;background:#7a1f12;color:#fff;padding:8px 12px;font:13px system-ui'; d.textContent = 'Antropolis hit an error: ' + m + ' (line ' + l + '). Please screenshot this and send it to the developer.'; document.body.appendChild(d); try { statsError(l); } catch (e) { } };
 
 // ---- core/state ----
 S = fresh();

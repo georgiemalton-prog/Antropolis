@@ -2,6 +2,7 @@
    Anonymous play stats, so we can see how far players get and where they stop.
    Sends a tiny "this happened" ping to GoatCounter (goatcounter.com): no cookies, no names,
    no save data, nothing that identifies the player. Each milestone is sent once per device.
+   Also counts script errors (build number and line only), so a broken build does not go unseen.
    Off when STATS_CODE is empty, in dev.html, or when the player turns it off in the Menu.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
@@ -64,6 +65,16 @@ function statsOnce(name) {
     catch (e) { }
 }
 
+// the game hit a script error: count it (build and line only, never the player's data), at most three
+// different ones per device and build, so a broken build shows up in the stats instead of going unseen
+function statsError(line) {
+    if (!ST)
+        statsLoad();
+    var b = 'error-build-' + BUILD, n = Object.keys(ST.sent).filter(function (k) { return k.indexOf(b) === 0; }).length;
+    if (n < 3)
+        statsOnce(b + '-line-' + (line || 0));
+}
+
 // called from the main loop with the real time step; checks milestones every few seconds
 function statsTick(rdt) {
     if (!statsOn())
@@ -87,6 +98,10 @@ function statsTick(rdt) {
             statsOnce('finished-how-to-play');
     }
     catch (e) { }
+    // how far through the opening goals; a save that skipped them (goalIndex 99) is not counted
+    if (S.goalIndex <= GOALS.length)
+        for (var gi = 1; gi <= S.goalIndex; gi++)
+            statsOnce('goal-' + gi);
     for (var i = 1; i <= S.tier && i < T.length; i++)
         statsOnce('stage-' + i + '-' + T[i].n.toLowerCase().replace(/ /g, '-'));
     for (i = 2; i <= Math.min(genNum(), 10); i++)

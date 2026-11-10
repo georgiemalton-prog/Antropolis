@@ -19,3 +19,8 @@ jobs:
         run: |
           npm install --no-save eslint@9
           python3 tools/lint.py
+      - name: Smoke test (every screen, tunnel layout the same on every phone, no crossings)
+        run: |
+          pip install playwright
+          python3 -m playwright install --with-deps chromium
+          python3 tools/test/smoke.py
