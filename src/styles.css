@@ -135,3 +135,9 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #opening .op-skip.go{color:rgba(255,190,160,.9);animation:opblink 2s ease-in-out infinite}
 @keyframes opblink{50%{opacity:.45}}
 @media (prefers-reduced-motion: reduce){#opening .op-skip.go{animation:none}}
+/* Nest tab (build 69): the cavern fills the tab; queen and egg details live in a card behind the i button */
+body.nt main{padding-bottom:0}body.nt{overflow:hidden}
+body.nt #p-nest{display:none}
+#ninfo{display:none;position:absolute;left:10px;top:66px;z-index:3;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,190,140,.45);background:rgba(30,20,10,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff4df;font:italic 700 15px Georgia,serif;cursor:pointer}
+body.nt #ninfo{display:block}
+#ninfo:focus-visible{outline:2px solid #fff4df;outline-offset:2px}

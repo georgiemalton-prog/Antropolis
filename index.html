@@ -145,13 +145,19 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #opening .op-skip.go{color:rgba(255,190,160,.9);animation:opblink 2s ease-in-out infinite}
 @keyframes opblink{50%{opacity:.45}}
 @media (prefers-reduced-motion: reduce){#opening .op-skip.go{animation:none}}
+/* Nest tab (build 69): the cavern fills the tab; queen and egg details live in a card behind the i button */
+body.nt main{padding-bottom:0}body.nt{overflow:hidden}
+body.nt #p-nest{display:none}
+#ninfo{display:none;position:absolute;left:10px;top:66px;z-index:3;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,190,140,.45);background:rgba(30,20,10,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff4df;font:italic 700 15px Georgia,serif;cursor:pointer}
+body.nt #ninfo{display:block}
+#ninfo:focus-visible{outline:2px solid #fff4df;outline-offset:2px}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
 <div class="top"><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
 <div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
 <div id="goals"></div><p id="goal" class="gline"></p>
-<div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food · <b id="jel">0</b> jelly</small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
+<div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food · <b id="jel">0</b> jelly</small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><button id="ninfo" aria-label="Queen and eggs: health, next egg, egg chances">i</button><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
  <div id="tzoom"><button class="card" id="tmap">Map</button><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
  <div id="tbot"><div id="abil" style="display:none;gap:6px"><button class="card" id="abR">Rally</button><button class="card" id="abA">Sound the alarm</button></div>
  <div id="wrow" style="display:none;gap:6px"><button class="card" id="jw">&#9664; West</button><button class="card" id="jh">Home</button><button class="card" id="je">East &#9654;</button></div>
@@ -1785,9 +1791,13 @@ function genPebs() {
 }
 
 function viewH() {
-    if (document.body.classList.contains('tt')) {
-        var nv = document.querySelector('.nav'), nt = nv ? nv.getBoundingClientRect().top : document.documentElement.clientHeight - 100;
+    var nv = document.querySelector('.nav'), nt = nv ? nv.getBoundingClientRect().top : document.documentElement.clientHeight - 100;
+    if (document.body.classList.contains('tt'))
         return Math.max(340, Math.round(nt - 28));
+    // the Nest tab is just the nest: the cavern runs from under the goal card down to the tab bar
+    if (document.body.classList.contains('nt')) {
+        var vt = $('view').getBoundingClientRect().top + (window.scrollY || 0);
+        return Math.max(300, Math.round(nt - vt - 10));
     }
     return Math.max(400, Math.min(640, Math.round((document.documentElement.clientHeight - 300) / 20) * 20));
 }
@@ -9245,6 +9255,7 @@ function drawNest(now) {
     drawFoesFx(now);
     g.restore();
     cx.setTransform(d, 0, 0, d, 0, 0);
+    nsQueenInfo(g, W, Hs, t, xf);
     // upgrade arrows and building progress on top
     NSF.forEach(function (f) {
         var s = nsState(f.id), x = f.x * W, y = f.y * Hs;
@@ -9567,6 +9578,49 @@ function nsTapFeature(f) {
     nextGo('build');
 }
 
+// the queen and egg details (health, next egg, egg chances, room) move out of the panel under the nest into
+// a card opened by the i button; the same elements, so the HUD keeps updating them (called once from boot.js)
+function initNestInfo() {
+    var el = document.createElement('div'), pn = $('p-nest');
+    el.className = 'intro';
+    el.id = 'nestinfo';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.innerHTML = '<div class="icard"><h3>The Queen’s Chamber</h3><div id="nibody"></div><div class="irow"><button class="card dig" id="niok">Close</button></div></div>';
+    document.body.appendChild(el);
+    while (pn.firstChild)
+        $('nibody').appendChild(pn.firstChild);
+    function close() { el.classList.remove('on'); }
+    $('niok').onclick = close;
+    el.addEventListener('click', function (e) { if (e.target === el) close(); });
+    $('ninfo').onclick = function () { el.classList.add('on'); };
+}
+
+// in the scene: a health bar over the queen when she is hurt, and the next-egg ring at the foot of the cavern
+function nsQueenInfo(g, W, Hs, t, xf) {
+    var hp = S.queenHp / hpMax(), qp = qPos(), qx = xf.x + xf.s * (qp.x - QX - 7), qy = xf.y + xf.s * (qp.y - QY + 3);
+    if (hp < .999) {
+        var bw = 70, by = qy - 52;
+        g.fillStyle = 'rgba(0,0,0,.6)'; nsRR(g, qx - bw / 2 - 1, by - 1, bw + 2, 7, 3.5); g.fill();
+        g.fillStyle = hp < .35 ? '#ff4a3a' : '#c0452d'; nsRR(g, qx - bw / 2, by, Math.max(2, bw * hp), 5, 2.5); g.fill();
+        g.font = '600 9px Inter, system-ui, sans-serif'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = 'rgba(10,4,2,.85)';
+        var tx = Math.ceil(S.queenHp) + ' / ' + hpMax(); g.strokeText(tx, qx, by - 4); g.fillStyle = '#ffd8c8'; g.fillText(tx, qx, by - 4);
+    }
+    // next egg: a ring that fills as the next egg comes, with the seconds (or why no egg is coming)
+    var cap = capN(), pop = popn(), gap = layGap(), x = W * .5, y = Hs - 22, r = 13, why = pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : '';
+    var f = why ? 0 : Math.max(0, Math.min(1, 1 - S.layTimer / gap));
+    g.fillStyle = 'rgba(20,10,6,.72)'; g.beginPath(); g.arc(x, y, r + 4, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 3; g.beginPath(); g.arc(x, y, r, 0, 7); g.stroke();
+    g.strokeStyle = why ? '#e0803a' : '#7fd06a'; g.beginPath(); g.arc(x, y, r, -Math.PI / 2, -Math.PI / 2 + f * 6.283); g.stroke();
+    g.fillStyle = '#fbf2e4'; g.beginPath(); g.ellipse(x, y, 4.2, 5.6, 0, 0, 7); g.fill();
+    g.font = '600 10px Inter, system-ui, sans-serif'; g.textAlign = 'left'; g.lineWidth = 3; g.strokeStyle = 'rgba(10,4,2,.85)';
+    var lb = why || ('Next egg ' + Math.ceil(S.layTimer) + 's');
+    g.strokeText(lb, x + r + 9, y + 3.5); g.fillStyle = why ? '#ffc890' : '#f2e2cc'; g.fillText(lb, x + r + 9, y + 3.5);
+    g.textAlign = 'right';
+    var ln = 'Ants ' + pop + ' of ' + cap;
+    g.strokeText(ln, x - r - 9, y + 3.5); g.fillStyle = '#f2e2cc'; g.fillText(ln, x - r - 9, y + 3.5);
+}
+
 /* ui/hud.js
    The HUD, tabs, the Next up card, goals and the Great Colony.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
@@ -9574,7 +9628,16 @@ function nsTapFeature(f) {
 // ---- hud, screens and tutorial ----
 
 // the HUD and menus (DOM), refreshed a few times a second from the main loop
-function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); }
+function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); nestFit(); }
+
+// the Nest tab's cavern reaches down to the tab bar; if the goal card above it changes height, refit it
+function nestFit() {
+    if (tab !== 'nest' || mapIsOpen())
+        return;
+    var h = parseFloat(cv.style.height) || cv.clientHeight;
+    if (Math.abs(h - viewH()) > 12)
+        sizeT();
+}
 
 // the colony's simulation (eggs, food, the army, work crews, events): runs every frame.
 // Build 55 had this inside ui(), which only runs ~6 times a second, so these ants moved in steps
@@ -9926,6 +9989,7 @@ function goTab(t) {
     cv.classList.toggle('tunmode', t === 'tun');
     cv.classList.toggle('nestmode', t !== 'tun');
     document.body.classList.toggle('tt', t === 'tun');
+    document.body.classList.toggle('nt', t === 'nest');
     try {
         localStorage.setItem('thecolony_tab', t);
     }
@@ -11735,7 +11799,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 68, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 69, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -13090,6 +13154,9 @@ $('tstw').onclick = function () { $('tinfo').classList.toggle('on'); };
 
 // ---- main/input ----
 initFollowButton();
+
+// ---- render/nestscene ----
+initNestInfo();
 
 // ---- core/stats ----
 statsLoad();

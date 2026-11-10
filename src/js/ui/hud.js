@@ -5,7 +5,16 @@
 // ---- hud, screens and tutorial ----
 
 // the HUD and menus (DOM), refreshed a few times a second from the main loop
-function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); }
+function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); nestFit(); }
+
+// the Nest tab's cavern reaches down to the tab bar; if the goal card above it changes height, refit it
+function nestFit() {
+    if (tab !== 'nest' || mapIsOpen())
+        return;
+    var h = parseFloat(cv.style.height) || cv.clientHeight;
+    if (Math.abs(h - viewH()) > 12)
+        sizeT();
+}
 
 // the colony's simulation (eggs, food, the army, work crews, events): runs every frame.
 // Build 55 had this inside ui(), which only runs ~6 times a second, so these ants moved in steps
@@ -357,6 +366,7 @@ function goTab(t) {
     cv.classList.toggle('tunmode', t === 'tun');
     cv.classList.toggle('nestmode', t !== 'tun');
     document.body.classList.toggle('tt', t === 'tun');
+    document.body.classList.toggle('nt', t === 'nest');
     try {
         localStorage.setItem('thecolony_tab', t);
     }

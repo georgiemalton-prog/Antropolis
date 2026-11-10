@@ -86,6 +86,7 @@ function drawNest(now) {
     drawFoesFx(now);
     g.restore();
     cx.setTransform(d, 0, 0, d, 0, 0);
+    nsQueenInfo(g, W, Hs, t, xf);
     // upgrade arrows and building progress on top
     NSF.forEach(function (f) {
         var s = nsState(f.id), x = f.x * W, y = f.y * Hs;
@@ -406,4 +407,47 @@ function nsTapFeature(f) {
     if (f.id === 'infirmary') { toast('The Infirmary: nurses heal injured ants here.'); return; }
     go('col');
     nextGo('build');
+}
+
+// the queen and egg details (health, next egg, egg chances, room) move out of the panel under the nest into
+// a card opened by the i button; the same elements, so the HUD keeps updating them (called once from boot.js)
+function initNestInfo() {
+    var el = document.createElement('div'), pn = $('p-nest');
+    el.className = 'intro';
+    el.id = 'nestinfo';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.innerHTML = '<div class="icard"><h3>The Queen’s Chamber</h3><div id="nibody"></div><div class="irow"><button class="card dig" id="niok">Close</button></div></div>';
+    document.body.appendChild(el);
+    while (pn.firstChild)
+        $('nibody').appendChild(pn.firstChild);
+    function close() { el.classList.remove('on'); }
+    $('niok').onclick = close;
+    el.addEventListener('click', function (e) { if (e.target === el) close(); });
+    $('ninfo').onclick = function () { el.classList.add('on'); };
+}
+
+// in the scene: a health bar over the queen when she is hurt, and the next-egg ring at the foot of the cavern
+function nsQueenInfo(g, W, Hs, t, xf) {
+    var hp = S.queenHp / hpMax(), qp = qPos(), qx = xf.x + xf.s * (qp.x - QX - 7), qy = xf.y + xf.s * (qp.y - QY + 3);
+    if (hp < .999) {
+        var bw = 70, by = qy - 52;
+        g.fillStyle = 'rgba(0,0,0,.6)'; nsRR(g, qx - bw / 2 - 1, by - 1, bw + 2, 7, 3.5); g.fill();
+        g.fillStyle = hp < .35 ? '#ff4a3a' : '#c0452d'; nsRR(g, qx - bw / 2, by, Math.max(2, bw * hp), 5, 2.5); g.fill();
+        g.font = '600 9px Inter, system-ui, sans-serif'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = 'rgba(10,4,2,.85)';
+        var tx = Math.ceil(S.queenHp) + ' / ' + hpMax(); g.strokeText(tx, qx, by - 4); g.fillStyle = '#ffd8c8'; g.fillText(tx, qx, by - 4);
+    }
+    // next egg: a ring that fills as the next egg comes, with the seconds (or why no egg is coming)
+    var cap = capN(), pop = popn(), gap = layGap(), x = W * .5, y = Hs - 22, r = 13, why = pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : '';
+    var f = why ? 0 : Math.max(0, Math.min(1, 1 - S.layTimer / gap));
+    g.fillStyle = 'rgba(20,10,6,.72)'; g.beginPath(); g.arc(x, y, r + 4, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 3; g.beginPath(); g.arc(x, y, r, 0, 7); g.stroke();
+    g.strokeStyle = why ? '#e0803a' : '#7fd06a'; g.beginPath(); g.arc(x, y, r, -Math.PI / 2, -Math.PI / 2 + f * 6.283); g.stroke();
+    g.fillStyle = '#fbf2e4'; g.beginPath(); g.ellipse(x, y, 4.2, 5.6, 0, 0, 7); g.fill();
+    g.font = '600 10px Inter, system-ui, sans-serif'; g.textAlign = 'left'; g.lineWidth = 3; g.strokeStyle = 'rgba(10,4,2,.85)';
+    var lb = why || ('Next egg ' + Math.ceil(S.layTimer) + 's');
+    g.strokeText(lb, x + r + 9, y + 3.5); g.fillStyle = why ? '#ffc890' : '#f2e2cc'; g.fillText(lb, x + r + 9, y + 3.5);
+    g.textAlign = 'right';
+    var ln = 'Ants ' + pop + ' of ' + cap;
+    g.strokeText(ln, x - r - 9, y + 3.5); g.fillStyle = '#f2e2cc'; g.fillText(ln, x - r - 9, y + 3.5);
 }

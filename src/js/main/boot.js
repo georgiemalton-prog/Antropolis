@@ -232,6 +232,9 @@ $('tstw').onclick = function () { $('tinfo').classList.toggle('on'); };
 // ---- main/input ----
 initFollowButton();
 
+// ---- render/nestscene ----
+initNestInfo();
+
 // ---- core/stats ----
 statsLoad();
 

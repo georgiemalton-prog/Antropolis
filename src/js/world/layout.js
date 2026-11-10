@@ -182,9 +182,13 @@ function genPebs() {
 }
 
 function viewH() {
-    if (document.body.classList.contains('tt')) {
-        var nv = document.querySelector('.nav'), nt = nv ? nv.getBoundingClientRect().top : document.documentElement.clientHeight - 100;
+    var nv = document.querySelector('.nav'), nt = nv ? nv.getBoundingClientRect().top : document.documentElement.clientHeight - 100;
+    if (document.body.classList.contains('tt'))
         return Math.max(340, Math.round(nt - 28));
+    // the Nest tab is just the nest: the cavern runs from under the goal card down to the tab bar
+    if (document.body.classList.contains('nt')) {
+        var vt = $('view').getBoundingClientRect().top + (window.scrollY || 0);
+        return Math.max(300, Math.round(nt - vt - 10));
     }
     return Math.max(400, Math.min(640, Math.round((document.documentElement.clientHeight - 300) / 20) * 20));
 }
