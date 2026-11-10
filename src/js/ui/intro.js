@@ -50,19 +50,21 @@ function initTitleScreen() {
             return;
         }
         $('tgo').textContent = S.totalHatched > 0 || S.dug > 0 ? 'CONTINUE' : 'PLAY';
-        function go() {
+        function go(help) {
             t.className = 'off';
             setTimeout(function () { t.style.display = 'none'; }, 800);
             musicStart();
-            if (OPEN_PENDING) {
-                dead = OPEN_PENDING.dead;
+            // the opening scene plays every time the game is opened (Daniel's call); new players then get How to play
+            var np = OPEN_PENDING;
+            if (np) {
+                dead = np.dead;
                 OPEN_PENDING = null;
-                openingPlay(function () { introOpen(); });
             }
+            openingPlay(help || np ? function () { introOpen(help ? true : undefined); } : null);
         }
-        $('tgo').onclick = go;
+        $('tgo').onclick = function () { go(false); };
         if ($('tver'))
             $('tver').textContent = 'Version ' + APP_VER + ' \u00b7 build ' + BUILD;
-        $('thelp').onclick = function () { var op = !!OPEN_PENDING; go(); if (!op) setTimeout(function () { introOpen(true); }, 300); };
+        $('thelp').onclick = function () { go(true); };
     })();
 }

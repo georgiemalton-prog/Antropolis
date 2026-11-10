@@ -1,7 +1,8 @@
 /* ui/opening.js
    The opening scene for new players: a dark cavern, the queen slowly lit from the dark, her eyes
    ignite, she lays the first egg, and the title rises. About 9 seconds; a tap skips it or carries on.
-   Plays once, after PLAY on the title screen, before How to play. The Menu can replay it.
+   Plays every time the game is opened, after PLAY on the title screen (new players then get How to play).
+   The Menu can replay it.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 var OPEN_PENDING = null;

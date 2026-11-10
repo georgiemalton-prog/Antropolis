@@ -11432,7 +11432,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 66, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 67, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -11545,27 +11545,30 @@ function initTitleScreen() {
             return;
         }
         $('tgo').textContent = S.totalHatched > 0 || S.dug > 0 ? 'CONTINUE' : 'PLAY';
-        function go() {
+        function go(help) {
             t.className = 'off';
             setTimeout(function () { t.style.display = 'none'; }, 800);
             musicStart();
-            if (OPEN_PENDING) {
-                dead = OPEN_PENDING.dead;
+            // the opening scene plays every time the game is opened (Daniel's call); new players then get How to play
+            var np = OPEN_PENDING;
+            if (np) {
+                dead = np.dead;
                 OPEN_PENDING = null;
-                openingPlay(function () { introOpen(); });
             }
+            openingPlay(help || np ? function () { introOpen(help ? true : undefined); } : null);
         }
-        $('tgo').onclick = go;
+        $('tgo').onclick = function () { go(false); };
         if ($('tver'))
             $('tver').textContent = 'Version ' + APP_VER + ' \u00b7 build ' + BUILD;
-        $('thelp').onclick = function () { var op = !!OPEN_PENDING; go(); if (!op) setTimeout(function () { introOpen(true); }, 300); };
+        $('thelp').onclick = function () { go(true); };
     })();
 }
 
 /* ui/opening.js
    The opening scene for new players: a dark cavern, the queen slowly lit from the dark, her eyes
    ignite, she lays the first egg, and the title rises. About 9 seconds; a tap skips it or carries on.
-   Plays once, after PLAY on the title screen, before How to play. The Menu can replay it.
+   Plays every time the game is opened, after PLAY on the title screen (new players then get How to play).
+   The Menu can replay it.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 var OPEN_PENDING = null;
