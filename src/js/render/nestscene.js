@@ -75,7 +75,7 @@ function drawNest(now) {
     var xf = nsXf(), qh = { x: QX + 7, y: QY - 3 };
     g.save();
     g.setTransform(d * xf.s, 0, 0, d * xf.s, d * (xf.x - xf.s * qh.x), d * (xf.y - xf.s * (qh.y - cam)));
-    eggs(now);
+    eggs(now, 1.7);
     g.save();
     g.translate(0, -cam);
     var qp = qPos();

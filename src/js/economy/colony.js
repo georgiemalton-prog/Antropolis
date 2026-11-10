@@ -429,8 +429,11 @@ function colony(dt) {
         var room = cap - pop - S.eggs.length, n = Math.min(clutch(), room, Math.floor(S.food / eggCost()));
         if (n > 0) {
             S.food -= n * eggCost();
-            for (i = 0; i < n; i++)
-                S.eggs.push({ t: 18 * (1 - .06 * S.classLevel[0]) * (S.tier >= 2 ? 1 - .15 * (1 + .2 * rl(1)) : 1) * (1 - .1 * S.bld.hatch) * (.9 + Math.random() * .3), b: performance.now(), c: rollClass() });
+            for (i = 0; i < n; i++) {
+                // d: the egg's whole time to hatch (optional save field), used to draw it growing egg -> larva -> pupa
+                var et = 18 * (1 - .06 * S.classLevel[0]) * (S.tier >= 2 ? 1 - .15 * (1 + .2 * rl(1)) : 1) * (1 - .1 * S.bld.hatch) * (.9 + Math.random() * .3);
+                S.eggs.push({ t: et, d: et, b: performance.now(), c: rollClass() });
+            }
             S.layTimer = layGap();
             pulse = 1;
             SFX.lay();
@@ -443,7 +446,7 @@ function colony(dt) {
         var e = S.eggs[i];
         e.t -= dt * (1.3 - .6 * S.orders.nu / 100);
         if (e.t <= 0) {
-            var p = eggPos(i);
+            var p = broodPos(i);
             S.eggs.splice(i, 1);
             hatch(p, e);
         }

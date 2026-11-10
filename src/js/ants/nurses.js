@@ -4,6 +4,10 @@
 
 // ---- ant behaviour: eggs, injuries and movement ----
 
+// in the new nest the brood is piled between the queen's bed and the Nursery (world units around the queen's home spot)
+function nestEggPos(i) { var row = Math.floor(i / 6), col = i % 6; return { x: QX + 7 + (84 + col * 11 + (row % 2) * 5.5 - Math.min(row, 5) * 2) / 1.1, y: QY - 3 + (8 - Math.min(row, 6) * 8 - (col % 2) * 2.5) / 1.1 }; }
+// where egg i is drawn and hatches: the nest scene on the Nest tab, the world nest otherwise
+function broodPos(i) { return tab === 'nest' ? nestEggPos(i) : eggPos(i); }
 function eggPos(i) { var sd = QX < W * .5 ? 1 : -1; return { x: QX + sd * (72 + S.tier * 5 + (i % 6) * 9), y: QY + 14 + Math.floor(i / 6) * 9 }; }
 
 function slotPos(i) { var p = infPos(); return { x: p.x + ((i % 6) - 2.5) * 7, y: p.y + Math.floor(i / 6) * 6 - 3 }; }

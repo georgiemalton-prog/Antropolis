@@ -39,7 +39,7 @@ function giftClaim() {
     S.food = Math.min(foodCap(), S.food + r.food);
     gainJelly(r.jelly);
     if (r.egg)
-        S.eggs.push({ t: 12, b: performance.now(), c: 4 });
+        S.eggs.push({ t: 12, d: 12, b: performance.now(), c: 4 });
     P.gift = { last: dayKey(), streak: st.streak };
     SFX.win();
     burst(QX, QY - 20, 30, ['#ffe27a', '#fff', '#9be07a'], 120);

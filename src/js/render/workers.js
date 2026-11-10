@@ -140,56 +140,71 @@ function drawCrew(now) {
     cx.restore();
 }
 
-function eggs(now) {
+// the brood: each egg grows through the real life stages as it develops, from a tiny glossy egg to a curled
+// larva (gut showing through) to a pale pupa whose eyes darken just before it hatches. big: drawing scale (nest scene)
+function eggs(now, big) {
     cx.save();
     cx.translate(0, -cam);
     S.eggs.forEach(function (e, i) {
-        var p = eggPos(i), s = popIn(Math.max(0, Math.min(1, (now - (e.b || 0)) / 450))), w = e.t < 5 ? Math.sin(now * .02 * (6 - e.t)) * .35 * (1 - e.t / 8) : 0, gd = e.c === 4, sh = gd ? '#ffd23f' : '#f4efe0';
+        var p = big ? nestEggPos(i) : eggPos(i), s = popIn(Math.max(0, Math.min(1, (now - (e.b || 0)) / 450))), d = e.d || Math.max(e.t, 18), u = Math.max(0, Math.min(1, 1 - e.t / d)),
+            w = e.t < 5 ? Math.sin(now * .02 * (6 - e.t)) * .3 * (1 - e.t / 8) : 0, gd = e.c === 4, sc = s * (big || 1.3) * (gd ? 1.25 : 1);
         cx.save();
         cx.translate(p.x, p.y);
-        cx.rotate(w);
-        cx.scale(s * (gd ? 1.7 : 1.3), s * (gd ? 1.7 : 1.3));
+        cx.rotate(w + (i % 3 - 1) * .5);
+        cx.scale(sc, sc);
         if (gd) {
             cx.save();
             cx.globalCompositeOperation = 'lighter';
             glow(0, 0, 9, '255,210,60', .5 + .3 * Math.sin(now * .006));
             cx.restore();
         }
-        if (e.t < .8) {
-            var o = (.8 - e.t) * 4;
-            cx.fillStyle = sh;
-            cx.beginPath();
-            cx.ellipse(0, o, 2.8, 3.6, 0, 0, Math.PI);
-            cx.fill();
-            cx.beginPath();
-            cx.ellipse(0, -o, 2.8, 3.6, 0, Math.PI, 2 * Math.PI);
-            cx.fill();
-            cx.fillStyle = 'rgba(255,255,200,.9)';
-            cx.beginPath();
-            cx.arc(0, 0, 2, 0, 7);
-            cx.fill();
-        }
-        else {
-            cx.fillStyle = sh;
-            cx.beginPath();
-            cx.ellipse(0, 0, 2.8, 3.6, 0, 0, 7);
-            cx.fill();
-            cx.fillStyle = 'rgba(255,255,255,.7)';
-            cx.beginPath();
-            cx.ellipse(-.9, -1.2, .8, 1.2, 0, 0, 7);
-            cx.fill();
-            if (e.t < 2.5) {
-                cx.strokeStyle = '#7a5636';
-                cx.lineWidth = .5;
-                cx.beginPath();
-                cx.moveTo(-2, -.5);
-                cx.lineTo(-.8, .4);
-                cx.lineTo(.4, -.6);
-                cx.lineTo(1.6, .3);
-                cx.stroke();
-            }
-        }
+        if (u < .3)
+            broodEgg(u / .3, gd);
+        else if (u < .7)
+            broodLarva((u - .3) / .4, gd, now * .003 + i);
+        else
+            broodPupa((u - .7) / .3, gd);
         cx.restore();
     });
     cx.restore();
+}
+
+// a tiny glossy egg, slightly see-through, growing a little
+function broodEgg(v, gd) {
+    var a = 1.5 + .5 * v, b = 2.4 + .8 * v, g = cx.createRadialGradient(-a * .3, -b * .35, .2, 0, 0, b * 1.1);
+    g.addColorStop(0, gd ? '#fff6c8' : '#ffffff'); g.addColorStop(.6, gd ? 'rgba(255,215,90,.92)' : 'rgba(242,236,222,.9)'); g.addColorStop(1, gd ? 'rgba(200,150,40,.85)' : 'rgba(200,190,170,.75)');
+    cx.fillStyle = g; cx.beginPath(); cx.ellipse(0, 0, a, b, 0, 0, 7); cx.fill();
+    cx.fillStyle = 'rgba(255,255,255,.85)'; cx.beginPath(); cx.ellipse(-a * .35, -b * .45, a * .25, b * .2, -.3, 0, 7); cx.fill();
+    if (v > .5) { cx.fillStyle = 'rgba(120,70,40,' + (v - .5) * .5 + ')'; cx.beginPath(); cx.ellipse(0, b * .1, a * .3, b * .25, 0, 0, 7); cx.fill(); }
+}
+
+// a plump larva curled into a C, its gut showing dark through the skin, wriggling now and then
+function broodLarva(v, gd, ph) {
+    var r = 2.4 + 1.8 * v, th = 1.6 + 1.1 * v, wr = Math.sin(ph * 2.3) * .12, a0 = .5 + wr, a1 = 4.9 + wr, k;
+    cx.lineCap = 'round';
+    cx.strokeStyle = gd ? '#f3d27a' : '#efe6d2'; cx.lineWidth = th * 2;
+    cx.beginPath(); cx.arc(0, 0, r, a0, a1); cx.stroke();
+    cx.strokeStyle = gd ? 'rgba(255,240,190,.9)' : 'rgba(255,253,246,.95)'; cx.lineWidth = th * 1.1;
+    cx.beginPath(); cx.arc(0, 0, r + th * .25, a0 + .2, a1 - .2); cx.stroke();
+    cx.strokeStyle = 'rgba(120,80,50,' + (.25 + .35 * v) + ')'; cx.lineWidth = th * .55;
+    cx.beginPath(); cx.arc(0, 0, r - th * .15, a0 + .8, a1 - 1.2); cx.stroke();
+    cx.strokeStyle = 'rgba(150,130,100,.5)'; cx.lineWidth = .35;
+    for (k = 0; k < 9; k++) { var aa = a0 + .3 + k * (a1 - a0 - .6) / 8; cx.beginPath(); cx.moveTo(Math.cos(aa) * (r - th), Math.sin(aa) * (r - th)); cx.lineTo(Math.cos(aa) * (r + th), Math.sin(aa) * (r + th)); cx.stroke(); }
+    cx.fillStyle = '#c8a878'; cx.beginPath(); cx.arc(Math.cos(a1) * r, Math.sin(a1) * r, th * .55, 0, 7); cx.fill();
+}
+
+// a pale pupa: an ant with its legs folded in, eyes darkening as it gets ready to hatch
+function broodPupa(v, gd) {
+    var body = gd ? '#f6dc8a' : '#f4ede0', edge = gd ? '#c9a040' : '#cfc4ae';
+    function blob(x, y, a, b) { var g = cx.createRadialGradient(x - a * .3, y - b * .4, .2, x, y, Math.max(a, b) * 1.1); g.addColorStop(0, '#fffdf6'); g.addColorStop(.55, body); g.addColorStop(1, edge); cx.fillStyle = g; cx.beginPath(); cx.ellipse(x, y, a, b, 0, 0, 7); cx.fill(); }
+    blob(0, 3.2, 2.5, 3.3);
+    blob(0, -.9, 1.7, 1.9);
+    blob(0, -3.9, 1.8, 1.6);
+    cx.strokeStyle = edge; cx.lineWidth = .5;
+    for (var k = 0; k < 3; k++) { cx.beginPath(); cx.moveTo(-2.3, 2 + k * 1.2); cx.lineTo(2.3, 2 + k * 1.2); cx.stroke(); }
+    cx.strokeStyle = 'rgba(200,185,160,.9)'; cx.lineWidth = .45;
+    [-1, 1].forEach(function (s2) { cx.beginPath(); cx.moveTo(s2 * .8, -.9); cx.quadraticCurveTo(s2 * 2.1, .3, s2 * 1.1, 2.6); cx.moveTo(s2 * .6, -3.4); cx.quadraticCurveTo(s2 * 1.8, -1.6, s2 * .7, .4); cx.stroke(); });
+    var ea = .15 + .85 * v * v;
+    cx.fillStyle = 'rgba(25,12,8,' + ea + ')';
+    cx.beginPath(); cx.ellipse(-1, -4.3, .55, .65, 0, 0, 7); cx.ellipse(1, -4.3, .55, .65, 0, 0, 7); cx.fill();
 }
