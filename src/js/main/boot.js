@@ -115,10 +115,9 @@ initTapToSelect();
 BACKUP_KEY = SAVE_KEY + '_backup';
 
 // ---- world/camera ----
-try { rqStep = Math.min(RQ.length - 1, Math.max(0, parseInt(localStorage.getItem('thecolony_rq'), 10) || 0)); }
+try { rqStep = Math.min(RQ.length - 1, Math.max(0, parseInt(localStorage.getItem('thecolony_rq2'), 10) || 0)); }
 catch (e) { }
-if (!rqStep && window.matchMedia && window.matchMedia('(pointer:coarse)').matches)
-    rqStep = 1;
+// phones start at full quality (2x); rqTick steps down only if frames really run slow
 
 // ---- ui/shop ----
 SKIN_DEF.forEach(function (k) { SKM[k.id] = k.c; });

@@ -10,21 +10,22 @@ var rqStep = 0, RQ = [2, 1.5, 1.2, 1, .8], rqAcc = 0, rqN = 0, rqWarm = 45;
 
 function rqDpr() { return Math.min(window.devicePixelRatio || 1, RQ[rqStep]); }
 
-function rqTick(dt) {
+// cap = the frame limiter's frames a second (0 = none): a capped frame is slow only if it runs well past the cap
+function rqTick(dt, cap) {
     if (rqWarm > 0) {
         rqWarm--;
         return;
     }
-    if (dt >= .1 || dt <= 0)
+    if (dt <= 0)  // very slow frames (dt held at .1) count too, so the slowest phones step down
         return;
     rqAcc += dt;
     if (++rqN < 45)
         return;
     var avg = rqAcc / rqN;
     rqAcc = rqN = 0;
-    if (avg > .027 && rqStep < RQ.length - 1 && rqDpr() > RQ[RQ.length - 1]) {
+    if (avg > (cap ? 1.3 / cap : .027) && rqStep < RQ.length - 1 && rqDpr() > RQ[RQ.length - 1]) {
         rqStep++;
-        try { localStorage.setItem('thecolony_rq', String(rqStep)); }
+        try { localStorage.setItem('thecolony_rq2', String(rqStep)); }
         catch (e) { }
         dpr = rqDpr();
         cv.width = Math.round((sizeT.cw || cv.clientWidth) * dpr);

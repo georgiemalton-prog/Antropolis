@@ -21,7 +21,7 @@ function frame(n) {
     lt = n;
     statsTick(dt);
     if (tab !== 'col' && !battery)
-        rqTick(dt);
+        rqTick(dt, fpsCap);
     if (!dead) {
         S.days = (S.days || 0) + dt / 180;
         if (!foes.length)
