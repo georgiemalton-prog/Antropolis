@@ -9270,7 +9270,13 @@ function drawSkyBand(now) {
 
 // ---- hud, screens and tutorial ----
 
-function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); var n = performance.now(), dt = Math.min(.1, (n - ltx) / 1000); ltx = n; extra(dt); }
+// the HUD and menus (DOM), refreshed a few times a second from the main loop
+function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); }
+
+// the colony's simulation (eggs, food, the army, work crews, events): runs every frame.
+// Build 55 had this inside ui(), which only runs ~6 times a second, so these ants moved in steps
+// and the colony ran at about 60% speed; it is separate again.
+function simTick() { var n = performance.now(), dt = Math.min(.1, (n - ltx) / 1000); ltx = n; extra(dt); }
 
 function hudColony() {
     var pop = popn(), cap = capN(), gap = layGap();
@@ -11426,7 +11432,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 65, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 66, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -12321,10 +12327,19 @@ function initFollowButton() {
 
 function frame(n) {
     var fpsCap = fpsCapNow();
-    if (fpsCap && n - lt < 1000 / fpsCap - 2) {
-        requestAnimationFrame(frame);
-        return;
+    // frame limiter: keep to an even beat (every 2nd frame on a 60Hz screen, every 4th on 120Hz).
+    // Each frame is due one interval after the last one was due, with a little slack for timing noise,
+    // so frames never drift and skip a beat (that showed as all the ants hitching at once).
+    if (fpsCap) {
+        var iv = 1000 / fpsCap;
+        if (frame.due && n < frame.due - iv * .2) {
+            requestAnimationFrame(frame);
+            return;
+        }
+        frame.due = frame.due && n - frame.due < iv ? frame.due + iv : n + iv;
     }
+    else
+        frame.due = 0;
     var dt = Math.min((n - lt) / 1000, .1);
     lt = n;
     statsTick(dt);
@@ -12464,6 +12479,7 @@ function frame(n) {
     if (tab !== 'col' && !mapIsOpen())
         drawT(n);
     updateSel();
+    simTick();
     if (!(n - (frame.ut || 0) < 160)) {
         frame.ut = n;
         ui();

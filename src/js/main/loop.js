@@ -4,10 +4,19 @@
 
 function frame(n) {
     var fpsCap = fpsCapNow();
-    if (fpsCap && n - lt < 1000 / fpsCap - 2) {
-        requestAnimationFrame(frame);
-        return;
+    // frame limiter: keep to an even beat (every 2nd frame on a 60Hz screen, every 4th on 120Hz).
+    // Each frame is due one interval after the last one was due, with a little slack for timing noise,
+    // so frames never drift and skip a beat (that showed as all the ants hitching at once).
+    if (fpsCap) {
+        var iv = 1000 / fpsCap;
+        if (frame.due && n < frame.due - iv * .2) {
+            requestAnimationFrame(frame);
+            return;
+        }
+        frame.due = frame.due && n - frame.due < iv ? frame.due + iv : n + iv;
     }
+    else
+        frame.due = 0;
     var dt = Math.min((n - lt) / 1000, .1);
     lt = n;
     statsTick(dt);
@@ -147,6 +156,7 @@ function frame(n) {
     if (tab !== 'col' && !mapIsOpen())
         drawT(n);
     updateSel();
+    simTick();
     if (!(n - (frame.ut || 0) < 160)) {
         frame.ut = n;
         ui();

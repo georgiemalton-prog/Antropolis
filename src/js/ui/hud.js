@@ -4,7 +4,13 @@
 
 // ---- hud, screens and tutorial ----
 
-function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); var n = performance.now(), dt = Math.min(.1, (n - ltx) / 1000); ltx = n; extra(dt); }
+// the HUD and menus (DOM), refreshed a few times a second from the main loop
+function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); }
+
+// the colony's simulation (eggs, food, the army, work crews, events): runs every frame.
+// Build 55 had this inside ui(), which only runs ~6 times a second, so these ants moved in steps
+// and the colony ran at about 60% speed; it is separate again.
+function simTick() { var n = performance.now(), dt = Math.min(.1, (n - ltx) / 1000); ltx = n; extra(dt); }
 
 function hudColony() {
     var pop = popn(), cap = capN(), gap = layGap();
