@@ -4,6 +4,12 @@
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 var TUNING = {
+    // the four nest chambers along the main tunnel (Fungus Garden, Nursery, Barracks, Royal Court). Since build 76
+    // they live in the Nest tab only; true brings back the tunnel chambers, their keepers and the dig-and-explore event
+    tunnelRooms: false,
+    // the chamber and building upgrade lists on the Colony tab; since build 76 they are on each building's card
+    // in the Nest tab (press and hold); true shows the lists again
+    colonyLists: false,
     // First session (the opening minutes)
     start: {
         tunnelOpen: .04,      // share of the first tunnel dug before ants start using it (was .1)

@@ -36,7 +36,7 @@ function antWhere(o) {
         return 'On the surface';
     if (y > QY - 34)
         return y > QY + 40 ? 'The infirmary area' : 'The royal nest';
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         var rp = PT[CI[i]];
         if (Math.hypot(rp[0] + (i % 2 ? -34 : 34) - x, rp[1] - y) < 30)
             return ROOMS[i].n;

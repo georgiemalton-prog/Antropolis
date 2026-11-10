@@ -400,13 +400,11 @@ function nsRoam(g, W, Hs, t) {
     });
 }
 
-// tapping a feature in the nest (stage 1: chambers open their upgrade card, buildings open the Colony tab's Build list)
-function nsTapFeature(f) {
-    var ri = { fungus: 0, nursery: 1, barracks: 2 }[f.id];
-    if (ri != null && S.tier > ri) { roomCard(ri); return; }
-    if (f.id === 'infirmary') { toast('The Infirmary: nurses heal injured ants here.'); return; }
-    go('col');
-    nextGo('build');
+// is the queen under a tap? (press and hold her for the Royal Court; see main/input.js)
+// is the scene point (px, py) on the queen?
+function nsQueenAt(px, py) {
+    var xf = nsXf(), qp = qPos(), qx = xf.x + xf.s * (qp.x - QX - 7), qy = xf.y + xf.s * (qp.y - QY + 3);
+    return Math.hypot(px - qx, py - qy) < 60;
 }
 
 // the queen and egg details (health, next egg, egg chances, room) move out of the panel under the nest into

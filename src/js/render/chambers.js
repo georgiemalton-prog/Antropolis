@@ -257,7 +257,7 @@ function drawRooms(now) {
     var t = now * .001, i, j;
     cx.save();
     cx.translate(0, -cam);
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         if (exc && exc.i === i)
             continue;
         var q = PT[CI[i]], x = q[0] + (i % 2 ? -34 : 34), y = q[1];

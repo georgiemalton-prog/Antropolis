@@ -29,7 +29,7 @@ function armyCounts() {
     var C = { lo: 1 - S.dug, slot: 0, nid: 0, injPos: [], nN: 0, keepOpen: {}, keepCnt: {}, keepTot: 0 };
     var ni = injN(), ipf = infPos();
     C.tend = Math.min(ni * 2, Math.max(1, Math.ceil(S.nurses / 3)));
-    C.keepRooms = openRooms();
+    C.keepRooms = TUNING.tunnelRooms ? openRooms() : [];
     C.keepRooms.forEach(function (r) { C.keepOpen[r] = true; C.keepCnt[r] = 0; });
     marchers.forEach(function (m) { if (m.k === 0 && !m.inj && m.kp && C.keepOpen[m.kp.i] && m.kp.ph !== 'out' && m.kp.ph !== 'down' && m.kp.ph !== 'home') {
         C.keepCnt[m.kp.i]++;

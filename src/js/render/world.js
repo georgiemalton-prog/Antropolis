@@ -112,7 +112,7 @@ function worldBio() {
 // the nest chambers, side-tunnel and deep-layer end rooms that are open
 function worldRooms() {
     var rooms = [], i;
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         var q = PT[CI[i]], ec = exc && exc.i === i ? Math.min(1, exc.t / exc.dur) : 1;
         if (ec < .1)
             continue;
@@ -503,7 +503,7 @@ function lighting(now) {
     var fed = 1, rx = 62 + S.tier * 5;
     glow(QX, QY, rx * (1.3 + .05 * Math.sin(t * 2)) + S.tier * 8, '255,170,70', .16 * fed);
     var cl = ['90,220,255', '255,240,200', '255,200,60', '190,110,255'];
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         var p = PT[CI[i]];
         glow(p[0] + (i % 2 ? -34 : 34), p[1], 34 + 4 * Math.sin(t * 1.7 + i), cl[i], .22);
     }

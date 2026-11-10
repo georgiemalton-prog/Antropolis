@@ -90,8 +90,11 @@ function ordersUi() {
         var b0 = BDEF.filter(function (x) { return x.id === pj.k; })[0];
         h += '<div class="ol">Building: ' + b0.n + '</div><div class="bar"><i style="width:' + Math.round((1 - pj.left / pj.tot) * 100) + '%;background:var(--accent)"></i></div>';
     }
-    h += '<div class="ol" style="margin:12px 0 6px">Buildings</div>';
+    if (TUNING.colonyLists)
+        h += '<div class="ol" style="margin:12px 0 6px">Buildings</div>';
     BDEF.forEach(function (b, i) {
+        if (!TUNING.colonyLists)
+            return;
         var lv = S.bld[b.id], locked = S.tier < b.t;
         h += '<button class="card" ' + (locked || lv >= 4 || pj || S.food < bCost(i) ? 'disabled ' : '') + 'onclick="startBuild(' + i + ')"><span><b>' + ico(b.id) + b.n + ' ' + lv + '/4</b><span class="mute">' + b.d + '</span></span><span class="r">' + (locked ? 'Needs nest stage ' + b.t : lv >= 4 ? 'Maxed' : fmt(bCost(i)) + ' food') + '</span></button>';
     });

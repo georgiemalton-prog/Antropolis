@@ -141,3 +141,8 @@ body.nt #p-nest{display:none}
 #ninfo{display:none;position:absolute;left:10px;top:66px;z-index:3;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,190,140,.45);background:rgba(30,20,10,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff4df;font:italic 700 15px Georgia,serif;cursor:pointer}
 body.nt #ninfo{display:block}
 #ninfo:focus-visible{outline:2px solid #fff4df;outline-offset:2px}
+/* building cards (press and hold a building in the Nest) */
+.bcrow{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}
+.bcrow.off{opacity:.62}
+.bcrow .card{margin:4px 0 0;display:flex;justify-content:space-between;align-items:center;width:100%}
+.bcrow .bar{margin:4px 0}

@@ -3,15 +3,33 @@
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 // tapping in the nest view (called once from boot.js)
+// press and hold a building (or the queen) to open its card; a quick tap on a building says so
+var NHOLD = null;
 function initNestTaps() {
+    function stop() { if (NHOLD) clearTimeout(NHOLD.t); NHOLD = null; }
+    cv.addEventListener('pointermove', function (e) { if (NHOLD && Math.hypot(e.clientX - NHOLD.x, e.clientY - NHOLD.y) > 12) stop(); });
+    cv.addEventListener('pointerup', function () {
+        if (NHOLD && !NHOLD.done && NHOLD.f)
+            toast('Press and hold the ' + NHOLD.f.n + ' to see its upgrades.');
+        stop();
+    });
+    cv.addEventListener('pointercancel', stop);
     cv.addEventListener('pointerdown', function (e) {
         if (tab !== 'nest' || dead)
             return;
-        var r = cv.getBoundingClientRect(), nf = nsFeatureAt(e.clientX - r.left, e.clientY - r.top);
-        if (nf) {
-            nsTapFeature(nf);
-            return;
+        var r = cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top, nf = nsFeatureAt(px, py), nq = !nf && nsQueenAt(px, py);
+        stop();
+        if (nf || nq) {
+            var h = NHOLD = { x: e.clientX, y: e.clientY, f: nf, done: false };
+            h.t = setTimeout(function () {
+                h.done = true;
+                try { if (navigator.vibrate) navigator.vibrate(12); }
+                catch (x) { }
+                bcard(nf ? nf.id : 'queen');
+            }, 450);
         }
+        if (nf)
+            return;
         var cut = Math.min(2, layGap() * .05);
         S.layTimer = Math.max(0, S.layTimer - cut);
         S.queenTaps = (S.queenTaps || 0) + 1;

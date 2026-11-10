@@ -151,6 +151,11 @@ body.nt #p-nest{display:none}
 #ninfo{display:none;position:absolute;left:10px;top:66px;z-index:3;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,190,140,.45);background:rgba(30,20,10,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff4df;font:italic 700 15px Georgia,serif;cursor:pointer}
 body.nt #ninfo{display:block}
 #ninfo:focus-visible{outline:2px solid #fff4df;outline-offset:2px}
+/* building cards (press and hold a building in the Nest) */
+.bcrow{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}
+.bcrow.off{opacity:.62}
+.bcrow .card{margin:4px 0 0;display:flex;justify-content:space-between;align-items:center;width:100%}
+.bcrow .bar{margin:4px 0}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
@@ -370,6 +375,12 @@ var RICO = ['farm', 'nest', 'rax', 'court'];
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 var TUNING = {
+    // the four nest chambers along the main tunnel (Fungus Garden, Nursery, Barracks, Royal Court). Since build 76
+    // they live in the Nest tab only; true brings back the tunnel chambers, their keepers and the dig-and-explore event
+    tunnelRooms: false,
+    // the chamber and building upgrade lists on the Colony tab; since build 76 they are on each building's card
+    // in the Nest tab (press and hold); true shows the lists again
+    colonyLists: false,
     // First session (the opening minutes)
     start: {
         tunnelOpen: .04,      // share of the first tunnel dug before ants start using it (was .1)
@@ -573,11 +584,11 @@ var GOALS = [
     { t: 'Dig your first nest upgrade', h: 'Open the Colony tab and tap Dig a Burrow.', tab: 'col', ok: function () { return S.tier >= 1; }, jl: 3, r: '+3 royal jelly' },
     { t: 'Level up an ant with royal jelly', h: 'Colony tab, Your ants and queen. Tap a card to spend jelly.', tab: 'col', ok: function () { return S.queenLevel > 0 || S.classLevel.some(function (l) { return l > 0; }); }, fd: 40, r: '+40 food' },
     { t: 'Reach 15 ants', h: 'Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(15, popn()) + ' / 15'; }, ok: function () { return popn() >= 15; }, fd: 40, r: '+40 food' },
-    { t: 'Start your first building', h: 'Colony tab, Build. Tap Food store or Extra nursery and your workers build it.', tab: 'col', ok: function () { return !!S.proj || Object.keys(S.bld).some(function (k) { return S.bld[k] > 0; }); }, jl: 2, r: '+2 royal jelly' },
+    { t: 'Start your first building', h: 'In the Nest, press and hold the Food Store or the Nursery, then tap Build.', tab: 'nest', ok: function () { return !!S.proj || Object.keys(S.bld).some(function (k) { return S.bld[k] > 0; }); }, jl: 2, r: '+2 royal jelly' },
     { t: 'Bring home 15 loads of food', h: 'More foragers means more food.', tab: 'tun', n: function () { return Math.min(15, S.deliveries || 0) + ' / 15'; }, ok: function () { return (S.deliveries || 0) >= 15; }, jl: 2, r: '+2 royal jelly' },
     { t: 'Reach 20 ants', h: 'More ants means more foragers and more food.', tab: 'nest', n: function () { return Math.min(20, popn()) + ' / 20'; }, ok: function () { return popn() >= 20; }, jl: 1, fd: 40, r: '+1 jelly, +40 food' },
     { t: 'Reach 25 ants', h: 'Bigger nests hold more ants.', tab: 'nest', n: function () { return Math.min(25, popn()) + ' / 25'; }, ok: function () { return popn() >= 25; }, fd: 60, r: '+60 food' },
-    { t: 'Upgrade a nest chamber', h: 'Colony tab, Build, Nest chambers. Upgrades cost food and royal jelly.', tab: 'col', ok: function () { return (S.roomLv || []).some(function (l) { return l > 0; }); }, fd: 60, r: '+60 food' },
+    { t: 'Upgrade a nest chamber', h: 'In the Nest, press and hold the Fungus Garden or Nursery and upgrade its chamber.', tab: 'nest', ok: function () { return (S.roomLv || []).some(function (l) { return l > 0; }); }, fd: 60, r: '+60 food' },
     { t: 'Bring home ' + TUNING.start.loadsGoal + ' loads of food', h: 'Send more foragers out by hatching more eggs.', tab: 'tun', n: function () { return Math.min(TUNING.start.loadsGoal, S.deliveries || 0) + ' / ' + TUNING.start.loadsGoal; }, ok: function () { return (S.deliveries || 0) >= TUNING.start.loadsGoal; }, fd: 80, r: '+80 food' },
     { t: 'Dig your first side tunnel', h: 'Workers dig it by themselves. It leads to chambers and finds.', tab: 'tun', ok: function () { return S.sideTunnels > 0 && S.sideDug[0] >= 1; }, jl: 2, r: '+2 royal jelly' },
     { t: 'Reach 35 ants', h: 'At 35 ants you can dig the next nest stage. Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(35, popn()) + ' / 35'; }, ok: function () { return popn() >= 35; }, jl: 1, fd: 60, r: '+1 jelly, +60 food' },
@@ -1097,7 +1108,7 @@ function lifeTick(dt) {
         seenTier = S.tier;
     if (S.tier > seenTier) {
         seenTier = S.tier;
-        if (!exc)
+        if (!exc && TUNING.tunnelRooms)
             exc = { i: S.tier - 1, t: 0, dur: 24 };
     }
     if (exc) {
@@ -3614,7 +3625,7 @@ function armyCounts() {
     var C = { lo: 1 - S.dug, slot: 0, nid: 0, injPos: [], nN: 0, keepOpen: {}, keepCnt: {}, keepTot: 0 };
     var ni = injN(), ipf = infPos();
     C.tend = Math.min(ni * 2, Math.max(1, Math.ceil(S.nurses / 3)));
-    C.keepRooms = openRooms();
+    C.keepRooms = TUNING.tunnelRooms ? openRooms() : [];
     C.keepRooms.forEach(function (r) { C.keepOpen[r] = true; C.keepCnt[r] = 0; });
     marchers.forEach(function (m) { if (m.k === 0 && !m.inj && m.kp && C.keepOpen[m.kp.i] && m.kp.ph !== 'out' && m.kp.ph !== 'down' && m.kp.ph !== 'home') {
         C.keepCnt[m.kp.i]++;
@@ -5986,7 +5997,7 @@ function worldBio() {
 // the nest chambers, side-tunnel and deep-layer end rooms that are open
 function worldRooms() {
     var rooms = [], i;
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         var q = PT[CI[i]], ec = exc && exc.i === i ? Math.min(1, exc.t / exc.dur) : 1;
         if (ec < .1)
             continue;
@@ -6377,7 +6388,7 @@ function lighting(now) {
     var fed = 1, rx = 62 + S.tier * 5;
     glow(QX, QY, rx * (1.3 + .05 * Math.sin(t * 2)) + S.tier * 8, '255,170,70', .16 * fed);
     var cl = ['90,220,255', '255,240,200', '255,200,60', '190,110,255'];
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         var p = PT[CI[i]];
         glow(p[0] + (i % 2 ? -34 : 34), p[1], 34 + 4 * Math.sin(t * 1.7 + i), cl[i], .22);
     }
@@ -7280,7 +7291,7 @@ function drawRooms(now) {
     var t = now * .001, i, j;
     cx.save();
     cx.translate(0, -cam);
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         if (exc && exc.i === i)
             continue;
         var q = PT[CI[i]], x = q[0] + (i % 2 ? -34 : 34), y = q[1];
@@ -10126,13 +10137,11 @@ function nsRoam(g, W, Hs, t) {
     });
 }
 
-// tapping a feature in the nest (stage 1: chambers open their upgrade card, buildings open the Colony tab's Build list)
-function nsTapFeature(f) {
-    var ri = { fungus: 0, nursery: 1, barracks: 2 }[f.id];
-    if (ri != null && S.tier > ri) { roomCard(ri); return; }
-    if (f.id === 'infirmary') { toast('The Infirmary: nurses heal injured ants here.'); return; }
-    go('col');
-    nextGo('build');
+// is the queen under a tap? (press and hold her for the Royal Court; see main/input.js)
+// is the scene point (px, py) on the queen?
+function nsQueenAt(px, py) {
+    var xf = nsXf(), qp = qPos(), qx = xf.x + xf.s * (qp.x - QX - 7), qy = xf.y + xf.s * (qp.y - QY + 3);
+    return Math.hypot(px - qx, py - qy) < 60;
 }
 
 // the queen and egg details (health, next egg, egg chances, room) move out of the panel under the nest into
@@ -10301,6 +10310,13 @@ function nextUpUi() {
 }
 
 function nextGo(to, k) {
+    // chambers and buildings: open that building's card in the Nest
+    var bf = bfeatFor(k || '');
+    if (bf) {
+        go('nest');
+        bcard(bf);
+        return;
+    }
     var t = $(to === 'rooms' ? 'rooms' : to === 'build' ? 'build' : to === 'bl' ? 'bl' : 'tier'), g = to === 'bl' ? 'ants' : 'build', tb, sec, el = null, f;
     if (!t)
         return;
@@ -10335,8 +10351,9 @@ function nextGo(to, k) {
 
 function hudClasses() {
     var pop = popn(), ij = injN(), i;
-    var rt = '<div class="ol" style="margin:4px 0 6px">Nest chambers</div>';
-    for (i = 0; i < 4; i++) {
+    // chambers and buildings are upgraded from their cards in the Nest tab (press and hold one)
+    var rt = '<button class="card" onclick="go(\'nest\')" style="margin:0 0 8px"><span><b>' + ico('nest') + 'Chambers and buildings</b><span class="mute">In the Nest, press and hold a building to upgrade it.</span></span></button>';
+    for (i = 0; i < 4 && TUNING.colonyLists; i++) {
         if (S.tier <= i) {
             rt += '<div class="mute" style="margin:0 0 6px">' + ico(RICO[i]) + 'Locked: ' + ROOMS[i].n + ', ' + ROOMS[i].b + '</div>';
             continue;
@@ -10621,7 +10638,7 @@ function antWhere(o) {
         return 'On the surface';
     if (y > QY - 34)
         return y > QY + 40 ? 'The infirmary area' : 'The royal nest';
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         var rp = PT[CI[i]];
         if (Math.hypot(rp[0] + (i % 2 ? -34 : 34) - x, rp[1] - y) < 30)
             return ROOMS[i].n;
@@ -11890,8 +11907,11 @@ function ordersUi() {
         var b0 = BDEF.filter(function (x) { return x.id === pj.k; })[0];
         h += '<div class="ol">Building: ' + b0.n + '</div><div class="bar"><i style="width:' + Math.round((1 - pj.left / pj.tot) * 100) + '%;background:var(--accent)"></i></div>';
     }
-    h += '<div class="ol" style="margin:12px 0 6px">Buildings</div>';
+    if (TUNING.colonyLists)
+        h += '<div class="ol" style="margin:12px 0 6px">Buildings</div>';
     BDEF.forEach(function (b, i) {
+        if (!TUNING.colonyLists)
+            return;
         var lv = S.bld[b.id], locked = S.tier < b.t;
         h += '<button class="card" ' + (locked || lv >= 4 || pj || S.food < bCost(i) ? 'disabled ' : '') + 'onclick="startBuild(' + i + ')"><span><b>' + ico(b.id) + b.n + ' ' + lv + '/4</b><span class="mute">' + b.d + '</span></span><span class="r">' + (locked ? 'Needs nest stage ' + b.t : lv >= 4 ? 'Maxed' : fmt(bCost(i)) + ' food') + '</span></button>';
     });
@@ -12480,7 +12500,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 75, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 76, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -12791,7 +12811,7 @@ function roomCanUp(i) { var c = roomCost(i); return S.tier > i && rl(i) < 4 && S
 // the chamber under a tap at world point (wx, wy), or -1
 function roomAt(wx, wy) {
     var best = -1, bd = 30, i, p;
-    for (i = 0; i < S.tier && i < 4; i++) {
+    for (i = 0; i < (TUNING.tunnelRooms ? S.tier : 0) && i < 4; i++) {
         p = roomXY(i);
         if (!p)
             continue;
@@ -12824,6 +12844,95 @@ function roomCard(i) {
     }
     $('rcup').onclick = function () { upRoom(i); fill(); };
     fill();
+    el.classList.add('on');
+}
+
+/* ---- Building cards: press and hold a building in the Nest tab ----
+   One card per building with everything you can do to it: its chamber's level (the old Nest chambers list) and
+   its building upgrades (the old Buildings list), each with its own button. The queen opens the Royal Court. */
+var BFEAT = {
+    fungus: { r: 0, b: ['farm'] },
+    nursery: { r: 1, b: ['nest', 'hatch'] },
+    barracks: { r: 2, b: ['rax'] },
+    store: { b: ['store'] },
+    archive: { b: ['archive'] },
+    tower: { b: ['tower'] },
+    infirmary: { n: 'Infirmary' },
+    queen: { r: 3, n: 'The Queen\u2019s bed' }
+};
+// the building card that holds the upgrade behind a Next-up key (b3 = building 3, r1 = chamber 1)
+function bfeatFor(k) {
+    var f;
+    if (k && k[0] === 'r' && k !== 'rch')
+        return ['fungus', 'nursery', 'barracks', 'queen'][+k.slice(1)] || null;
+    if (k && k[0] === 'b' && BDEF[+k.slice(1)])
+        for (f in BFEAT)
+            if ((BFEAT[f].b || []).indexOf(BDEF[+k.slice(1)].id) >= 0)
+                return f;
+    return null;
+}
+function bcRoom(i) {
+    var lv = rl(i), c = roomCost(i), btn;
+    if (S.tier <= i)
+        return '<div class="bcrow off"><b>' + ico(RICO[i]) + ROOMS[i].n + '</b><span class="mute">Opens when your nest becomes a ' + T[i + 1].n + '. Then ' + ROOMS[i].b + '.</span></div>';
+    var bt = ROOMT[i].replace('%s', Math.round(ROOMB[i] * (1 + .2 * lv) * 100) + '%');
+    if (lv >= 4)
+        return '<div class="bcrow"><b>' + ico(RICO[i]) + ROOMS[i].n + ' 5/5</b><span class="mute">' + bt + '. Fully upgraded.</span></div>';
+    btn = '<button class="card dig" ' + (roomCanUp(i) ? '' : 'disabled ') + 'onclick="upRoom(' + i + ');bcFill()">Upgrade<span class="mute">' + fmt(c.f) + ' food, ' + c.j + ' jelly</span></button>';
+    return '<div class="bcrow"><b>' + ico(RICO[i]) + ROOMS[i].n + ' ' + (lv + 1) + '/5</b><span class="mute">Now ' + bt + '. Next level: ' + ROOMT[i].replace('%s', Math.round(ROOMB[i] * (1 + .2 * (lv + 1)) * 100) + '%') + '.</span>' + btn + '</div>';
+}
+function bcBuild(id) {
+    var i = bIdx(id), b = BDEF[i], lv = S.bld[id], pj = S.proj;
+    if (S.tier < b.t)
+        return '<div class="bcrow off"><b>' + ico(b.id) + b.n + '</b><span class="mute">Unlocks at the ' + T[b.t].n + ' stage. ' + b.d + '.</span></div>';
+    var head = '<div class="bcrow"><b>' + ico(b.id) + b.n + ' ' + lv + '/4</b><span class="mute">' + b.d + '.</span>';
+    if (pj && pj.k === id)
+        return head + '<div class="bar"><i style="width:' + Math.round((1 - pj.left / pj.tot) * 100) + '%;background:var(--accent)"></i></div><span class="mute">Workers are building it now.</span></div>';
+    if (lv >= 4)
+        return head + '<span class="mute">Fully built.</span></div>';
+    return head + '<button class="card dig" ' + (bCanUp(i) ? '' : 'disabled ') + 'onclick="startBuild(' + i + ');bcFill()">' + (lv ? 'Upgrade' : 'Build') + '<span class="mute">' + fmt(bCost(i)) + ' food' + (pj && pj.k !== id ? ' (workers are busy)' : '') + '</span></button></div>';
+}
+var BC = { id: null, h: '', iv: 0 };
+function bcFill() {
+    var id = BC.id, F = BFEAT[id], nf = null, h;
+    if (!F)
+        return;
+    NSF.forEach(function (f) { if (f.id === id) nf = f; });
+    h = '<h3>' + (F.n || (nf ? nf.n : id)) + '</h3>';
+    if (id === 'infirmary')
+        h += '<p>Nurses heal injured ants here. ' + (injN() ? injN() + ' injured ' + (injN() > 1 ? 'ants are' : 'ant is') + ' resting now.' : 'Nobody is hurt right now.') + '</p>';
+    if (id === 'queen')
+        h += '<p>Tap the queen to hurry her next egg.</p>';
+    if (F.r != null)
+        h += bcRoom(F.r);
+    (F.b || []).forEach(function (k) { h += bcBuild(k); });
+    h += '<p class="mute" style="margin:8px 0 0">You have ' + fmt(Math.floor(S.food)) + ' food and ' + S.jelly + ' royal jelly.</p>';
+    if (h !== BC.h) {
+        BC.h = h;
+        $('bcbody').innerHTML = h;
+    }
+}
+function bcard(id) {
+    var el = $('bcard');
+    if (!BFEAT[id])
+        return;
+    if (!el) {
+        el = document.createElement('div');
+        el.className = 'intro';
+        el.id = 'bcard';
+        el.setAttribute('role', 'dialog');
+        el.setAttribute('aria-modal', 'true');
+        el.innerHTML = '<div class="icard"><div id="bcbody"></div><div class="irow"><button class="card" id="bcclose">Close</button></div></div>';
+        document.body.appendChild(el);
+        var close = function () { el.classList.remove('on'); clearInterval(BC.iv); BC.id = null; };
+        $('bcclose').onclick = close;
+        el.addEventListener('click', function (e) { if (e.target === el) close(); });
+    }
+    BC.id = id;
+    BC.h = '';
+    bcFill();
+    clearInterval(BC.iv);
+    BC.iv = setInterval(bcFill, 500);
     el.classList.add('on');
 }
 
@@ -13260,15 +13369,33 @@ function devNote(m) { $('devnote').textContent = m; }
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 // tapping in the nest view (called once from boot.js)
+// press and hold a building (or the queen) to open its card; a quick tap on a building says so
+var NHOLD = null;
 function initNestTaps() {
+    function stop() { if (NHOLD) clearTimeout(NHOLD.t); NHOLD = null; }
+    cv.addEventListener('pointermove', function (e) { if (NHOLD && Math.hypot(e.clientX - NHOLD.x, e.clientY - NHOLD.y) > 12) stop(); });
+    cv.addEventListener('pointerup', function () {
+        if (NHOLD && !NHOLD.done && NHOLD.f)
+            toast('Press and hold the ' + NHOLD.f.n + ' to see its upgrades.');
+        stop();
+    });
+    cv.addEventListener('pointercancel', stop);
     cv.addEventListener('pointerdown', function (e) {
         if (tab !== 'nest' || dead)
             return;
-        var r = cv.getBoundingClientRect(), nf = nsFeatureAt(e.clientX - r.left, e.clientY - r.top);
-        if (nf) {
-            nsTapFeature(nf);
-            return;
+        var r = cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top, nf = nsFeatureAt(px, py), nq = !nf && nsQueenAt(px, py);
+        stop();
+        if (nf || nq) {
+            var h = NHOLD = { x: e.clientX, y: e.clientY, f: nf, done: false };
+            h.t = setTimeout(function () {
+                h.done = true;
+                try { if (navigator.vibrate) navigator.vibrate(12); }
+                catch (x) { }
+                bcard(nf ? nf.id : 'queen');
+            }, 450);
         }
+        if (nf)
+            return;
         var cut = Math.min(2, layGap() * .05);
         S.layTimer = Math.max(0, S.layTimer - cut);
         S.queenTaps = (S.queenTaps || 0) + 1;

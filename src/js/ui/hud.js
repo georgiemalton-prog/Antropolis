@@ -121,6 +121,13 @@ function nextUpUi() {
 }
 
 function nextGo(to, k) {
+    // chambers and buildings: open that building's card in the Nest
+    var bf = bfeatFor(k || '');
+    if (bf) {
+        go('nest');
+        bcard(bf);
+        return;
+    }
     var t = $(to === 'rooms' ? 'rooms' : to === 'build' ? 'build' : to === 'bl' ? 'bl' : 'tier'), g = to === 'bl' ? 'ants' : 'build', tb, sec, el = null, f;
     if (!t)
         return;
@@ -155,8 +162,9 @@ function nextGo(to, k) {
 
 function hudClasses() {
     var pop = popn(), ij = injN(), i;
-    var rt = '<div class="ol" style="margin:4px 0 6px">Nest chambers</div>';
-    for (i = 0; i < 4; i++) {
+    // chambers and buildings are upgraded from their cards in the Nest tab (press and hold one)
+    var rt = '<button class="card" onclick="go(\'nest\')" style="margin:0 0 8px"><span><b>' + ico('nest') + 'Chambers and buildings</b><span class="mute">In the Nest, press and hold a building to upgrade it.</span></span></button>';
+    for (i = 0; i < 4 && TUNING.colonyLists; i++) {
         if (S.tier <= i) {
             rt += '<div class="mute" style="margin:0 0 6px">' + ico(RICO[i]) + 'Locked: ' + ROOMS[i].n + ', ' + ROOMS[i].b + '</div>';
             continue;

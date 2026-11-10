@@ -161,7 +161,7 @@ function lifeTick(dt) {
         seenTier = S.tier;
     if (S.tier > seenTier) {
         seenTier = S.tier;
-        if (!exc)
+        if (!exc && TUNING.tunnelRooms)
             exc = { i: S.tier - 1, t: 0, dur: 24 };
     }
     if (exc) {
