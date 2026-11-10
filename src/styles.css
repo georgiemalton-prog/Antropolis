@@ -127,11 +127,11 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #opening{position:fixed;inset:0;z-index:400;background:#000;transition:opacity .6s ease;cursor:pointer;outline:none}
 #opening.out{opacity:0}
 #opening canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-#opening .op-t{position:absolute;left:0;right:0;top:calc(14% + env(safe-area-inset-top,0px));padding:0 24px;text-align:center;color:#ecc8b6;font:italic 21px/1.4 Georgia,'Times New Roman',serif;letter-spacing:.06em;opacity:0;transition:opacity 1s ease;text-shadow:0 0 18px rgba(255,60,30,.45)}
+#opening .op-t{position:absolute;left:0;right:0;top:calc(14% + env(safe-area-inset-top,0px));padding:0 24px;text-align:center;color:#ff9a3c;font:400 34px/1.1 var(--fh);letter-spacing:.08em;text-transform:uppercase;background:linear-gradient(180deg,#ffd27a 0%,#ff9a3c 45%,#d4511c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;opacity:0;transition:opacity 1s ease;filter:drop-shadow(0 0 12px rgba(255,80,30,.5))}
 #opening .op-t.on{opacity:.92}
 #opening #oplogo{position:absolute;left:50%;bottom:calc(8% + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);width:min(84vw,520px);height:auto;opacity:0;transition:opacity 1.6s ease,transform 1.6s ease;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse 62% 74% at 50% 50%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 62% 74% at 50% 50%,#000 52%,transparent 100%);filter:drop-shadow(0 0 28px rgba(232,60,30,.45));pointer-events:none}
 #opening #oplogo.on{opacity:1;transform:translate(-50%,0)}
-#opening .op-skip{position:absolute;left:0;right:0;bottom:calc(26px + env(safe-area-inset-bottom,0px));text-align:center;color:rgba(236,200,182,.5);font:600 12px system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+#opening .op-skip{position:absolute;left:0;right:0;bottom:calc(26px + env(safe-area-inset-bottom,0px));text-align:center;color:rgba(255,190,140,.55);font:400 17px var(--fh);letter-spacing:.22em;text-transform:uppercase}
 #opening .op-skip.go{color:rgba(255,190,160,.9);animation:opblink 2s ease-in-out infinite}
 @keyframes opblink{50%{opacity:.45}}
 @media (prefers-reduced-motion: reduce){#opening .op-skip.go{animation:none}}
