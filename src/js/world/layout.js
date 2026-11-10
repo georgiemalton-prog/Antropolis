@@ -107,6 +107,9 @@ function gen() {
     // now and then one joins another, so there are a few loops but no tangle (see netGrow)
     var fgrid = netGrid(.05);
     fall.forEach(function (g) { fgrid.add(g); });
+    // the roof of the queen's cavern (as it is while still young, so a link always reaches in): tunnels near it
+    // usually join it, giving the nest several ways in; and none can be drawn across it
+    netNestArc(fgrid, 200, 340, .4, 1 / W, YS / WH);
     for (fi = 0; fi < 2000 && FARM.length < 160; fi++) {
         var fq = rng(S.seed + 31000 + fi * 331), pf = FARM.length > 5 && fq() < .6 ? FARM[Math.floor(fq() * FARM.length)] : null, sc = pf ? { p: pf.pts, r: pf.par } : fsrc[Math.floor(fq() * fsrc.length)],
             sgi = Math.floor(fq() * (sc.p.length - 1)), ft = .15 + .7 * fq(),
@@ -121,7 +124,7 @@ function gen() {
         else
             sa = pd + (fq() < .5 ? 1 : -1) * (.5 + fq() * .5);
         var fpts = netGrow(fgrid, fq, [fx0, fy0 * YS], sa, 3 + Math.floor(fq() * 4), {
-            u0: .05, u1: .085, turn: .42, clr: .02, snap: .03, join: .28,
+            u0: .05, u1: .085, turn: .42, clr: .02, snap: .035, join: .4,
             x0: side ? .02 : -1.95, x1: side ? .98 : 2.95, y0: .08 * YS, y1: .86 * YS
         });
         if (!fpts)
@@ -154,6 +157,21 @@ function netGrid(cs) {
         }
     };
 }
+// add the queen's cavern outline from angle a0 to a1 (degrees; 270 = the top) as join targets, for a cavern grown
+// to g (0..1, as cav()), in the grid's units: x * sx, y * sy
+function netNestArc(grid, a0, a1, g, sx, sy) {
+    var f = cavFull(), ry = f.ry * g, cy = f.top + ry, rx = f.rx * (.55 + .45 * g), a, px = null, py;
+    for (a = a0; a <= a1; a += 5) {
+        var t = a * Math.PI / 180, x = (f.x + Math.cos(t) * rx * cavM(t)) * sx, y = (cy + Math.sin(t) * ry * cavM(t)) * sy;
+        if (px != null) {
+            var sg = [px, py, x, y];
+            sg.nest = 1;
+            grid.add(sg);
+        }
+        px = x;
+        py = y;
+    }
+}
 function netPS(px, py, g) {
     var dx = g[2] - g[0], dy = g[3] - g[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - g[0]) * dx + (py - g[1]) * dy) / l2)), x = g[0] + dx * t, y = g[1] + dy * t;
     return [x, y, Math.hypot(px - x, py - y)];
@@ -173,7 +191,14 @@ function netGrow(grid, rnd, start, sa, n, o) {
     for (st = 0; st < n && !joined; st++) {
         var ok = false, nx, ny, seg;
         for (at = 0; at < 8 && !ok; at++) {
-            var u = o.u0 + rnd() * (o.u1 - o.u0), t2 = th + (rnd() - .5) * o.turn * 2 * (1 + at * .35) + (o.down || 0);
+            var u = o.u0 + rnd() * (o.u1 - o.u0), t2 = th + (rnd() - .5) * o.turn * 2 * (1 + at * .35) + (o.down || 0), my = (o.y1 - o.y0) * .14, ty = 0;
+            // near the top or bottom of its band a tunnel eases back towards the middle instead of running along the edge
+            if (y < o.y0 + my)
+                ty = 1 - (y - o.y0) / my;
+            else if (y > o.y1 - my)
+                ty = -(1 - (o.y1 - y) / my);
+            if (ty)
+                t2 += Math.atan2(Math.sin(Math.PI / 2 * Math.sign(ty) - t2), Math.cos(Math.PI / 2 * Math.sign(ty) - t2)) * Math.min(1, Math.abs(ty)) * .5;
             nx = x + Math.cos(t2) * u;
             ny = y + Math.sin(t2) * u;
             if (nx < o.x0 || nx > o.x1 || ny < o.y0 || ny > o.y1)
@@ -196,12 +221,14 @@ function netGrow(grid, rnd, start, sa, n, o) {
                     break;
                 }
                 var e = netPS(nx, ny, g);
-                if (e[2] < o.snap && (!best || e[2] < best[2]))
+                if (e[2] < o.snap * (g.nest ? 1.6 : 1) && (!best || e[2] < best[2])) {
                     best = e;
+                    best.nest = g.nest;
+                }
                 if (netSS(seg, g) < o.clr)
                     bad = 'close';
             }
-            if (best && st >= 1 && rnd() < o.join) {
+            if (best && st >= 1 && rnd() < (best.nest ? .9 : o.join)) {
                 // join the nearby tunnel: end exactly on it, as long as that short step crosses nothing
                 var js = [x, y, best[0], best[1]], clash = false;
                 grid.near(x, y, best[0], best[1], 1e-3).forEach(function (g) { if (netPS(x, y, g)[2] > 1e-6 && netPS(best[0], best[1], g)[2] > 1e-6 && netCross(js, g)) clash = true; });
@@ -366,10 +393,20 @@ function genDeep() {
     }
     var dgrid = netGrid(30);
     segsD.forEach(function (g) { dgrid.add(g); });
+    // the cavern floor: Clay galleries can climb up and join it, so the nest opens downwards in several places
+    netNestArc(dgrid, 25, 155, 1, 1, 1);
     for (L = 0; L < 4; L++) {
-        var yA = top + L * lh + 10, yB = top + (L + 1) * lh - 10, made = 0, fi;
-        for (fi = 0; fi < 900 && made < 48; fi++) {
-            var fq = rng(S.seed + 92000 + L * 7919 + fi * 331), srcI = byL[L][Math.floor(fq() * byL[L].length)], src = DEEP[srcI], sg = Math.floor(fq() * (src.pts.length - 1)), ft = .15 + .7 * fq(),
+        var yA = L ? top + L * lh + 10 : c.y, yB = top + (L + 1) * lh - 10, made = 0, fi;
+        for (fi = 0; fi < 1500 && made < 48; fi++) {
+            var fq = rng(S.seed + 92000 + L * 7919 + fi * 331), srcI = byL[L][Math.floor(fq() * byL[L].length)];
+            // the outer galleries grow from the furthest-out tips, so each layer keeps spreading to the sides
+            if (made >= 16)
+                for (var tq = 0; tq < 3; tq++) {
+                    var cI = byL[L][Math.floor(fq() * byL[L].length)], ce = DEEP[cI].pts[DEEP[cI].pts.length - 1], se = DEEP[srcI].pts[DEEP[srcI].pts.length - 1];
+                    if (Math.abs(ce[0] - .5) > Math.abs(se[0] - .5))
+                        srcI = cI;
+                }
+            var src = DEEP[srcI], out = made >= 16 && !src.t, sg = out ? src.pts.length - 2 : Math.floor(fq() * (src.pts.length - 1)), ft = out ? .5 + .45 * fq() : .15 + .7 * fq(),
                 fx = (src.pts[sg][0] + (src.pts[sg + 1][0] - src.pts[sg][0]) * ft) * W, fy = (src.pts[sg][1] + (src.pts[sg + 1][1] - src.pts[sg][1]) * ft) * WH;
             if (fy < yA || fy > yB)
                 continue;
@@ -381,8 +418,11 @@ function genDeep() {
                 sa = (fq() < .5 ? 0 : Math.PI) + (fq() - .5) * .5;
             else
                 sa = pd + (fq() < .5 ? 1 : -1) * (.5 + fq() * .5);
-            var wide = made >= 32, dp = netGrow(dgrid, fq, [fx, fy], sa, 4 + Math.floor(fq() * 5), {
-                u0: .07 * W, u1: .12 * W, turn: .38, clr: 9, snap: 13, join: .22, down: .06,
+            if (out && Math.cos(sa) * (fx < W / 2 ? -1 : 1) < 0 && fq() < .8)
+                sa = Math.PI - sa;
+            // a third stay under the main screen; the rest may run out into the side areas, like the ant farm
+            var wide = made >= 16, dp = netGrow(dgrid, fq, [fx, fy], sa, 5 + Math.floor(fq() * 6), {
+                u0: .08 * W, u1: .14 * W, turn: .38, clr: 9, snap: 14, join: .4, down: .04,
                 x0: wide ? -1.95 * W : .04 * W, x1: wide ? 2.95 * W : .96 * W, y0: yA, y1: yB
             });
             if (!dp)
