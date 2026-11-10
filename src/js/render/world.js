@@ -2,44 +2,86 @@
    Drawing the world each frame: background, tunnels, trails, lighting and decorations.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
-function strokeTun(tw) {
+// a dug tunnel: dark disturbed soil round it, a packed wall, light catching the top lip, a mid-tone hollow
+// (so the dark ants show up), the roof's shadow, a lit floor the ants walk on and crumbly edges.
+// build() lays down the tunnel's path; it is called once per layer, shifted up or down for the lip and floor.
+function strokeTun(tw, build) {
+    function pass(dy, w, col, dash) {
+        cx.save();
+        cx.translate(0, dy);
+        build();
+        cx.restore();
+        if (dash)
+            cx.setLineDash(dash);
+        cx.strokeStyle = col;
+        cx.lineWidth = w;
+        cx.stroke();
+        if (dash)
+            cx.setLineDash([]);
+    }
     cx.lineCap = 'round';
     cx.lineJoin = 'round';
-    cx.strokeStyle = 'rgba(15,7,3,.28)';
-    cx.lineWidth = tw + 9;
-    cx.stroke();
-    cx.strokeStyle = 'rgba(15,7,3,.3)';
-    cx.lineWidth = tw + 6;
-    cx.stroke();
-    cx.strokeStyle = '#120a05';
-    cx.lineWidth = tw + 4;
-    cx.stroke();
-    cx.strokeStyle = '#6b4a2f';
-    cx.lineWidth = tw + 2;
-    cx.stroke();
-    cx.strokeStyle = '#3a2414';
-    cx.lineWidth = tw;
-    cx.stroke();
-    cx.strokeStyle = '#6e4d2f';
-    cx.lineWidth = tw * .82;
-    cx.stroke();
-    cx.strokeStyle = '#a67c50';
-    cx.lineWidth = tw * .56;
-    cx.stroke();
-    cx.strokeStyle = '#c29a68';
-    cx.lineWidth = tw * .24;
-    cx.stroke();
-    cx.strokeStyle = 'rgba(255,235,200,.18)';
-    cx.lineWidth = Math.max(1, tw * .1);
-    cx.stroke();
-    cx.lineCap = 'butt';
-    cx.setLineDash([.9, 11]);
-    cx.strokeStyle = 'rgba(205,165,115,.4)';
-    cx.lineWidth = tw + 3;
-    cx.stroke();
-    cx.setLineDash([]);
-    cx.lineCap = 'round';
+    WOB = Math.max(.4, tw * .13);
+    try {
+        pass(0, tw + 9, 'rgba(8,3,1,.38)');
+        pass(0, tw + 5.5, 'rgba(150,100,60,.55)', [.7, 3.3]);
+        pass(.6, tw + 4.6, 'rgba(10,4,2,.6)', [.9, 4.1]);
+        pass(0, tw + 3.4, '#24140a');
+        pass(-tw * .12, tw + 1, 'rgba(255,170,90,.42)');
+        pass(0, tw, '#5a3820');
+        pass(tw * .08, tw * .55, '#6e4626');
+        pass(-tw * .3, tw * .42, 'rgba(8,3,1,.55)');
+        pass(tw * .32, tw * .3, '#8a5a30');
+        pass(tw * .2, Math.max(.5, tw * .06), 'rgba(255,190,110,.3)');
+    }
+    finally { WOB = 0; }
 }
+
+// glowing amber droplets and fungus along a dug stretch of tunnel (p0 to p1 of route q; no q = main)
+function tunGlow(q, p0, p1, tw, seed) {
+    var L = (q || MAIN).LEN * (p1 - p0), n = Math.floor(L / 46), r = rng(seed), i;
+    for (i = 0; i < n; i++) {
+        var p = p0 + (p1 - p0) * (i + .3 + r() * .4) / n, a = at(p, q), sd = r() < .5 ? 1 : -1, x = a.x + a.nx * sd * (tw / 2 + 1), y = a.y + a.ny * sd * (tw / 2 + 1), amb = r() < .55, col = amb ? '255,170,70' : '120,230,200';
+        if (r() < .25 || x < VR.x0 || x > VR.x1 || y < VR.y0 || y > VR.y1)
+            continue;
+        cx.save();
+        cx.globalCompositeOperation = 'lighter';
+        var lg = cx.createRadialGradient(x, y, 0, x, y, 15);
+        lg.addColorStop(0, 'rgba(' + col + ',.3)');
+        lg.addColorStop(1, 'rgba(' + col + ',0)');
+        cx.fillStyle = lg;
+        cx.beginPath();
+        cx.arc(x, y, 15, 0, 7);
+        cx.fill();
+        cx.restore();
+        if (amb) {
+            cx.fillStyle = 'rgba(255,200,110,.95)';
+            cx.beginPath();
+            cx.ellipse(x, y, 1.1, 1.5, 0, 0, 7);
+            cx.fill();
+            cx.fillStyle = '#fff6d8';
+            cx.beginPath();
+            cx.arc(x - .3, y - .4, .4, 0, 7);
+            cx.fill();
+        }
+        else {
+            for (var k = 0; k < 3; k++) {
+                var fx2 = x + (k - 1) * 1.6, fy2 = y + (k === 1 ? -.8 : 0);
+                cx.strokeStyle = 'rgba(150,240,210,.8)';
+                cx.lineWidth = .4;
+                cx.beginPath();
+                cx.moveTo(fx2, fy2 + 1.5);
+                cx.lineTo(fx2, fy2);
+                cx.stroke();
+                cx.fillStyle = 'rgba(170,255,225,.95)';
+                cx.beginPath();
+                cx.ellipse(fx2, fy2, .9, .5, 0, Math.PI, 0);
+                cx.fill();
+            }
+        }
+    }
+}
+
 function drawFarmAnts(now, x0, x1, y0, y1) {
     if (FAOv !== layoutV) {
         FAO = {};
@@ -101,10 +143,10 @@ function worldRooms() {
    drawn once into WC (the screen plus a margin) and copied each frame; it is redrawn only when the view
    leaves the margin, the zoom changes or something is dug (wKey). While pinching it is drawn directly.
    WPASS: 1 = only the still parts, 2 = only the twinkles and other moving bits, 0 = everything. */
-var WPASS = 0, WC = { c: null, key: '', zs: 0, x0: 0, y0: 0, w: 0, h: 0, lz: 0, zt: 0 };
+var WPASS = 0, WC = { c: null, key: '', zs: 0, x0: 0, y0: 0, w: 0, h: 0 }, WZ = { lz: 0, zt: 0 };
 
 function wStatic(bp) {
-    var tw = tunW(), now = 0;
+    var tw = tunW(), now = 0, i;
     var g = cx.createLinearGradient(0, 0, 0, WH);
     g.addColorStop(0, bp.top || '#4a3322');
     g.addColorStop(1, bp.bot || '#241710');
@@ -120,11 +162,15 @@ function wStatic(bp) {
         cx.fillStyle = bp.tint;
         cx.fillRect(wideL() - 20, 20, wideR() - wideL() + 40, WH - 20);
     }
+    // the glow-lit look: the soil sits a little darker so the tunnel lights stand out
+    cx.fillStyle = 'rgba(12,5,2,.24)';
+    cx.fillRect(wideL() - 20, 20, wideR() - wideL() + 40, WH - 20);
     var rooms = worldRooms().filter(function (r) { return r.x + r.rx + 12 > VR.x0 && r.x - r.rx - 12 < VR.x1 && r.y + r.ry + 12 > VR.y0 && r.y - r.ry - 12 < VR.y1; });
     cavernRim();
     rooms.forEach(function (r) { chamberRim(r.x, r.y, r.rx, r.ry); });
-    var farmL = farmList();
+    var farmL = wQL(farmList());
     if (farmL.length) {
+        strokeTun(tw * .42, function () {
         cx.beginPath();
         farmL.forEach(function (o) {
             var q = o.f.q, d = o.pr * q.LEN, e2, u, lx2 = q.PT[0][0], ly2 = q.PT[0][1];
@@ -138,17 +184,18 @@ function wStatic(bp) {
             e2 = at(o.pr, q);
             vto(lx2, ly2, e2.x, e2.y);
         });
-        strokeTun(tw * .42);
+        });
     }
-    var deepL = deepList();
+    var deepL = wQL(deepList());
     if (deepL.length) {
         [0, 1].forEach(function (trk) {
-            var any = false;
+            var any = deepL.some(function (o) { return !!o.f.t === !!trk; });
+            if (any)
+                strokeTun(tw * (trk ? .8 : .42), function () {
             cx.beginPath();
             deepL.forEach(function (o) {
                 if (!!o.f.t !== !!trk)
                     return;
-                any = true;
                 var q = o.f.q, d = o.pr * q.LEN, e2, u, lx3 = q.PT[0][0], ly3 = q.PT[0][1];
                 cx.moveTo(lx3, ly3);
                 for (u = 1; u < q.PT.length; u++)
@@ -160,17 +207,21 @@ function wStatic(bp) {
                 e2 = at(o.pr, q);
                 vto(lx3, ly3, e2.x, e2.y);
             });
-            if (any)
-                strokeTun(tw * (trk ? .8 : .42));
+                });
         });
     }
     if (S.dug > .003) {
-        tpath();
-        rooms.forEach(function (r) { if (r.s) {
-            cx.moveTo(r.s[0], r.s[1]);
-            cx.lineTo(r.s[2], r.s[3]);
-        } });
-        strokeTun(tw);
+        strokeTun(tw, function () {
+            tpath();
+            rooms.forEach(function (r) { if (r.s) {
+                cx.moveTo(r.s[0], r.s[1]);
+                cx.lineTo(r.s[2], r.s[3]);
+            } });
+        });
+        // glow lights along the dug tunnels
+        tunGlow(null, 1 - S.dug, 1, tw, S.seed + 61);
+        for (i = 0; i < S.sideTunnels && i < BP.length; i++)
+            tunGlow(BP[i], 0, S.sideDug[i] == null ? 1 : S.sideDug[i], tw, S.seed + 300 + i);
     }
     cavernIn();
     rooms.forEach(function (r) { chamberIn(r.x, r.y, r.rx, r.ry, r.ic); });
@@ -178,43 +229,94 @@ function wStatic(bp) {
 
 // what the ground layer depends on: anything here changing redraws it
 function wKey(bp) {
-    var k = [WH, W, QX, QY, S.tier, S.deep || 0, S.reach || 0, layoutV, FDV, S.seed, P.theme || '', bp.top, bp.bot, bp.tint, Math.round(S.dug * LEN / 2), S.sideTunnels, pebs.length, Object.keys(S.rare || {}).join(','), Math.round(frontY() / 4)], i;
+    var k = [WH, W, QX, QY, S.tier, S.deep || 0, S.reach || 0, layoutV, FDV, S.seed, P.theme || '', bp.top, bp.bot, bp.tint, wQ(S.dug, LEN), S.sideTunnels, pebs.length, Object.keys(S.rare || {}).join(','), Math.round(frontY() / 4)], i;
     for (i = 0; i < S.sideTunnels && i < BP.length; i++)
-        k.push(Math.round((S.sideDug[i] == null ? 1 : S.sideDug[i]) * BP[i].LEN / 2));
-    farmList().concat(deepList()).forEach(function (o) { k.push(Math.round(o.pr * o.f.q.LEN / 2)); });
+        k.push(wQ(S.sideDug[i] == null ? 1 : S.sideDug[i], BP[i].LEN));
+    farmList().concat(deepList()).forEach(function (o) { k.push(wQ(o.pr, o.f.q.LEN)); });
     worldRooms().forEach(function (r) { k.push(Math.round(r.x) + ':' + Math.round(r.y) + ':' + Math.round(r.rx * 2) + ':' + Math.round(r.ry * 2) + ':' + (r.ic || '')); });
     var c = cav();
     k.push(Math.round(c.x) + ':' + Math.round(c.y) + ':' + Math.round(c.rx * 2) + ':' + Math.round(c.ry * 2));
     return k.join('|');
 }
 
-// copy the cached ground layer to the screen, redrawing it first if needed; false = draw directly instead
+// Digging: the cached layer holds each tunnel only up to its last 24 px step (wQ); the growing tip beyond
+// that is drawn live each frame (wTips), so the cache is not redrawn every frame while ants dig
+var WQ = false;
+function wQ(p, L) { return p >= 1 ? 1 : Math.floor(p * L / 24) * 24 / Math.max(1, L); }
+function wQL(list) { return WQ ? list.map(function (o) { return { f: o.f, pr: wQ(o.pr, o.f.q.LEN), i: o.i }; }) : list; }
+
+// draw the ground layer into a cache canvas c at scale zs with world origin x0,y0, only the rows y0b..y1b
+function wRender(c, bp, zs, x0, y0, y0b, y1b) {
+    var g = c.getContext('2d'), ovr = VR, occ = cx, odug = S.dug, oside = S.sideDug;
+    g.setTransform(zs, 0, 0, zs, -x0 * zs, -y0 * zs);
+    g.save();
+    g.beginPath();
+    g.rect(x0 - 1, y0b, c.width / zs + 2, y1b - y0b);
+    g.clip();
+    g.clearRect(x0 - 1, y0b, c.width / zs + 2, y1b - y0b);
+    VR = { x0: x0 - 40, x1: x0 + c.width / zs + 40, y0: y0b - 40, y1: y1b + 40 };
+    cx = g;
+    WPASS = 1;
+    WQ = true;
+    S.dug = wQ(S.dug, LEN);
+    S.sideDug = oside.map(function (v, i) { return v == null || !BP[i] ? v : wQ(v, BP[i].LEN); });
+    try { wStatic(bp); }
+    finally {
+        S.dug = odug;
+        S.sideDug = oside;
+        WQ = false;
+        WPASS = 0;
+        cx = occ;
+        VR = ovr;
+        g.restore();
+    }
+}
+
+// copy the cached ground layer to the screen; false = draw it directly instead (no room for a cache).
+// The cache covers the screen plus a 30% margin. Out of it, or zoomed: redrawn at once. Near its edge,
+// or something changed: a fresh copy is built in the background a quarter at a time (WB) and swapped in.
+var WB = { c: null, b: -1 };
 function wBlit(bp, zs) {
-    var vw = cv.width / zs, vh = cv.height / zs, m = .3, key = wKey(bp), occ = cx;
-    if (!WC.c || key !== WC.key || zs !== WC.zs || camX < WC.x0 || cam < WC.y0 || camX + vw > WC.x0 + WC.w || cam + vh > WC.y0 + WC.h) {
-        var pw = Math.ceil(cv.width * (1 + 2 * m)), ph = Math.ceil(cv.height * (1 + 2 * m));
-        if (pw * ph > 16e6)
-            return false;
-        WC.c = WC.c || document.createElement('canvas');
-        if (WC.c.width !== pw || WC.c.height !== ph) {
-            WC.c.width = pw;
-            WC.c.height = ph;
+    var vw = cv.width / zs, vh = cv.height / zs, m = .3, key = wKey(bp), nb = 4;
+    var pw = Math.ceil(cv.width * (1 + 2 * m)), ph = Math.ceil(cv.height * (1 + 2 * m));
+    if (pw * ph > 16e6)
+        return false;
+    function place(o) {
+        o.zs = zs;
+        o.x0 = Math.floor((camX - vw * m) * zs) / zs;
+        o.y0 = Math.floor((cam - vh * m) * zs) / zs;
+        o.w = pw / zs;
+        o.h = ph / zs;
+        o.key = key;
+        o.c = o.c || document.createElement('canvas');
+        if (o.c.width !== pw || o.c.height !== ph) {
+            o.c.width = pw;
+            o.c.height = ph;
         }
-        WC.key = key;
-        WC.zs = zs;
-        WC.x0 = Math.floor((camX - vw * m) * zs) / zs;
-        WC.y0 = Math.floor((cam - vh * m) * zs) / zs;
-        WC.w = pw / zs;
-        WC.h = ph / zs;
-        var g = WC.c.getContext('2d'), ovr = VR;
-        g.setTransform(1, 0, 0, 1, 0, 0);
-        g.clearRect(0, 0, pw, ph);
-        g.setTransform(zs, 0, 0, zs, -WC.x0 * zs, -WC.y0 * zs);
-        VR = { x0: WC.x0 - 40, x1: WC.x0 + WC.w + 40, y0: WC.y0 - 40, y1: WC.y0 + WC.h + 40 };
-        cx = g;
-        WPASS = 1;
-        try { wStatic(bp); }
-        finally { WPASS = 0; cx = occ; VR = ovr; }
+    }
+    var out = !WC.c || zs !== WC.zs || camX < WC.x0 || cam < WC.y0 || camX + vw > WC.x0 + WC.w || cam + vh > WC.y0 + WC.h;
+    if (out) {
+        place(WC);
+        wRender(WC.c, bp, zs, WC.x0, WC.y0, WC.y0, WC.y0 + WC.h);
+        WB.b = -1;
+    }
+    else {
+        var edge = Math.min(camX - WC.x0, WC.x0 + WC.w - camX - vw) < vw * m * .45 || Math.min(cam - WC.y0, WC.y0 + WC.h - cam - vh) < vh * m * .45;
+        if (WB.b < 0 && (key !== WC.key || edge)) {
+            place(WB);
+            WB.b = 0;
+        }
+        else if (WB.b >= 0 && WB.zs !== zs)
+            WB.b = -1;
+        if (WB.b >= 0) {
+            wRender(WB.c, bp, zs, WB.x0, WB.y0, WB.y0 + WB.h * WB.b / nb, WB.y0 + WB.h * (WB.b + 1) / nb);
+            if (++WB.b >= nb) {
+                var t = WC;
+                WC = WB;
+                WB = t;
+                WB.b = -1;
+            }
+        }
     }
     cx.save();
     cx.setTransform(1, 0, 0, 1, 0, 0);
@@ -223,20 +325,54 @@ function wBlit(bp, zs) {
     return true;
 }
 
+// the live tips of tunnels still being dug: from the cached step (wQ) to where the diggers have got to
+function wTips() {
+    var tw = tunW(), i;
+    function part(q, p0, p1, w) {
+        if (p1 - p0 <= 1e-6)
+            return;
+        strokeTun(w, function () {
+            var R = q || MAIN, a = at(p0, q), b = at(p1, q), lx = a.x, ly = a.y, j;
+            cx.beginPath();
+            cx.moveTo(a.x, a.y);
+            for (j = 1; j < R.PT.length; j++)
+                if (R.CUM[j] > p0 * R.LEN && R.CUM[j] < p1 * R.LEN) {
+                    vto(lx, ly, R.PT[j][0], R.PT[j][1]);
+                    lx = R.PT[j][0];
+                    ly = R.PT[j][1];
+                }
+            vto(lx, ly, b.x, b.y);
+        });
+    }
+    if (S.dug > .003 && S.dug < 1)
+        part(null, 1 - S.dug, 1 - wQ(S.dug, LEN), tw);
+    for (i = 0; i < S.sideTunnels && i < BP.length; i++)
+        if (S.sideDug[i] != null && S.sideDug[i] < 1)
+            part(BP[i], wQ(S.sideDug[i], BP[i].LEN), S.sideDug[i], tw);
+    farmList().forEach(function (o) { if (o.pr < 1) part(o.f.q, wQ(o.pr, o.f.q.LEN), o.pr, tw * .42); });
+    deepList().forEach(function (o) { if (o.pr < 1) part(o.f.q, wQ(o.pr, o.f.q.LEN), o.pr, tw * (o.f.t ? .8 : .42)); });
+}
+
 function drawWorld(now) {
     var zs = dpr * K * uz, bp = worldBio(), tw = tunW(), i;
-    if (zs !== WC.lz) {
-        WC.lz = zs;
-        WC.zt = now;
+    if (zs !== WZ.lz) {
+        WZ.lz = zs;
+        WZ.zt = now;
     }
     cx.setTransform(zs, 0, 0, zs, -camX * zs, 0);
     setVR();
-    if (now - WC.zt < 250 || !wBlit(bp, zs)) {
+    if (now - WZ.zt < 250 || !wBlit(bp, zs)) {
         cx.save();
         cx.translate(0, -cam);
         WPASS = 1;
         try { wStatic(bp); }
         finally { WPASS = 0; }
+        cx.restore();
+    }
+    else {
+        cx.save();
+        cx.translate(0, -cam);
+        wTips();
         cx.restore();
     }
     cx.save();

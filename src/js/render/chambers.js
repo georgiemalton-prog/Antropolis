@@ -31,11 +31,14 @@ function caveK(x, y) { return Math.round(x * .37 + y * .61) % 997; }
 
 function chamberRim(x, y, rx, ry) {
     var k = caveK(x, y);
-    cx.fillStyle = '#150c07';
+    cx.fillStyle = 'rgba(8,3,1,.4)';
+    caveP(x, y, rx + 6, ry + 6, k);
+    cx.fill();
+    cx.fillStyle = '#24140a';
     caveP(x, y, rx + 3, ry + 3, k);
     cx.fill();
-    cx.fillStyle = '#5a3d26';
-    caveP(x, y, rx + 1.2, ry + 1.2, k);
+    cx.fillStyle = 'rgba(255,170,90,.42)';
+    caveP(x, y - 1, rx + 1.2, ry + 1.2, k);
     cx.fill();
 }
 
@@ -229,8 +232,9 @@ function glyph(n, x, y, sz) {
 
 function chamberIn(x, y, rx, ry, ic) {
     var g = cx.createRadialGradient(x, y - ry * .3, 2, x, y, rx);
-    g.addColorStop(0, '#a07650');
-    g.addColorStop(1, '#6a4a2c');
+    g.addColorStop(0, '#86562e');
+    g.addColorStop(.7, '#5a3820');
+    g.addColorStop(1, '#2a160a');
     cx.fillStyle = g;
     caveP(x, y, rx, ry, caveK(x, y));
     cx.fill();

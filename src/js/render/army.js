@@ -165,13 +165,13 @@ function drawArmy(now) {
     drawBuild(now);
     var tw = tunW(), ip = infPos(), ry = 36 + S.tier * 2;
     cx.lineCap = 'round';
-    cx.strokeStyle = '#150c07';
+    cx.strokeStyle = '#24140a';
     cx.lineWidth = 12;
     cx.beginPath();
     cx.moveTo(ip.x, QY + ry - 6);
     cx.lineTo(ip.x, ip.y);
     cx.stroke();
-    cx.strokeStyle = '#8a6340';
+    cx.strokeStyle = '#6e4626';
     cx.lineWidth = 8;
     cx.stroke();
     chamber(ip.x, ip.y, 46, 17);

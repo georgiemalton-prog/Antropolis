@@ -109,24 +109,53 @@ function soilTex() {
             cx.lineTo(x, y + 28 + Math.sin(x * .02 + i) * 5);
         cx.fill();
     }
-    cx.strokeStyle = 'rgba(120,85,50,.55)';
-    cx.lineWidth = 1.2;
+    // roots from the grass: tapering, with side shoots
+    cx.lineCap = 'round';
     for (i = 0; i < 8 * WWf; i++) {
-        var r0 = XL + r() * XW, len = 30 + r() * 60;
+        var r0 = XL + r() * XW, len = 30 + r() * 60, w0 = 1.4 + r() * 1.4, px = r0, py = 26, k, rs = rng(S.seed + 31 + i);
+        if (r0 < VR.x0 - 20 || r0 > VR.x1 + 20 || VR.y0 > 26 + len + 15)
+            continue;
+        for (k = 0; k < 6; k++) {
+            var nx = px + (rs() - .5) * 9, ny = py + len / 6;
+            cx.strokeStyle = 'rgba(70,46,26,.85)';
+            cx.lineWidth = w0 * (1 - k / 7);
+            cx.beginPath();
+            cx.moveTo(px, py);
+            cx.quadraticCurveTo(px + (rs() - .5) * 7, py + len / 12, nx, ny);
+            cx.stroke();
+            if (rs() < .35) {
+                cx.lineWidth = w0 * .3;
+                cx.beginPath();
+                cx.moveTo(nx, ny);
+                cx.quadraticCurveTo(nx + (rs() - .5) * 9, ny + 4, nx + (rs() - .5) * 13, ny + 7 + rs() * 6);
+                cx.stroke();
+            }
+            px = nx;
+            py = ny;
+        }
+        cx.strokeStyle = 'rgba(255,215,160,.12)';
+        cx.lineWidth = .5;
         cx.beginPath();
-        cx.moveTo(r0, 26);
-        cx.bezierCurveTo(r0 + 10, 26 + len * .3, r0 - 12, 26 + len * .6, r0 + 4, 26 + len);
+        cx.moveTo(r0 - .4, 26);
+        cx.quadraticCurveTo(r0 + 2, 26 + len * .3, r0 + 1, 26 + len * .5);
         cx.stroke();
     }
     for (i = 0; i < 9 * WWf; i++) {
-        var sx = XL + r() * XW, sy = 60 + r() * (WH - 80), sr = 3 + r() * 5;
-        cx.fillStyle = '#5b4430';
+        var sx = XL + r() * XW, sy = 60 + r() * (WH - 80), sr = 3 + r() * 5, rot = r() * 3;
+        if (sx < VR.x0 - 12 || sx > VR.x1 + 12 || sy < VR.y0 - 12 || sy > VR.y1 + 12)
+            continue;
+        // a shaded stone with a contact shadow
+        cx.fillStyle = 'rgba(0,0,0,.35)';
         cx.beginPath();
-        cx.ellipse(sx, sy, sr * 1.3, sr, r() * 3, 0, 7);
+        cx.ellipse(sx + .8, sy + 1.4, sr * 1.3, sr * .95, rot, 0, 7);
         cx.fill();
-        cx.fillStyle = 'rgba(255,230,190,.18)';
+        var sg = cx.createRadialGradient(sx - sr * .4, sy - sr * .5, sr * .1, sx, sy, sr * 1.4);
+        sg.addColorStop(0, '#8a7a6a');
+        sg.addColorStop(.6, '#4a3c30');
+        sg.addColorStop(1, '#1e150e');
+        cx.fillStyle = sg;
         cx.beginPath();
-        cx.ellipse(sx - sr * .3, sy - sr * .3, sr * .6, sr * .35, 0, 0, 7);
+        cx.ellipse(sx, sy, sr * 1.3, sr, rot, 0, 7);
         cx.fill();
     }
 }

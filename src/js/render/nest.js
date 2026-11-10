@@ -3,23 +3,34 @@
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 function cavernRim() {
-    cx.fillStyle = '#150c07';
+    cx.fillStyle = 'rgba(8,3,1,.5)';
+    cavPath(8);
+    cx.fill();
+    cx.fillStyle = '#0c0503';
     cavPath(4);
     cx.fill();
-    cx.fillStyle = '#5a3d26';
+    cx.fillStyle = '#4a2414';
     cavPath(1.5);
     cx.fill();
 }
 
 function cavernIn() {
     var c = cav(), i, g;
-    g = cx.createRadialGradient(QX, QY, 6, QX, QY + 20, c.rx);
-    g.addColorStop(0, '#b08658');
-    g.addColorStop(.6, '#85613c');
-    g.addColorStop(1, '#5e4127');
+    if (c.x + c.rx < VR.x0 || c.x - c.rx > VR.x1 || c.y + c.ry < VR.y0 || c.y - c.ry > VR.y1)
+        return;
+    // the same dark, glowing cavern as the Nest tab: warm red-brown round the queen, near-black at the walls
+    g = cx.createRadialGradient(QX, QY, 6, QX, QY + 10, c.rx * 1.05);
+    g.addColorStop(0, '#8a4020');
+    g.addColorStop(.3, '#64301a');
+    g.addColorStop(.65, '#38190c');
+    g.addColorStop(1, '#170905');
     cx.fillStyle = g;
     cavPath(0);
     cx.fill();
+    cx.save();
+    cx.globalCompositeOperation = 'lighter';
+    glow(QX, QY - 4, c.rx * .8, '255,120,60', .16);
+    cx.restore();
     // shadow along the ceiling and walls so the room has depth
     cx.save();
     cavPath(0);

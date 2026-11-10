@@ -37,9 +37,20 @@ function rqTick(dt, cap) {
 // the part of the world on screen (with a margin); tunnel segments wholly outside it are skipped
 var VR = { x0: -1e9, x1: 1e9, y0: -1e9, y1: 1e9 };
 function setVR() { var m = 40; VR.x0 = camX - m; VR.x1 = camX + W / uz + m; VR.y0 = cam - m; VR.y1 = cam + H / uz + m; }
+// WOB > 0 (only while the ground layer draws tunnels): segments get a gentle hand-dug wobble of up to
+// WOB world px, fixed by position so every layer of the tunnel wobbles the same way; ends stay put
+var WOB = 0;
 function vto(px, py, x, y) {
     if ((px < VR.x0 && x < VR.x0) || (px > VR.x1 && x > VR.x1) || (py < VR.y0 && y < VR.y0) || (py > VR.y1 && y > VR.y1))
         cx.moveTo(x, y);
+    else if (WOB) {
+        var dx = x - px, dy = y - py, L = Math.hypot(dx, dy), n = Math.floor(L / 5), k;
+        for (k = 1; k < n; k++) {
+            var t = k / n, ox = px + dx * t, oy = py + dy * t, w = (Math.sin(ox * .31 + oy * .17) * .6 + Math.sin(ox * .11 - oy * .23 + 1.7) * .4) * WOB * Math.sin(Math.PI * t);
+            cx.lineTo(ox - dy / L * w, oy + dx / L * w);
+        }
+        cx.lineTo(x, y);
+    }
     else
         cx.lineTo(x, y);
 }
