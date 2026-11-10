@@ -47,6 +47,7 @@ ui/events.js
 ui/buildings.js
 ui/settings.js
 ui/intro.js
+ui/opening.js
 ui/ads.js
 ui/music.js
 dev/preview-tools.js

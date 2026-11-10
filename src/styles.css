@@ -123,3 +123,15 @@ canvas#cv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #title .go:active{transform:scale(.97)}
 #title .sub{font:400 18px var(--fh);letter-spacing:.2em;color:#9a6b3a;background:none;border:0;cursor:pointer;padding:6px}
 #title .sub:hover{color:#f5b23c}
+/* opening scene (ui/opening.js) */
+#opening{position:fixed;inset:0;z-index:400;background:#000;transition:opacity .6s ease;cursor:pointer;outline:none}
+#opening.out{opacity:0}
+#opening canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#opening .op-t{position:absolute;left:0;right:0;top:calc(14% + env(safe-area-inset-top,0px));padding:0 24px;text-align:center;color:#ecc8b6;font:italic 21px/1.4 Georgia,'Times New Roman',serif;letter-spacing:.06em;opacity:0;transition:opacity 1s ease;text-shadow:0 0 18px rgba(255,60,30,.45)}
+#opening .op-t.on{opacity:.92}
+#opening #oplogo{position:absolute;left:50%;bottom:calc(8% + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);width:min(84vw,520px);height:auto;opacity:0;transition:opacity 1.6s ease,transform 1.6s ease;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse 62% 74% at 50% 50%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 62% 74% at 50% 50%,#000 52%,transparent 100%);filter:drop-shadow(0 0 28px rgba(232,60,30,.45));pointer-events:none}
+#opening #oplogo.on{opacity:1;transform:translate(-50%,0)}
+#opening .op-skip{position:absolute;left:0;right:0;bottom:calc(26px + env(safe-area-inset-bottom,0px));text-align:center;color:rgba(236,200,182,.5);font:600 12px system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+#opening .op-skip.go{color:rgba(255,190,160,.9);animation:opblink 2s ease-in-out infinite}
+@keyframes opblink{50%{opacity:.45}}
+@media (prefers-reduced-motion: reduce){#opening .op-skip.go{animation:none}}

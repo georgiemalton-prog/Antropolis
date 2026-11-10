@@ -25,7 +25,13 @@ function initFirstVisit() {
     try {
         if (!localStorage.getItem('thecolony_intro')) {
             P.wn = WN_V;
-            introOpen();
+            if (navigator.webdriver)
+                introOpen();
+            else {
+                // a new player: the opening scene plays after PLAY, then How to play; hold the game still until then
+                OPEN_PENDING = { dead: dead };
+                dead = true;
+            }
         }
     }
     catch (e) {
@@ -44,10 +50,19 @@ function initTitleScreen() {
             return;
         }
         $('tgo').textContent = S.totalHatched > 0 || S.dug > 0 ? 'CONTINUE' : 'PLAY';
-        function go() { t.className = 'off'; setTimeout(function () { t.style.display = 'none'; }, 800); musicStart(); }
+        function go() {
+            t.className = 'off';
+            setTimeout(function () { t.style.display = 'none'; }, 800);
+            musicStart();
+            if (OPEN_PENDING) {
+                dead = OPEN_PENDING.dead;
+                OPEN_PENDING = null;
+                openingPlay(function () { introOpen(); });
+            }
+        }
         $('tgo').onclick = go;
         if ($('tver'))
             $('tver').textContent = 'Version ' + APP_VER + ' \u00b7 build ' + BUILD;
-        $('thelp').onclick = function () { go(); setTimeout(function () { introOpen(true); }, 300); };
+        $('thelp').onclick = function () { var op = !!OPEN_PENDING; go(); if (!op) setTimeout(function () { introOpen(true); }, 300); };
     })();
 }

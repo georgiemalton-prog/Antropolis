@@ -54,7 +54,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 62, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 63, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -79,6 +79,7 @@ function openSettings() {
             '<textarea id="setcode" rows="3" placeholder="Paste a save code here, or choose a backup file" style="width:100%;font:12px monospace;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px"></textarea>' +
             '<div class="irow" style="margin-top:6px;flex-wrap:wrap"><label class="card" style="margin:0;justify-content:center;cursor:pointer">Choose file<input id="setfile" type="file" accept=".json,.txt,application/json,text/plain" style="display:none"></label><button class="card" id="setload">Load this backup</button></div>' +
             (DEV ? '<p style="margin:12px 0 4px"><b>Preview tools</b></p><button class="card" id="setdev">Open preview tools</button>' : '') +
+            '<button class="card" id="setopen">Watch the opening</button>' +
             '<p style="margin:12px 0 4px"><b>Power</b> <span class="mute">(tap to change)</span></p>' +
             '<button class="card" id="setbat"></button>' +
             (STATS_CODE && !DEV ? '<p style="margin:12px 0 4px"><b>Anonymous play stats</b> <span class="mute">(helps us improve the game)</span></p><button class="card" id="setstats"></button>' : '') +
@@ -100,6 +101,7 @@ function openSettings() {
         $('setfile').onchange = function () { var f = this.files && this.files[0]; if (!f)
             return; var r = new FileReader(); r.onload = function () { $('setcode').value = String(r.result); pendingLoad = null; tryLoadSave($('setcode').value); }; r.readAsText(f); };
         $('setbat').onclick = function () { setPower(power === 'auto' ? 'saver' : power === 'saver' ? 'smooth' : 'auto'); };
+        $('setopen').onclick = function () { el.classList.remove('on'); openingPlay(); };
         if ($('setstats'))
             $('setstats').onclick = statsToggle;
         if ($('fbsend'))
