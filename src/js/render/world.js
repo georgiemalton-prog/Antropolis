@@ -59,64 +59,17 @@ function drawFarmAnts(now, x0, x1, y0, y1) {
     });
 }
 
-function drawWorld(now) {
-    var zs = dpr * K * uz;
-    cx.setTransform(zs, 0, 0, zs, -camX * zs, 0);
-    setVR();
-    cx.save();
-    cx.translate(0, -cam);
-    var g = cx.createLinearGradient(0, 0, 0, WH);
+// the biome's colours, or the shop theme's
+function worldBio() {
     var bp = bio(), th = THM[P.theme];
     if (th)
         bp = { top: th.top, bot: th.bot, tint: th.tint, sky: bp.sky };
-    g.addColorStop(0, bp.top || '#4a3322');
-    g.addColorStop(1, bp.bot || '#241710');
-    cx.fillStyle = g;
-    cx.fillRect(wideL() - 20, 0, wideR() - wideL() + 40, WH);
-    if (S.deep)
-        drawDeepBg(now);
-    soilTex();
-    pebs.forEach(function (p) { cx.fillStyle = p[3] > .5 ? '#6a4c36' : '#1e130c'; cx.globalAlpha = .6; cx.beginPath(); cx.arc(p[0], p[1], p[2], 0, 7); cx.fill(); });
-    cx.globalAlpha = 1;
-    drawSoil(now);
-    if (bp.tint) {
-        cx.fillStyle = bp.tint;
-        cx.fillRect(wideL() - 20, 20, wideR() - wideL() + 40, WH - 20);
-    }
-    var sg = cx.createLinearGradient(0, -SK, 0, 24);
-    sg.addColorStop(0, bp.sky ? bp.sky[0] : '#5fa6d0');
-    sg.addColorStop(.7, bp.sky ? bp.sky[1] : '#a9d3df');
-    sg.addColorStop(1, bp.sky ? bp.sky[2] : '#d3e8da');
-    cx.fillStyle = sg;
-    cx.fillRect(wideL() - 20, -SK - 4, wideR() - wideL() + 40, 24 + SK + 4);
-    var dn = dayState();
-    if (dn.night > .01) {
-        cx.fillStyle = 'rgba(8,12,46,' + dn.night * .78 + ')';
-        cx.fillRect(wideL() - 20, -SK - 4, wideR() - wideL() + 40, 24 + SK + 4);
-        var sr = rng(S.seed + 55), sxn = Math.round((wideR() - wideL()) / 9);
-        for (var si = 0; si < sxn; si++) {
-            var stx = wideL() + sr() * (wideR() - wideL()), sty = -SK + sr() * (SK - 14), sta = (.4 + .6 * Math.abs(Math.sin(now * .002 * (.5 + sr()) + si))) * dn.night;
-            cx.fillStyle = 'rgba(255,255,235,' + sta + ')';
-            cx.fillRect(stx, sty, 1.3, 1.3);
-        }
-    }
-    for (var ck = 0; ck < 5; ck++) {
-        var cxx = wideL() + (now * .003 * (1 + ck * .4) + ck * 97) % (wideR() - wideL() + 140) - 70, cyy = -SK + 14 + ck * (SK - 30) / 5;
-        cx.fillStyle = 'rgba(255,255,255,.78)';
-        cx.beginPath();
-        cx.ellipse(cxx, cyy, 16, 5, 0, 0, 7);
-        cx.ellipse(cxx + 9, cyy - 3, 10, 5, 0, 0, 7);
-        cx.ellipse(cxx - 9, cyy - 2, 9, 4, 0, 0, 7);
-        cx.fill();
-    }
-    cx.fillStyle = bp.grass || '#5b8f3a';
-    cx.fillRect(wideL() - 20, 20, wideR() - wideL() + 40, 6);
-    var e = PT[0], mr = 28 + S.tier * 8;
-    cx.fillStyle = bp.hill || '#7a5636';
-    cx.beginPath();
-    cx.ellipse(e[0], 24, mr, mr * .5 + S.tier * 2 + (S.hillGrowth || 0), 0, Math.PI, 0);
-    cx.fill();
-    var tw = tunW(), rooms = [], i;
+    return bp;
+}
+
+// the nest chambers, side-tunnel and deep-layer end rooms that are open
+function worldRooms() {
+    var rooms = [], i;
     for (i = 0; i < S.tier && i < 4; i++) {
         var q = PT[CI[i]], ec = exc && exc.i === i ? Math.min(1, exc.t / exc.dur) : 1;
         if (ec < .1)
@@ -141,9 +94,34 @@ function drawWorld(now) {
             rooms.push({ x: fe[0], y: fe[1], rx: 7 + (fe[0] * 7 % 4), ry: 5 + (fe[1] * 3 % 3), ic: null });
         }
     });
-    var rx = 62 + S.tier * 5;
+    return rooms;
+}
+
+/* The ground layer: soil, stones, tunnels, chambers and the queen's cavern. None of it moves, so it is
+   drawn once into WC (the screen plus a margin) and copied each frame; it is redrawn only when the view
+   leaves the margin, the zoom changes or something is dug (wKey). While pinching it is drawn directly.
+   WPASS: 1 = only the still parts, 2 = only the twinkles and other moving bits, 0 = everything. */
+var WPASS = 0, WC = { c: null, key: '', zs: 0, x0: 0, y0: 0, w: 0, h: 0, lz: 0, zt: 0 };
+
+function wStatic(bp) {
+    var tw = tunW(), now = 0;
+    var g = cx.createLinearGradient(0, 0, 0, WH);
+    g.addColorStop(0, bp.top || '#4a3322');
+    g.addColorStop(1, bp.bot || '#241710');
+    cx.fillStyle = g;
+    cx.fillRect(wideL() - 20, 0, wideR() - wideL() + 40, WH);
+    if (S.deep)
+        drawDeepBg(now);
+    soilTex();
+    pebs.forEach(function (p) { cx.fillStyle = p[3] > .5 ? '#6a4c36' : '#1e130c'; cx.globalAlpha = .6; cx.beginPath(); cx.arc(p[0], p[1], p[2], 0, 7); cx.fill(); });
+    cx.globalAlpha = 1;
+    drawSoil(now);
+    if (bp.tint) {
+        cx.fillStyle = bp.tint;
+        cx.fillRect(wideL() - 20, 20, wideR() - wideL() + 40, WH - 20);
+    }
+    var rooms = worldRooms().filter(function (r) { return r.x + r.rx + 12 > VR.x0 && r.x - r.rx - 12 < VR.x1 && r.y + r.ry + 12 > VR.y0 && r.y - r.ry - 12 < VR.y1; });
     cavernRim();
-    rooms = rooms.filter(function (r) { return r.x + r.rx + 12 > VR.x0 && r.x - r.rx - 12 < VR.x1 && r.y + r.ry + 12 > VR.y0 && r.y - r.ry - 12 < VR.y1; });
     rooms.forEach(function (r) { chamberRim(r.x, r.y, r.rx, r.ry); });
     var farmL = farmList();
     if (farmL.length) {
@@ -196,6 +174,115 @@ function drawWorld(now) {
     }
     cavernIn();
     rooms.forEach(function (r) { chamberIn(r.x, r.y, r.rx, r.ry, r.ic); });
+}
+
+// what the ground layer depends on: anything here changing redraws it
+function wKey(bp) {
+    var k = [WH, W, QX, QY, S.tier, S.deep || 0, S.reach || 0, layoutV, FDV, S.seed, P.theme || '', bp.top, bp.bot, bp.tint, Math.round(S.dug * LEN / 2), S.sideTunnels, pebs.length, Object.keys(S.rare || {}).join(','), Math.round(frontY() / 4)], i;
+    for (i = 0; i < S.sideTunnels && i < BP.length; i++)
+        k.push(Math.round((S.sideDug[i] == null ? 1 : S.sideDug[i]) * BP[i].LEN / 2));
+    farmList().concat(deepList()).forEach(function (o) { k.push(Math.round(o.pr * o.f.q.LEN / 2)); });
+    worldRooms().forEach(function (r) { k.push(Math.round(r.x) + ':' + Math.round(r.y) + ':' + Math.round(r.rx * 2) + ':' + Math.round(r.ry * 2) + ':' + (r.ic || '')); });
+    var c = cav();
+    k.push(Math.round(c.x) + ':' + Math.round(c.y) + ':' + Math.round(c.rx * 2) + ':' + Math.round(c.ry * 2));
+    return k.join('|');
+}
+
+// copy the cached ground layer to the screen, redrawing it first if needed; false = draw directly instead
+function wBlit(bp, zs) {
+    var vw = cv.width / zs, vh = cv.height / zs, m = .3, key = wKey(bp), occ = cx;
+    if (!WC.c || key !== WC.key || zs !== WC.zs || camX < WC.x0 || cam < WC.y0 || camX + vw > WC.x0 + WC.w || cam + vh > WC.y0 + WC.h) {
+        var pw = Math.ceil(cv.width * (1 + 2 * m)), ph = Math.ceil(cv.height * (1 + 2 * m));
+        if (pw * ph > 16e6)
+            return false;
+        WC.c = WC.c || document.createElement('canvas');
+        if (WC.c.width !== pw || WC.c.height !== ph) {
+            WC.c.width = pw;
+            WC.c.height = ph;
+        }
+        WC.key = key;
+        WC.zs = zs;
+        WC.x0 = Math.floor((camX - vw * m) * zs) / zs;
+        WC.y0 = Math.floor((cam - vh * m) * zs) / zs;
+        WC.w = pw / zs;
+        WC.h = ph / zs;
+        var g = WC.c.getContext('2d'), ovr = VR;
+        g.setTransform(1, 0, 0, 1, 0, 0);
+        g.clearRect(0, 0, pw, ph);
+        g.setTransform(zs, 0, 0, zs, -WC.x0 * zs, -WC.y0 * zs);
+        VR = { x0: WC.x0 - 40, x1: WC.x0 + WC.w + 40, y0: WC.y0 - 40, y1: WC.y0 + WC.h + 40 };
+        cx = g;
+        WPASS = 1;
+        try { wStatic(bp); }
+        finally { WPASS = 0; cx = occ; VR = ovr; }
+    }
+    cx.save();
+    cx.setTransform(1, 0, 0, 1, 0, 0);
+    cx.drawImage(WC.c, Math.round((WC.x0 - camX) * zs), Math.round((WC.y0 - cam) * zs));
+    cx.restore();
+    return true;
+}
+
+function drawWorld(now) {
+    var zs = dpr * K * uz, bp = worldBio(), tw = tunW(), i;
+    if (zs !== WC.lz) {
+        WC.lz = zs;
+        WC.zt = now;
+    }
+    cx.setTransform(zs, 0, 0, zs, -camX * zs, 0);
+    setVR();
+    if (now - WC.zt < 250 || !wBlit(bp, zs)) {
+        cx.save();
+        cx.translate(0, -cam);
+        WPASS = 1;
+        try { wStatic(bp); }
+        finally { WPASS = 0; }
+        cx.restore();
+    }
+    cx.save();
+    cx.translate(0, -cam);
+    // the moving bits of the ground: twinkling crystals, springs, neighbour colonies
+    WPASS = 2;
+    try {
+        if (S.deep)
+            drawDeepBg(now);
+        drawSoil(now);
+    }
+    finally { WPASS = 0; }
+    var sg = cx.createLinearGradient(0, -SK, 0, 24);
+    sg.addColorStop(0, bp.sky ? bp.sky[0] : '#5fa6d0');
+    sg.addColorStop(.7, bp.sky ? bp.sky[1] : '#a9d3df');
+    sg.addColorStop(1, bp.sky ? bp.sky[2] : '#d3e8da');
+    cx.fillStyle = sg;
+    cx.fillRect(wideL() - 20, -SK - 4, wideR() - wideL() + 40, 24 + SK + 4);
+    var dn = dayState();
+    if (dn.night > .01) {
+        cx.fillStyle = 'rgba(8,12,46,' + dn.night * .78 + ')';
+        cx.fillRect(wideL() - 20, -SK - 4, wideR() - wideL() + 40, 24 + SK + 4);
+        var sr = rng(S.seed + 55), sxn = Math.round((wideR() - wideL()) / 9);
+        for (var si = 0; si < sxn; si++) {
+            var stx = wideL() + sr() * (wideR() - wideL()), sty = -SK + sr() * (SK - 14), sta = (.4 + .6 * Math.abs(Math.sin(now * .002 * (.5 + sr()) + si))) * dn.night;
+            cx.fillStyle = 'rgba(255,255,235,' + sta + ')';
+            cx.fillRect(stx, sty, 1.3, 1.3);
+        }
+    }
+    for (var ck = 0; ck < 5; ck++) {
+        var cxx = wideL() + (now * .003 * (1 + ck * .4) + ck * 97) % (wideR() - wideL() + 140) - 70, cyy = -SK + 14 + ck * (SK - 30) / 5;
+        cx.fillStyle = 'rgba(255,255,255,.78)';
+        cx.beginPath();
+        cx.ellipse(cxx, cyy, 16, 5, 0, 0, 7);
+        cx.ellipse(cxx + 9, cyy - 3, 10, 5, 0, 0, 7);
+        cx.ellipse(cxx - 9, cyy - 2, 9, 4, 0, 0, 7);
+        cx.fill();
+    }
+    cx.fillStyle = bp.grass || '#5b8f3a';
+    cx.fillRect(wideL() - 20, 20, wideR() - wideL() + 40, 6);
+    var e = PT[0], mr = 28 + S.tier * 8;
+    cx.fillStyle = bp.hill || '#7a5636';
+    cx.beginPath();
+    cx.ellipse(e[0], 24, mr, mr * .5 + S.tier * 2 + (S.hillGrowth || 0), 0, Math.PI, 0);
+    cx.fill();
+    var rx = 62 + S.tier * 5;
     if (S.dug >= 1) {
         cx.fillStyle = '#150c07';
         cx.beginPath();

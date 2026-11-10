@@ -12,7 +12,7 @@ function antDraw(x, y, ang, sz, leaf, ph, kd, fast) {
         drawAnt(x, y, ang, sz, leaf, ph, kd);
         return;
     }
-    var sb = Math.max(.25, Math.round(dpr * K * uz * 4) / 4), pb = Math.floor((((ph % 6.2832) + 6.2832) % 6.2832) / 6.2832 * 12), key = kd + '|' + pb + '|' + (leaf || 0) + '|' + Math.round(sz * 10) + '|' + sb, sp = SPR[key], half = sz * 1.7 + 2;
+    var sb = Math.max(.25, Math.ceil(dpr * K * uz * 4) / 4), pb = Math.floor((((ph % 6.2832) + 6.2832) % 6.2832) / 6.2832 * 12), key = kd + '|' + pb + '|' + (leaf || 0) + '|' + Math.round(sz * 10) + '|' + sb, sp = SPR[key], half = sz * 1.7 + 2;
     if (!sp) {
         if (SPRN > 700) {
             SPR = {};

@@ -69,6 +69,10 @@ function drawFallen() {
     }
 }
 
+// a fixed number per ant for its idle sways and lunges. (m.ph is the walking phase, which keeps
+// running every frame, so a sway built on it jumped to a new angle each frame: the wobble.)
+function mSeed(m) { return (m.u || 0) * 61 + (m.fi || 0) * .37; }
+
 function smoothPos(o, x, y, ang, now) {
     // a bad position (eg a job that has not set its spot yet) is skipped, and a broken smoothed one is reset,
     // so one bad frame can never leave an ant stuck as 'not a number' for good
@@ -187,7 +191,7 @@ function drawArmy(now) {
         if (m.inj) {
             if (m.st === 0) {
                 a = at(m.p);
-                var lm = Math.sin(now * .009 + m.ph) * .9;
+                var lm = Math.sin(now * .009 + mSeed(m)) * .9;
                 x = a.x + a.nx * lm;
                 y = a.y + a.ny * lm;
                 ang = a.ang;
@@ -205,7 +209,7 @@ function drawArmy(now) {
             y = m.py == null ? QY : m.py;
             ang = m.ang || 0;
             if (m.tend)
-                y += Math.sin(now * .012 + m.ph * 4) * .5;
+                y += Math.sin(now * .012 + mSeed(m) * 4) * .5;
         }
         else if (m.ex || (m.dr && m.dr.ph !== 'main' && m.dr.ph !== 'mainB') || (m.cr && m.cr.ph !== 'main' && m.cr.ph !== 'mainB') || (m.mo && m.mo.ph !== 'main' && m.mo.ph !== 'mainB')) {
             x = m.px;
@@ -213,7 +217,7 @@ function drawArmy(now) {
             ang = m.ang;
         }
         else if (m.tr && m.tr.ph !== 'main' && BP[17]) {
-            var tb = BP[17], tl = ((m.tr.slot % 3) - 1) * tw * .32, lg = trm.fT > 0 && m.tr.slot < 6 ? Math.max(0, Math.sin(now * .013 + m.ph * 5)) * 2.5 / tb.LEN : 0;
+            var tb = BP[17], tl = ((m.tr.slot % 3) - 1) * tw * .32, lg = trm.fT > 0 && m.tr.slot < 6 ? Math.max(0, Math.sin(now * .013 + mSeed(m) * 5)) * 2.5 / tb.LEN : 0;
             a = at(Math.max(0, Math.min(1, m.tr.s + lg)), tb);
             x = a.x + a.nx * tl;
             y = a.y + a.ny * tl;
@@ -230,7 +234,7 @@ function drawArmy(now) {
             a = at(m.s * pr, BP[m.q]);
             x = a.x + a.nx * m.l * tw * .3;
             y = a.y + a.ny * m.l * tw * .3;
-            ang = (m.sd > 0 ? a.ang : a.ang + Math.PI) + (m.pz > 0 ? Math.sin(now * .0035 + m.ph) * .6 : 0);
+            ang = (m.sd > 0 ? a.ang : a.ang + Math.PI) + (m.pz > 0 ? Math.sin(now * .0035 + mSeed(m)) * .6 : 0);
         }
         else if (k === 1 && m.sf) {
             var rq = routeAt(m.sf.rt, m.sf.d);
@@ -238,7 +242,7 @@ function drawArmy(now) {
             y = rq.y;
             ang = m.sf.back ? rq.ang + Math.PI : rq.ang;
             if (m.sf.pk > 0)
-                ang += Math.sin(now * .01 + m.ph) * .25;
+                ang += Math.sin(now * .01 + mSeed(m)) * .25;
             leaf = m.cg ? (m.sf.side ? 4 : (m.ph * 13) % 1 < .25 ? 3 : 1) : false;
         }
         else {
@@ -252,12 +256,12 @@ function drawArmy(now) {
                 var sdp = S.foodSpots[m.si].side;
                 x = a.x + a.nx * sdp * tw * .3;
                 y = a.y + a.ny * sdp * tw * .3;
-                ang = a.ang + sdp * 1.35 + Math.sin(now * .012 + m.ph) * .12;
+                ang = a.ang + sdp * 1.35 + Math.sin(now * .012 + mSeed(m)) * .12;
             }
             if (m.wait > 0 && k === 1 && !m.inj)
-                ang += Math.sin(now * .004 + m.ph * 7) * .45;
+                ang += Math.sin(now * .004 + mSeed(m) * 7) * .45;
             else if (!foes.length && (k === 2 || k === 4) && !m.inj)
-                ang += Math.sin(now * .0015 + m.ph * 5) * .35;
+                ang += Math.sin(now * .0015 + mSeed(m) * 5) * .35;
             if (!foes.length)
                 m.eng = 0;
             if ((k === 2 || k === 4) && foes.length) {
@@ -270,11 +274,11 @@ function drawArmy(now) {
                         m.eng = 0;
                 }
                 if (f && m.eng) {
-                    var side = m.fi % 2 ? -1 : 1, rank = Math.floor(m.u * 8), fsz = foeSz(f), lw0 = Math.sin(now * .012 + m.ph * 5), lunge = rank < 2 ? Math.max(0, lw0) * 4.5 : 0, pq = Math.max(0, Math.min(1, f.p + side * (fsz * (side > 0 ? 2.25 : 1.95) + rank * 4.5 - lunge) / LEN)), bq = at(pq), ln2 = (((m.u * 5.7) % 1) * 2 - 1) * tw * .3;
+                    var side = m.fi % 2 ? -1 : 1, rank = Math.floor(m.u * 8), fsz = foeSz(f), lw0 = Math.sin(now * .012 + mSeed(m) * 5), lunge = rank < 2 ? Math.max(0, lw0) * 4.5 : 0, pq = Math.max(0, Math.min(1, f.p + side * (fsz * (side > 0 ? 2.25 : 1.95) + rank * 4.5 - lunge) / LEN)), bq = at(pq), ln2 = (((m.u * 5.7) % 1) * 2 - 1) * tw * .3;
                     x = bq.x + bq.nx * ln2;
                     y = bq.y + bq.ny * ln2;
                     ang = side > 0 ? bq.ang + Math.PI : bq.ang;
-                    m.bite = rank < 2 ? Math.max(0, lw0) : rank < 4 ? .35 + .35 * Math.sin(now * .02 + m.ph * 3) : 0;
+                    m.bite = rank < 2 ? Math.max(0, lw0) : rank < 4 ? .35 + .35 * Math.sin(now * .02 + mSeed(m) * 3) : 0;
                     // a spark where the jaws land, once per lunge
                     if (rank < 2 && lw0 > .96 && !(m.lsp > now - 300) && fx.length < 260) {
                         m.lsp = now;
@@ -288,7 +292,7 @@ function drawArmy(now) {
             }
         }
         if (m.gt > 0)
-            ang += Math.sin(now * .02 + m.ph) * .12;
+            ang += Math.sin(now * .02 + mSeed(m)) * .12;
         smoothPos(m, x, y, ang, now);
         x = m.sx;
         y = m.sy;
@@ -303,7 +307,7 @@ function drawArmy(now) {
         if (k === 4) {
             cx.save();
             cx.globalCompositeOperation = 'lighter';
-            glow(x, y, 18, '170,40,30', .3 + .1 * Math.sin(now * .008 + m.ph));
+            glow(x, y, 18, '170,40,30', .3 + .1 * Math.sin(now * .008 + mSeed(m)));
             cx.restore();
         }
         cx.globalAlpha = m.al == null ? 1 : m.al;

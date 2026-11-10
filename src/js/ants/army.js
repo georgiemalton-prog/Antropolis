@@ -409,7 +409,7 @@ function soldierGuard(m, dt, t, C) {
     if (!tunOK() || m.tired)
         post = Math.max(1 - .006 - (m.fi % 14) * .004, 1 - S.dug * .9);
     else if (k === 4)
-        post += Math.sin(t * .05 + m.ph) * Math.min(.03, 40 / Math.max(1, LEN));
+        post += Math.sin(t * .05 + mSeed(m)) * Math.min(.03, 40 / Math.max(1, LEN));
     m.sp = (m.sp || 0) - dt;
     if (m.sp <= 0) {
         m.sp = (3 + Math.random() * 5) * (.7 + trait(m, 6));
@@ -422,7 +422,7 @@ function soldierGuard(m, dt, t, C) {
     }
     else if (m.mode === 1) {
         m.d = m.fi % 2 ? -1 : 1;
-        m.p = post + Math.sin(t * 5 + m.ph) * .0022;
+        m.p = post + Math.sin(t * 5 + mSeed(m)) * .0022;
     }
     else {
         m.d = -1;

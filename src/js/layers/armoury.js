@@ -113,9 +113,9 @@ function drillStep(m, dt, t) {
             d.ph = 'up1';
         // short lunges back and forth on the practice floor
         a = at(1, ap.q1);
-        m.px = ap.x - 6 + Math.sin(t * 2.2 + m.ph) * 7;
-        m.py = ap.y + 2 + Math.cos(t * 1.3 + m.ph) * 3;
-        m.ang = Math.cos(t * 2.2 + m.ph) > 0 ? 0 : Math.PI;
+        m.px = ap.x - 6 + Math.sin(t * 2.2 + mSeed(m)) * 7;
+        m.py = ap.y + 2 + Math.cos(t * 1.3 + mSeed(m)) * 3;
+        m.ang = Math.cos(t * 2.2 + mSeed(m)) > 0 ? 0 : Math.PI;
         return true;
     }
     d.s += (dn ? 1 : -1) * V / Math.max(1, q.LEN);

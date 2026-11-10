@@ -142,7 +142,7 @@ function cricFight(m, d, ap, V, t) {
         }
         if (d.s < best.s)
             cricDef.push(d.s);
-        a = at(Math.max(0, Math.min(1, d.s + (Math.abs(dd) * L < 3 ? -side * Math.max(0, Math.sin(t * 9 + m.ph * 5)) * 2 / L : 0))), q);
+        a = at(Math.max(0, Math.min(1, d.s + (Math.abs(dd) * L < 3 ? -side * Math.max(0, Math.sin(t * 9 + mSeed(m) * 5)) * 2 / L : 0))), q);
         m.ang = side < 0 ? a.ang : a.ang + Math.PI;
     }
     else {

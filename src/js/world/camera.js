@@ -55,7 +55,11 @@ function camXc(v) { return Math.max(wideL(), Math.min(wideR() - W / uz, v)); }
 
 function camClamp(v) { return Math.max(-SK, Math.min(WHX() - H / uz, v)); }
 
-function setZoom(z) { var o = uz; z = Math.max(1, Math.min(4, z)); if (z === o)
+// closest zoom: as the colony grows the world gets wider and is shrunk to fit the screen, so the cap
+// grows with it and the closest view stays the same size as in a new colony (4x at the start)
+function uzMax() { return Math.max(4, 4.4 / K); }
+
+function setZoom(z) { var o = uz; z = Math.max(1, Math.min(uzMax(), z)); if (z === o)
     return; var cwx = camX + W / (2 * o), cwy = camT + H / (2 * o); uz = z; camX = camXc(cwx - W / (2 * z)); camT = camClamp(cwy - H / (2 * z)); follow = performance.now() + 5000; }
 
 function pdist() { var k = Object.keys(ptrs), a = ptrs[k[0]], b = ptrs[k[1]]; return Math.hypot(a.x - b.x, a.y - b.y); }

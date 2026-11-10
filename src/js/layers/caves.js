@@ -91,9 +91,9 @@ function crystalStep(m, dt, t) {
     if (c.ph === 'map') {
         c.wt -= dt;
         m.act = 'Mapping the Crystal Caves';
-        m.px = cp.x + Math.cos(t * .7 + m.ph) * 11;
-        m.py = cp.y + 1 + Math.sin(t * 1.1 + m.ph) * 4;
-        m.ang = Math.atan2(Math.cos(t * 1.1 + m.ph) * 4.4, -Math.sin(t * .7 + m.ph) * 7.7);
+        m.px = cp.x + Math.cos(t * .7 + mSeed(m)) * 11;
+        m.py = cp.y + 1 + Math.sin(t * 1.1 + mSeed(m)) * 4;
+        m.ang = Math.atan2(Math.cos(t * 1.1 + mSeed(m)) * 4.4, -Math.sin(t * .7 + mSeed(m)) * 7.7);
         if (Math.random() < dt * .6)
             fx.push({ x: m.px, y: m.py - 6, vx: 0, vy: -12, l: .8, t: '\u2726', f: 9, c: '#a9c8ff', g: 0 });
         if (c.wt <= 0) {

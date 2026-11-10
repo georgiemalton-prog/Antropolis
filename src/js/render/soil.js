@@ -3,25 +3,28 @@
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 function drawDeepBg(now) {
-    var top = deepTop(), lh = LH(), x0 = wideL() - 20, ww = wideR() - wideL() + 40, v0 = cam - 10, v1 = cam + H / uz + 10, L, i, g, r, a;
+    var top = deepTop(), lh = LH(), x0 = wideL() - 20, ww = wideR() - wideL() + 40, v0 = VR.y0 + 30, v1 = VR.y1 - 30, L, i, g, r, a, st = WPASS !== 2, lv = WPASS !== 1;
     g = cx.createLinearGradient(0, WH - 2, 0, top);
     g.addColorStop(0, '#241710');
     g.addColorStop(1, DLAY[0].a);
     cx.fillStyle = g;
-    cx.fillRect(x0, WH - 2, ww, top - WH + 4);
+    if (st)
+        cx.fillRect(x0, WH - 2, ww, top - WH + 4);
     for (L = 0; L < S.deep; L++) {
         var y0 = top + L * lh, y1 = y0 + lh;
         g = cx.createLinearGradient(0, y0, 0, y1);
         g.addColorStop(0, DLAY[L].a);
         g.addColorStop(1, DLAY[L].b);
         cx.fillStyle = g;
-        cx.fillRect(x0, y0, ww, lh + 1);
-        cx.strokeStyle = 'rgba(0,0,0,.35)';
-        cx.lineWidth = 3;
-        cx.beginPath();
-        for (i = 0; i <= ww; i += 16)
-            cx.lineTo(x0 + i, y0 + Math.sin((x0 + i) * .03 + L * 2) * 3);
-        cx.stroke();
+        if (st) {
+            cx.fillRect(x0, y0, ww, lh + 1);
+            cx.strokeStyle = 'rgba(0,0,0,.35)';
+            cx.lineWidth = 3;
+            cx.beginPath();
+            for (i = 0; i <= ww; i += 16)
+                cx.lineTo(x0 + i, y0 + Math.sin((x0 + i) * .03 + L * 2) * 3);
+            cx.stroke();
+        }
         if (y1 < v0 || y0 > v1)
             continue;
         r = rng(S.seed + 5000 + L * 97);
@@ -31,6 +34,8 @@ function drawDeepBg(now) {
             if (ry < v0 - 10 || ry > v1 + 10)
                 continue;
             if (L === 1 || (L === 0 && kd < .3) || L === 3) {
+                if (!st)
+                    continue;
                 cx.fillStyle = L === 0 ? '#5a3a20' : L === 1 ? '#4d4740' : '#2c2c30';
                 cx.beginPath();
                 cx.ellipse(rx, ry, rs * 1.4, rs, 0, 0, 7);
@@ -41,6 +46,8 @@ function drawDeepBg(now) {
                 cx.fill();
             }
             else if (L === 2 && kd > .86) {
+                if (!lv)
+                    continue;
                 a = .5 + .3 * Math.sin(now * .002 + rx);
                 cx.fillStyle = 'rgba(120,170,255,' + a + ')';
                 cx.beginPath();
@@ -54,6 +61,8 @@ function drawDeepBg(now) {
                 cx.restore();
             }
             else if (L === 3 && kd > .8) {
+                if (!lv)
+                    continue;
                 a = .4 + .3 * Math.sin(now * .0016 + ry);
                 cx.strokeStyle = 'rgba(230,150,50,' + a + ')';
                 cx.lineWidth = 1.2;
@@ -63,7 +72,7 @@ function drawDeepBg(now) {
                 cx.lineTo(rx + 9, ry - rs * .5);
                 cx.stroke();
             }
-            else {
+            else if (st) {
                 cx.fillStyle = 'rgba(0,0,0,.18)';
                 cx.fillRect(rx, ry, 2, 1.4);
             }
@@ -129,7 +138,9 @@ function farDecor(now) {
         x = side < 0 ? -r() * span : W + r() * span;
         y = 60 + r() * (WH - 110);
         t = Math.floor(r() * 4);
-        if (x < camX - 40 || x > camX + W / uz + 40)
+        if (x < VR.x0 || x > VR.x1)
+            continue;
+        if (WPASS === 2 && t !== 1)
             continue;
         if (t === 0) {
             cx.strokeStyle = 'rgba(150,110,70,.7)';
@@ -144,15 +155,19 @@ function farDecor(now) {
         }
         else if (t === 1) {
             cx.strokeStyle = r() < .5 ? 'rgba(230,190,90,.75)' : 'rgba(110,200,210,.7)';
-            cx.lineWidth = 1.6;
-            cx.beginPath();
-            cx.moveTo(x - 10, y + 5);
-            cx.lineTo(x - 2, y - 2);
-            cx.lineTo(x + 4, y + 3);
-            cx.lineTo(x + 12, y - 5);
-            cx.stroke();
-            cx.fillStyle = 'rgba(255,255,255,' + (.25 + .25 * Math.sin(now * .004 + i)) + ')';
-            cx.fillRect(x + 3, y + 1, 1.6, 1.6);
+            if (WPASS !== 2) {
+                cx.lineWidth = 1.6;
+                cx.beginPath();
+                cx.moveTo(x - 10, y + 5);
+                cx.lineTo(x - 2, y - 2);
+                cx.lineTo(x + 4, y + 3);
+                cx.lineTo(x + 12, y - 5);
+                cx.stroke();
+            }
+            if (WPASS !== 1) {
+                cx.fillStyle = 'rgba(255,255,255,' + (.25 + .25 * Math.sin(now * .004 + i)) + ')';
+                cx.fillRect(x + 3, y + 1, 1.6, 1.6);
+            }
         }
         else if (t === 2) {
             cx.fillStyle = '#4b3a2a';
@@ -178,8 +193,8 @@ function farDecor(now) {
 }
 
 function drawSoil(now) {
-    var f = feat(), n = f.bands.length, y0 = 30, hh = WH - 50, i, x;
-    for (i = 0; i < n; i++) {
+    var f = feat(), n = f.bands.length, y0 = 30, hh = WH - 50, i, x, st = WPASS !== 2, lv = WPASS !== 1;
+    for (i = 0; i < n && st; i++) {
         var b = f.bands[i];
         if (!b.t)
             continue;
@@ -201,17 +216,21 @@ function drawSoil(now) {
         if (S.dug <= .02 || fy > wy(sp.fy))
             return;
         var x = sp.fx * W, y = wy(sp.fy);
-        cx.fillStyle = 'rgba(70,140,200,.55)';
-        cx.beginPath();
-        cx.ellipse(x, y, 16, 7, 0, 0, 7);
-        cx.fill();
-        cx.fillStyle = 'rgba(190,230,255,' + (.25 + .15 * Math.sin(now * .003 + x)) + ')';
-        cx.beginPath();
-        cx.ellipse(x - 4, y - 2, 6, 2, 0, 0, 7);
-        cx.fill();
+        if (st) {
+            cx.fillStyle = 'rgba(70,140,200,.55)';
+            cx.beginPath();
+            cx.ellipse(x, y, 16, 7, 0, 0, 7);
+            cx.fill();
+        }
+        if (lv) {
+            cx.fillStyle = 'rgba(190,230,255,' + (.25 + .15 * Math.sin(now * .003 + x)) + ')';
+            cx.beginPath();
+            cx.ellipse(x - 4, y - 2, 6, 2, 0, 0, 7);
+            cx.fill();
+        }
     });
     f.finds.forEach(function (fd) {
-        if (!S.rare[fd.id])
+        if (!S.rare[fd.id] || !st)
             return;
         var x = fd.fx * W, y = wy(fd.fy);
         if (fd.id === 'old') {
@@ -245,15 +264,21 @@ function drawSoil(now) {
                 return;
             var q = at(ff.pf, BP[12 + ff.w]), x = q.x + q.nx * ff.sd * 13, y = q.y + q.ny * ff.sd * 13;
             if (ff.t === 'spring') {
-                cx.fillStyle = 'rgba(70,140,200,.6)';
-                cx.beginPath();
-                cx.ellipse(x, y, 14, 6, 0, 0, 7);
-                cx.fill();
-                cx.fillStyle = 'rgba(190,230,255,' + (.25 + .15 * Math.sin(now * .003 + x)) + ')';
-                cx.beginPath();
-                cx.ellipse(x - 3, y - 2, 5, 1.8, 0, 0, 7);
-                cx.fill();
+                if (st) {
+                    cx.fillStyle = 'rgba(70,140,200,.6)';
+                    cx.beginPath();
+                    cx.ellipse(x, y, 14, 6, 0, 0, 7);
+                    cx.fill();
+                }
+                if (lv) {
+                    cx.fillStyle = 'rgba(190,230,255,' + (.25 + .15 * Math.sin(now * .003 + x)) + ')';
+                    cx.beginPath();
+                    cx.ellipse(x - 3, y - 2, 5, 1.8, 0, 0, 7);
+                    cx.fill();
+                }
             }
+            else if (!st)
+                return;
             else if (ff.t === 'geode') {
                 cx.fillStyle = '#7a5a8a';
                 cx.beginPath();
@@ -300,6 +325,8 @@ function drawSoil(now) {
                 }
             }
         });
+    if (!lv)
+        return;
     if (S.rare.nb)
         drawNeighbour(f.nb, now);
     if (S.rare.nbf && BP[17]) {
