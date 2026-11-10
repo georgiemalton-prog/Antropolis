@@ -28,7 +28,7 @@ function hudColony() {
     $('tdf').textContent = 'Digging through ' + SOILN[soilAt(frontY())].toLowerCase() + (S.tier < 2 ? '' : SOILM[soilAt(frontY())] < 1 ? ' (slow)' : SOILM[soilAt(frontY())] > 1 ? ' (fast)' : '') + '. Soldiers ' + S.soldiers + ', foragers ' + S.foragers + '. Defense ' + fmt(dps()) + ' damage/s. Wave ' + (S.wave + 1) + ' is next.';
     var nt = T[S.tier + 1], tb = $('tierbtn');
     if (nt) {
-        tb.innerHTML = '<span><b>Dig a ' + nt.n + '</b><span class="mute">Needs ' + TP[S.tier + 1] + ' ants and ' + TF[S.tier + 1] + ' food. Room for ' + CAPS[S.tier + 1] + ' ants and a new chamber.</span></span>';
+        tb.innerHTML = '<span><b>Dig a ' + nt.n + '</b><span class="mute">' + tierNeed(pop) + ' Room for ' + CAPS[S.tier + 1] + ' ants and a new chamber.</span></span>';
         tb.disabled = pop < TP[S.tier + 1] || S.food < TF[S.tier + 1];
     }
     else {
@@ -53,11 +53,19 @@ function hudColony() {
 }
 
 // the "Next up" card: one clear suggestion, so the player does not have to read every list
+// what the next nest stage costs: "Ready. Costs 30 food." or "Needs 35 ants (you have 20) and 250 food."
+function tierNeed(pop) {
+    var n = TP[S.tier + 1], f = TF[S.tier + 1];
+    if (pop >= n && S.food >= f)
+        return 'Ready. Costs ' + fmt(f) + ' food.';
+    return 'Needs ' + n + ' ants' + (pop < n ? ' (you have ' + pop + ')' : '') + ' and ' + fmt(f) + ' food.';
+}
+
 function nextUp() {
     var pop = popn(), c = [], nt = T[S.tier + 1], i, f = S.food, j = S.jelly;
     function add(k, name, ok, f1, j1, to, extra) { c.push({ k: k, n: name, ok: ok, f: f1 || 0, j: j1 || 0, to: to, pf: Math.min(1, f1 ? f / f1 : 1, j1 ? j / j1 : 1), x: extra }); }
     if (nt)
-        c.push({ k: 'nest', n: 'Dig a ' + nt.n, ok: pop >= TP[S.tier + 1] && f >= TF[S.tier + 1], f: TF[S.tier + 1], j: 0, to: 'tier', pf: Math.min(1, pop / TP[S.tier + 1], f / TF[S.tier + 1]), x: 'Needs ' + TP[S.tier + 1] + ' ants and ' + fmt(TF[S.tier + 1]) + ' food.' });
+        c.push({ k: 'nest', n: 'Dig a ' + nt.n, ok: pop >= TP[S.tier + 1] && f >= TF[S.tier + 1], f: TF[S.tier + 1], j: 0, to: 'tier', pf: Math.min(1, pop / TP[S.tier + 1], f / TF[S.tier + 1]), x: tierNeed(pop) });
     [6, 0, 1, 2, 3, 4, 5].forEach(function (ri) {
         var q = ri === 5, lv = q ? S.queenLevel : S.classLevel[ri];
         if (lv < 8 && (ri !== 4 || S.superMajors > 0 || S.tier >= 3))

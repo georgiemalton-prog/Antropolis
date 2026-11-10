@@ -543,7 +543,7 @@ var GOALS = [
     { t: 'Workers discover a food spot', h: 'Your workers are digging. Watch the Tunnel tab.', tab: 'tun', ok: function () { return S.foodSpots.length >= 1; }, fd: 25, r: '+25 food' },
     { t: 'A forager brings food home', h: 'Foragers carry food along the tunnel to the queen.', tab: 'tun', ok: function () { return (S.deliveries || 0) >= 1; }, jl: 3, fd: 20, r: '+3 royal jelly' },
     { t: 'Reach 10 ants', h: 'Every egg costs a little food. Foragers keep it coming.', tab: 'nest', n: function () { return Math.min(10, popn()) + ' / 10'; }, ok: function () { return popn() >= 10; }, fd: 40, r: '+40 food' },
-    { t: 'Dig your first nest upgrade', h: 'Open the Colony tab and tap Dig deeper.', tab: 'col', ok: function () { return S.tier >= 1; }, jl: 3, r: '+3 royal jelly' },
+    { t: 'Dig your first nest upgrade', h: 'Open the Colony tab and tap Dig a Burrow.', tab: 'col', ok: function () { return S.tier >= 1; }, jl: 3, r: '+3 royal jelly' },
     { t: 'Level up an ant with royal jelly', h: 'Colony tab, Your ants and queen. Tap a card to spend jelly.', tab: 'col', ok: function () { return S.queenLevel > 0 || S.classLevel.some(function (l) { return l > 0; }); }, fd: 40, r: '+40 food' },
     { t: 'Reach 15 ants', h: 'Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(15, popn()) + ' / 15'; }, ok: function () { return popn() >= 15; }, fd: 40, r: '+40 food' },
     { t: 'Bring home 15 loads of food', h: 'More foragers means more food.', tab: 'tun', n: function () { return Math.min(15, S.deliveries || 0) + ' / 15'; }, ok: function () { return (S.deliveries || 0) >= 15; }, jl: 2, r: '+2 royal jelly' },
@@ -552,7 +552,7 @@ var GOALS = [
     { t: 'Bring home 40 loads of food', h: 'Send more foragers out by hatching more eggs.', tab: 'tun', n: function () { return Math.min(40, S.deliveries || 0) + ' / 40'; }, ok: function () { return (S.deliveries || 0) >= 40; }, fd: 80, r: '+80 food' },
     { t: 'Dig your first side tunnel', h: 'Workers dig it by themselves. It leads to chambers and finds.', tab: 'tun', ok: function () { return S.sideTunnels > 0 && S.sideDug[0] >= 1; }, jl: 2, r: '+2 royal jelly' },
     { t: 'Reach 30 ants', h: 'Your nest fits 40. Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(30, popn()) + ' / 30'; }, ok: function () { return popn() >= 30; }, jl: 1, fd: 60, r: '+1 jelly, +60 food' },
-    { t: 'Dig the Colony nest stage', h: 'Colony tab, Dig deeper. It needs more ants and food.', tab: 'col', ok: function () { return S.tier >= 2; }, jl: 4, r: '+4 royal jelly' },
+    { t: 'Dig the Colony nest stage', h: 'Colony tab, tap Dig a Colony. It needs 35 ants and 250 food.', tab: 'col', ok: function () { return S.tier >= 2; }, jl: 4, r: '+4 royal jelly' },
     { t: 'Reach 40 ants', h: 'The tunnel waits just under the grass until the colony has 40 ants.', tab: 'nest', n: function () { return Math.min(40, popn()) + ' / 40'; }, ok: function () { return popn() >= 40; }, jl: 2, fd: 80, r: '+2 jelly, +80 food' },
     { t: 'Break through to the surface', h: 'Your tunnel is nearly at the grass. Invaders come next.', tab: 'tun', ok: function () { return S.dug >= 1; }, jl: 5, r: '+5 royal jelly' },
     { t: 'Beat your first invader wave', h: 'Soldiers fight at the tunnel mouth. Keep them healthy.', tab: 'tun', ok: function () { return S.wave >= 1; }, jl: 4, r: '+4 royal jelly' },
@@ -9066,7 +9066,7 @@ function hudColony() {
     $('tdf').textContent = 'Digging through ' + SOILN[soilAt(frontY())].toLowerCase() + (S.tier < 2 ? '' : SOILM[soilAt(frontY())] < 1 ? ' (slow)' : SOILM[soilAt(frontY())] > 1 ? ' (fast)' : '') + '. Soldiers ' + S.soldiers + ', foragers ' + S.foragers + '. Defense ' + fmt(dps()) + ' damage/s. Wave ' + (S.wave + 1) + ' is next.';
     var nt = T[S.tier + 1], tb = $('tierbtn');
     if (nt) {
-        tb.innerHTML = '<span><b>Dig a ' + nt.n + '</b><span class="mute">Needs ' + TP[S.tier + 1] + ' ants and ' + TF[S.tier + 1] + ' food. Room for ' + CAPS[S.tier + 1] + ' ants and a new chamber.</span></span>';
+        tb.innerHTML = '<span><b>Dig a ' + nt.n + '</b><span class="mute">' + tierNeed(pop) + ' Room for ' + CAPS[S.tier + 1] + ' ants and a new chamber.</span></span>';
         tb.disabled = pop < TP[S.tier + 1] || S.food < TF[S.tier + 1];
     }
     else {
@@ -9091,11 +9091,19 @@ function hudColony() {
 }
 
 // the "Next up" card: one clear suggestion, so the player does not have to read every list
+// what the next nest stage costs: "Ready. Costs 30 food." or "Needs 35 ants (you have 20) and 250 food."
+function tierNeed(pop) {
+    var n = TP[S.tier + 1], f = TF[S.tier + 1];
+    if (pop >= n && S.food >= f)
+        return 'Ready. Costs ' + fmt(f) + ' food.';
+    return 'Needs ' + n + ' ants' + (pop < n ? ' (you have ' + pop + ')' : '') + ' and ' + fmt(f) + ' food.';
+}
+
 function nextUp() {
     var pop = popn(), c = [], nt = T[S.tier + 1], i, f = S.food, j = S.jelly;
     function add(k, name, ok, f1, j1, to, extra) { c.push({ k: k, n: name, ok: ok, f: f1 || 0, j: j1 || 0, to: to, pf: Math.min(1, f1 ? f / f1 : 1, j1 ? j / j1 : 1), x: extra }); }
     if (nt)
-        c.push({ k: 'nest', n: 'Dig a ' + nt.n, ok: pop >= TP[S.tier + 1] && f >= TF[S.tier + 1], f: TF[S.tier + 1], j: 0, to: 'tier', pf: Math.min(1, pop / TP[S.tier + 1], f / TF[S.tier + 1]), x: 'Needs ' + TP[S.tier + 1] + ' ants and ' + fmt(TF[S.tier + 1]) + ' food.' });
+        c.push({ k: 'nest', n: 'Dig a ' + nt.n, ok: pop >= TP[S.tier + 1] && f >= TF[S.tier + 1], f: TF[S.tier + 1], j: 0, to: 'tier', pf: Math.min(1, pop / TP[S.tier + 1], f / TF[S.tier + 1]), x: tierNeed(pop) });
     [6, 0, 1, 2, 3, 4, 5].forEach(function (ri) {
         var q = ri === 5, lv = q ? S.queenLevel : S.classLevel[ri];
         if (lv < 8 && (ri !== 4 || S.superMajors > 0 || S.tier >= 3))
@@ -9562,7 +9570,7 @@ function giftShow() {
     if (!st)
         return false;
     r = giftReward(st.day);
-    h = '<h3>The Queen\u2019s Gift</h3><p>' + (st.streak > 1 ? 'Day ' + st.day + ' of 7 in a row. Welcome back!' : 'A gift from the colony for coming back today.') + '</p><div class="idots" style="gap:10px">';
+    h = '<h3>The Queen\u2019s Gift</h3><p>' + (st.streak > 1 ? 'Day ' + st.day + ' of 7 in a row. Welcome back!' : !(P.gift && P.gift.last) ? 'Your first gift from the colony. A new one waits every day you play.' : 'A gift from the colony for coming back today.') + '</p><div class="idots" style="gap:10px">';
     for (i = 1; i <= 7; i++)
         h += '<i class="' + (i === st.day ? 'on' : '') + '" style="' + (i < st.day ? 'background:var(--accent2)' : '') + '"></i>';
     h += '</div><p><b>+' + fmt(r.food) + ' food, +' + r.jelly + ' royal jelly' + (r.egg ? ', and a golden egg' : '') + '</b></p>' + (st.day < 7 ? '<p class="mute">Come back tomorrow for a bigger gift. Day 7 brings a golden egg.</p>' : '');
@@ -11190,7 +11198,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 58, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 59, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }

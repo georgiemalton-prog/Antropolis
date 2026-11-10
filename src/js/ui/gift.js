@@ -21,7 +21,7 @@ function giftShow() {
     if (!st)
         return false;
     r = giftReward(st.day);
-    h = '<h3>The Queen\u2019s Gift</h3><p>' + (st.streak > 1 ? 'Day ' + st.day + ' of 7 in a row. Welcome back!' : 'A gift from the colony for coming back today.') + '</p><div class="idots" style="gap:10px">';
+    h = '<h3>The Queen\u2019s Gift</h3><p>' + (st.streak > 1 ? 'Day ' + st.day + ' of 7 in a row. Welcome back!' : !(P.gift && P.gift.last) ? 'Your first gift from the colony. A new one waits every day you play.' : 'A gift from the colony for coming back today.') + '</p><div class="idots" style="gap:10px">';
     for (i = 1; i <= 7; i++)
         h += '<i class="' + (i === st.day ? 'on' : '') + '" style="' + (i < st.day ? 'background:var(--accent2)' : '') + '"></i>';
     h += '</div><p><b>+' + fmt(r.food) + ' food, +' + r.jelly + ' royal jelly' + (r.egg ? ', and a golden egg' : '') + '</b></p>' + (st.day < 7 ? '<p class="mute">Come back tomorrow for a bigger gift. Day 7 brings a golden egg.</p>' : '');
