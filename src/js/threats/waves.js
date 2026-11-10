@@ -35,13 +35,37 @@ function wave() {
     toast(boss ? 'Boss wave! A giant ' + FN[tp] + ' leads the attack. Preparation ' + prep + ' of 3: it is ' + prep * 12 + '% weaker.' : tp === 0 ? 'Armoured beetles! Soldiers struggle; Super Majors and Barracks cut through the armour.' : 'Wave ' + S.wave + ': ' + cnt + ' ' + FN[tp] + (cnt > 1 ? 's' : '') + ' in the tunnel!');
 }
 
+/* The first fight comes early: once the colony is a Burrow with a couple of soldiers, two wood lice dig
+   into the half-dug tunnel and crawl towards the queen, long before real waves start at the surface.
+   Once per colony (optional save field S.firstFoes). Does not count as a wave. */
+var ffT = TUNING.start.firstFoesDelay;
+function firstFoesTick(dt) {
+    if (S.firstFoes || S.dug >= 1 || S.tier < 1 || S.dug < .15 || healthy(2) < 2 || foes.length || wvi.w || RAID || trm.length)
+        return;
+    ffT -= dt;
+    if (ffT > 0)
+        return;
+    S.firstFoes = 1;
+    var p0 = 1 - S.dug + .01, cnt = TUNING.start.firstFoes, h = Math.max(4, dps() * TUNING.start.firstFoesHp), a = at(p0), i;
+    foes = [];
+    for (i = 0; i < cnt; i++)
+        foes.push({ p: p0 - .03 * i, tp: 3, boss: false, hp: h, max: h, kl: 0, kt: 1.2, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i - (cnt - 1) / 2) * 2 });
+    wvi = { n: cnt, boss: false, w: 1, ff: 1 };
+    SFX.alarm();
+    alarmT = 5;
+    burst(a.x, a.y, 16, ['#a07a50', '#7a5636', '#c9a46a'], 60);
+    fx.push({ x: a.x, y: a.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
+    fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#ff5a3a', g: 0, pop: 1 });
+    toast('Wood lice dug into your tunnel! Your soldiers march out to stop them.' + (tab === 'tun' ? '' : ' Watch on the Tunnel tab.'));
+}
+
 function loot(p, w) {
     var a = at(p), f = Math.ceil((2 + S.tier * 2) * (w.boss ? 5 : 1 + .5 * w.n));
     S.food = Math.min(foodCap(), S.food + f);
     gainJelly(w.boss ? 5 : 1);
     SFX.win();
     fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
-    toast((w.boss ? 'Boss defeated! ' : 'Wave cleared! ') + '+' + f + ' food.');
+    toast((w.boss ? 'Boss defeated! ' : w.ff ? 'The wood lice are beaten! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
 
 function loseGame() {

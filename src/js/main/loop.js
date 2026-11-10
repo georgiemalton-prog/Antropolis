@@ -17,6 +17,7 @@ function frame(n) {
         S.days = (S.days || 0) + dt / 180;
         if (!foes.length)
             S.queenHp = Math.min(hpMax(), S.queenHp + (S.classLevel[0] >= 4 ? .24 : .08) * dt);
+        firstFoesTick(dt);
         if (S.dug >= 1 && !foes.length && !wvi.w && n > nf) {
             if ((S.wave + 1) % 10 === 0 && !bossWarned) {
                 bossWarned = true;

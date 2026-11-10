@@ -352,6 +352,14 @@ var RICO = ['farm', 'nest', 'rax', 'court'];
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 var TUNING = {
+    // First session (the opening minutes)
+    start: {
+        tunnelOpen: .04,      // share of the first tunnel dug before ants start using it (was .1)
+        loadsGoal: 30,        // the "Bring home N loads of food" goal (was 40)
+        firstFoes: 2,         // wood lice in the early first fight (Burrow stage, 2+ soldiers, tunnel 15% dug)
+        firstFoesHp: 5,       // their health, in seconds of the colony's soldier damage
+        firstFoesDelay: 20    // seconds after those conditions are met
+    },
     // Giant Mole (threats/mole.js) and the Great Hall built after beating it
     mole: {
         maxHp: 900000,        // mole health; damage between fights is kept
@@ -551,7 +559,7 @@ var GOALS = [
     { t: 'Reach 20 ants', h: 'More ants means more foragers and more food.', tab: 'nest', n: function () { return Math.min(20, popn()) + ' / 20'; }, ok: function () { return popn() >= 20; }, jl: 1, fd: 40, r: '+1 jelly, +40 food' },
     { t: 'Reach 25 ants', h: 'Bigger nests hold more ants.', tab: 'nest', n: function () { return Math.min(25, popn()) + ' / 25'; }, ok: function () { return popn() >= 25; }, fd: 60, r: '+60 food' },
     { t: 'Upgrade a nest chamber', h: 'Colony tab, Build, Nest chambers. Upgrades cost food and royal jelly.', tab: 'col', ok: function () { return (S.roomLv || []).some(function (l) { return l > 0; }); }, fd: 60, r: '+60 food' },
-    { t: 'Bring home 40 loads of food', h: 'Send more foragers out by hatching more eggs.', tab: 'tun', n: function () { return Math.min(40, S.deliveries || 0) + ' / 40'; }, ok: function () { return (S.deliveries || 0) >= 40; }, fd: 80, r: '+80 food' },
+    { t: 'Bring home ' + TUNING.start.loadsGoal + ' loads of food', h: 'Send more foragers out by hatching more eggs.', tab: 'tun', n: function () { return Math.min(TUNING.start.loadsGoal, S.deliveries || 0) + ' / ' + TUNING.start.loadsGoal; }, ok: function () { return (S.deliveries || 0) >= TUNING.start.loadsGoal; }, fd: 80, r: '+80 food' },
     { t: 'Dig your first side tunnel', h: 'Workers dig it by themselves. It leads to chambers and finds.', tab: 'tun', ok: function () { return S.sideTunnels > 0 && S.sideDug[0] >= 1; }, jl: 2, r: '+2 royal jelly' },
     { t: 'Reach 30 ants', h: 'Your nest fits 40. Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(30, popn()) + ' / 30'; }, ok: function () { return popn() >= 30; }, jl: 1, fd: 60, r: '+1 jelly, +60 food' },
     { t: 'Dig the Colony nest stage', h: 'Colony tab, tap Dig a Colony. It needs 35 ants and 250 food.', tab: 'col', ok: function () { return S.tier >= 2; }, jl: 4, r: '+4 royal jelly' },
@@ -884,6 +892,7 @@ function gain() { return S.tier >= 3 ? Math.floor(Math.sqrt(S.totalHatched / 40)
 
 // leftovers from the old colony (raids, crickets, dig crews) walk tunnels the new colony hasn't dug, so they go
 function clearOldRun() {
+    ffT = TUNING.start.firstFoesDelay;
     trm.length = 0;
     trm.res = 0;
     trm.ms = null;
@@ -2519,7 +2528,8 @@ function spotMax() { return Math.min(10, 3 + S.tier * 2); }
 function spotsTick(dt) { S.foodSpots.forEach(function (s) { s.stock = Math.min(s.cap, s.stock + s.rg * dt); }); }
 
 // until the first tunnel is dug far enough to move about in, everyone stays in the nest
-function tunOK() { return S.dug >= .1; }
+// (4%: about when workers find the first food spot, so foragers can start on it straight away)
+function tunOK() { return S.dug >= TUNING.start.tunnelOpen; }
 
 function pickTarget(m) {
     if (!tunOK())
@@ -4115,13 +4125,37 @@ function wave() {
     toast(boss ? 'Boss wave! A giant ' + FN[tp] + ' leads the attack. Preparation ' + prep + ' of 3: it is ' + prep * 12 + '% weaker.' : tp === 0 ? 'Armoured beetles! Soldiers struggle; Super Majors and Barracks cut through the armour.' : 'Wave ' + S.wave + ': ' + cnt + ' ' + FN[tp] + (cnt > 1 ? 's' : '') + ' in the tunnel!');
 }
 
+/* The first fight comes early: once the colony is a Burrow with a couple of soldiers, two wood lice dig
+   into the half-dug tunnel and crawl towards the queen, long before real waves start at the surface.
+   Once per colony (optional save field S.firstFoes). Does not count as a wave. */
+var ffT = TUNING.start.firstFoesDelay;
+function firstFoesTick(dt) {
+    if (S.firstFoes || S.dug >= 1 || S.tier < 1 || S.dug < .15 || healthy(2) < 2 || foes.length || wvi.w || RAID || trm.length)
+        return;
+    ffT -= dt;
+    if (ffT > 0)
+        return;
+    S.firstFoes = 1;
+    var p0 = 1 - S.dug + .01, cnt = TUNING.start.firstFoes, h = Math.max(4, dps() * TUNING.start.firstFoesHp), a = at(p0), i;
+    foes = [];
+    for (i = 0; i < cnt; i++)
+        foes.push({ p: p0 - .03 * i, tp: 3, boss: false, hp: h, max: h, kl: 0, kt: 1.2, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i - (cnt - 1) / 2) * 2 });
+    wvi = { n: cnt, boss: false, w: 1, ff: 1 };
+    SFX.alarm();
+    alarmT = 5;
+    burst(a.x, a.y, 16, ['#a07a50', '#7a5636', '#c9a46a'], 60);
+    fx.push({ x: a.x, y: a.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
+    fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#ff5a3a', g: 0, pop: 1 });
+    toast('Wood lice dug into your tunnel! Your soldiers march out to stop them.' + (tab === 'tun' ? '' : ' Watch on the Tunnel tab.'));
+}
+
 function loot(p, w) {
     var a = at(p), f = Math.ceil((2 + S.tier * 2) * (w.boss ? 5 : 1 + .5 * w.n));
     S.food = Math.min(foodCap(), S.food + f);
     gainJelly(w.boss ? 5 : 1);
     SFX.win();
     fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
-    toast((w.boss ? 'Boss defeated! ' : 'Wave cleared! ') + '+' + f + ' food.');
+    toast((w.boss ? 'Boss defeated! ' : w.ff ? 'The wood lice are beaten! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
 
 function loseGame() {
@@ -9607,7 +9641,7 @@ function giftClaim() {
 
 function giftCheck() {
     var t = $('title');
-    if (dead || S.totalHatched < 5 || (t && t.style.display !== 'none' && !navigator.webdriver))
+    if (dead || S.totalHatched < 5 || fighting() || (t && t.style.display !== 'none' && !navigator.webdriver))
         return;
     if ($('intro').classList.contains('on') || ($('away') && $('away').classList.contains('on')) || $('endscr').classList.contains('on') || $('gift').classList.contains('on'))
         return;
@@ -11207,7 +11241,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 60, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 61, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -11879,6 +11913,7 @@ function frame(n) {
         S.days = (S.days || 0) + dt / 180;
         if (!foes.length)
             S.queenHp = Math.min(hpMax(), S.queenHp + (S.classLevel[0] >= 4 ? .24 : .08) * dt);
+        firstFoesTick(dt);
         if (S.dug >= 1 && !foes.length && !wvi.w && n > nf) {
             if ((S.wave + 1) % 10 === 0 && !bossWarned) {
                 bossWarned = true;

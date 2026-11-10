@@ -49,7 +49,7 @@ function giftClaim() {
 
 function giftCheck() {
     var t = $('title');
-    if (dead || S.totalHatched < 5 || (t && t.style.display !== 'none' && !navigator.webdriver))
+    if (dead || S.totalHatched < 5 || fighting() || (t && t.style.display !== 'none' && !navigator.webdriver))
         return;
     if ($('intro').classList.contains('on') || ($('away') && $('away').classList.contains('on')) || $('endscr').classList.contains('on') || $('gift').classList.contains('on'))
         return;

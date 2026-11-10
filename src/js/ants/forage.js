@@ -28,7 +28,8 @@ function spotMax() { return Math.min(10, 3 + S.tier * 2); }
 function spotsTick(dt) { S.foodSpots.forEach(function (s) { s.stock = Math.min(s.cap, s.stock + s.rg * dt); }); }
 
 // until the first tunnel is dug far enough to move about in, everyone stays in the nest
-function tunOK() { return S.dug >= .1; }
+// (4%: about when workers find the first food spot, so foragers can start on it straight away)
+function tunOK() { return S.dug >= TUNING.start.tunnelOpen; }
 
 function pickTarget(m) {
     if (!tunOK())

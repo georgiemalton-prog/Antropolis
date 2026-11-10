@@ -4,6 +4,14 @@
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 var TUNING = {
+    // First session (the opening minutes)
+    start: {
+        tunnelOpen: .04,      // share of the first tunnel dug before ants start using it (was .1)
+        loadsGoal: 30,        // the "Bring home N loads of food" goal (was 40)
+        firstFoes: 2,         // wood lice in the early first fight (Burrow stage, 2+ soldiers, tunnel 15% dug)
+        firstFoesHp: 5,       // their health, in seconds of the colony's soldier damage
+        firstFoesDelay: 20    // seconds after those conditions are met
+    },
     // Giant Mole (threats/mole.js) and the Great Hall built after beating it
     mole: {
         maxHp: 900000,        // mole health; damage between fights is kept
