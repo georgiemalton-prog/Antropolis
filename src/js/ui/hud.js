@@ -377,6 +377,12 @@ function goTab(t) {
     cv.classList.toggle('nestmode', t !== 'tun');
     document.body.classList.toggle('tt', t === 'tun');
     document.body.classList.toggle('nt', t === 'nest');
+    // the Nest and Tunnel are full-screen and must not scroll: a scrolling page makes phones shrink their
+    // toolbars, which resizes the scene over and over
+    var full = t === 'tun' || t === 'nest';
+    document.documentElement.classList.toggle('full', full);
+    if (full)
+        window.scrollTo(0, 0);
     try {
         localStorage.setItem('thecolony_tab', t);
     }
@@ -396,7 +402,7 @@ function goTab(t) {
     tn(400, .05, 'square', .05);
 }
 
-function go(t) { goTab(t); cv.style.touchAction = t === 'tun' ? 'none' : 'manipulation'; }
+function go(t) { goTab(t); cv.style.touchAction = t === 'tun' || t === 'nest' ? 'none' : 'manipulation'; }
 
 function poll() {
     var n = 0;

@@ -51,8 +51,9 @@ function nsSize() {
     }
     NS.W = cw; NS.H = ch; NS.Hs = hs; NS.T = top;
 }
-// a height in the laid-out part of the scene: 0 = just under the top strip, 1 = the tab bar
-function nsY(f) { return NS.T + f * (NS.Hs - NS.T); }
+// a height in the laid-out part of the scene: 0 = just under the top strip, 1 = just above the egg timer
+// (the strip of 40px over the tab bar is kept clear for the "Ants / Next egg" line)
+function nsY(f) { return NS.T + f * (NS.Hs - 40 - NS.T); }
 // where the queen's bed sits: the middle of the cavern
 function nsQY() { return nsY(.6); }
 

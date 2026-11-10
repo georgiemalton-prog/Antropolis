@@ -303,8 +303,11 @@ function genPebs() {
 
 // the Nest and Tunnel tabs fill the whole screen (the tab bar and counters float over the scene)
 function viewH() {
-    if (fullTab())
-        return Math.max(340, document.documentElement.clientHeight);
+    // the scene is pinned to the screen's edges, so its own height is the height to draw at
+    if (fullTab()) {
+        var v = $('view');
+        return Math.max(340, Math.round((v && v.clientHeight) || document.documentElement.clientHeight));
+    }
     return Math.max(400, Math.min(640, Math.round((document.documentElement.clientHeight - 300) / 20) * 20));
 }
 function fullTab() { var c = document.body.classList; return c.contains('tt') || c.contains('nt'); }

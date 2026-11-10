@@ -167,6 +167,14 @@ body.nt #goals .gcard{margin:0;-webkit-backdrop-filter:blur(8px);backdrop-filter
 body.tt #tstw{top:calc(8px + env(safe-area-inset-top,0px))}
 body.tt #tzoom{top:calc(44px + env(safe-area-inset-top,0px))}
 body.tt #tbot{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+/* full-screen tabs: the page itself never scrolls or bounces (otherwise phones collapse their toolbars and the scene resizes) */
+html.full,html.full body{height:100%;overflow:hidden;overscroll-behavior:none}
+html.full body{position:fixed;inset:0;min-height:0;padding-bottom:0}
+html.full .scene{touch-action:none}
+/* on the full-screen tabs, messages slide in at the top (over the goal card / tunnel status) instead of covering the nest floor */
+html.full .toast{top:calc(72px + env(safe-area-inset-top,0px));bottom:auto;transform:translateY(-10px);padding:9px 14px;font-size:14px}
+html.full .toast.on{transform:none}
+html.full body.tt .toast{top:calc(8px + env(safe-area-inset-top,0px))}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
@@ -1966,8 +1974,11 @@ function genPebs() {
 
 // the Nest and Tunnel tabs fill the whole screen (the tab bar and counters float over the scene)
 function viewH() {
-    if (fullTab())
-        return Math.max(340, document.documentElement.clientHeight);
+    // the scene is pinned to the screen's edges, so its own height is the height to draw at
+    if (fullTab()) {
+        var v = $('view');
+        return Math.max(340, Math.round((v && v.clientHeight) || document.documentElement.clientHeight));
+    }
     return Math.max(400, Math.min(640, Math.round((document.documentElement.clientHeight - 300) / 20) * 20));
 }
 function fullTab() { var c = document.body.classList; return c.contains('tt') || c.contains('nt'); }
@@ -9716,8 +9727,9 @@ function nsSize() {
     }
     NS.W = cw; NS.H = ch; NS.Hs = hs; NS.T = top;
 }
-// a height in the laid-out part of the scene: 0 = just under the top strip, 1 = the tab bar
-function nsY(f) { return NS.T + f * (NS.Hs - NS.T); }
+// a height in the laid-out part of the scene: 0 = just under the top strip, 1 = just above the egg timer
+// (the strip of 40px over the tab bar is kept clear for the "Ants / Next egg" line)
+function nsY(f) { return NS.T + f * (NS.Hs - 40 - NS.T); }
 // where the queen's bed sits: the middle of the cavern
 function nsQY() { return nsY(.6); }
 
@@ -10505,6 +10517,12 @@ function goTab(t) {
     cv.classList.toggle('nestmode', t !== 'tun');
     document.body.classList.toggle('tt', t === 'tun');
     document.body.classList.toggle('nt', t === 'nest');
+    // the Nest and Tunnel are full-screen and must not scroll: a scrolling page makes phones shrink their
+    // toolbars, which resizes the scene over and over
+    var full = t === 'tun' || t === 'nest';
+    document.documentElement.classList.toggle('full', full);
+    if (full)
+        window.scrollTo(0, 0);
     try {
         localStorage.setItem('thecolony_tab', t);
     }
@@ -10524,7 +10542,7 @@ function goTab(t) {
     tn(400, .05, 'square', .05);
 }
 
-function go(t) { goTab(t); cv.style.touchAction = t === 'tun' ? 'none' : 'manipulation'; }
+function go(t) { goTab(t); cv.style.touchAction = t === 'tun' || t === 'nest' ? 'none' : 'manipulation'; }
 
 function poll() {
     var n = 0;
@@ -13910,9 +13928,10 @@ statsLoad();
 // ---- main/loop ----
 try {
     var lastTab = localStorage.getItem('thecolony_tab');
-    if (lastTab === 'tun' || lastTab === 'col' || lastTab === 'store')
-        go(lastTab);
 }
 catch (e) { }
+// always go through go(): it switches the page into its full-screen Nest or Tunnel layout (build 79
+// skipped it for the Nest, so a game opened on the Nest kept the old scrolling page)
+go(lastTab === 'tun' || lastTab === 'col' || lastTab === 'store' ? lastTab : 'nest');
 requestAnimationFrame(frame);
 </script></body></html>

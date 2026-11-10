@@ -240,8 +240,9 @@ statsLoad();
 // ---- main/loop ----
 try {
     var lastTab = localStorage.getItem('thecolony_tab');
-    if (lastTab === 'tun' || lastTab === 'col' || lastTab === 'store')
-        go(lastTab);
 }
 catch (e) { }
+// always go through go(): it switches the page into its full-screen Nest or Tunnel layout (build 79
+// skipped it for the Nest, so a game opened on the Nest kept the old scrolling page)
+go(lastTab === 'tun' || lastTab === 'col' || lastTab === 'store' ? lastTab : 'nest');
 requestAnimationFrame(frame);
