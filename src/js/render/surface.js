@@ -191,50 +191,53 @@ function farNest() {
 }
 
 // tiny side-on insect for the neighbour colony: termite (pale, long) or aphid (green, pear shaped)
+// small creatures (build 72 redesign): a termite (pale, see-through segmented body, amber head, dark jaws)
+// or an aphid (aph: plump, glossy green). Seen from above, head to +x.
 function critter(x, y, ang, s, aph) {
     cx.save();
     cx.translate(x, y);
     cx.rotate(ang);
-    cx.strokeStyle = aph ? '#4e6a26' : '#8a6a40';
-    cx.lineWidth = .5;
+    cx.lineCap = 'round';
+    cx.strokeStyle = aph ? '#4e6a26' : '#7a5a34';
+    cx.lineWidth = Math.max(.4, s * .18);
     cx.beginPath();
     for (var k = -1; k <= 1; k++) {
-        cx.moveTo(s * .2 + k * s * .5, 0);
-        cx.lineTo(s * .2 + k * s * .7, -s * 1.1);
-        cx.moveTo(s * .2 + k * s * .5, 0);
-        cx.lineTo(s * .2 + k * s * .7, s * 1.1);
+        cx.moveTo(s * .2 + k * s * .45, 0);
+        cx.lineTo(s * .35 + k * s * .75, -s * .8);
+        cx.lineTo(s * .2 + k * s * .9, -s * 1.15);
+        cx.moveTo(s * .2 + k * s * .45, 0);
+        cx.lineTo(s * .35 + k * s * .75, s * .8);
+        cx.lineTo(s * .2 + k * s * .9, s * 1.15);
     }
     cx.stroke();
+    var g;
     if (aph) {
-        cx.fillStyle = '#9ccf5e';
-        cx.beginPath();
-        cx.ellipse(-s * .4, 0, s * 1.5, s * 1.05, 0, 0, 7);
-        cx.fill();
-        cx.fillStyle = '#b9e27d';
-        cx.beginPath();
-        cx.ellipse(-s * .6, -s * .35, s * .7, s * .3, 0, 0, 7);
-        cx.fill();
-        cx.fillStyle = '#6f9a3c';
-        cx.beginPath();
-        cx.ellipse(s * 1.2, 0, s * .6, s * .5, 0, 0, 7);
-        cx.fill();
-        cx.fillRect(-s * 1.6, -s * .9, s * .5, s * .3);
-        cx.fillRect(-s * 1.6, s * .6, s * .5, s * .3);
+        g = cx.createRadialGradient(-s * .7, -s * .45, s * .1, -s * .4, 0, s * 1.6);
+        g.addColorStop(0, '#e2f7a8'); g.addColorStop(.5, '#9ccf5e'); g.addColorStop(1, '#4e7a24');
+        cx.fillStyle = g; cx.beginPath(); cx.ellipse(-s * .4, 0, s * 1.5, s * 1.05, 0, 0, 7); cx.fill();
+        cx.fillStyle = 'rgba(255,255,255,.55)'; cx.beginPath(); cx.ellipse(-s * .7, -s * .45, s * .55, s * .2, -.2, 0, 7); cx.fill();
+        cx.fillStyle = '#3a5a1a'; cx.fillRect(-s * 1.75, -s * .55, s * .45, s * .18); cx.fillRect(-s * 1.75, s * .37, s * .45, s * .18);
+        cx.fillStyle = '#6f9a3c'; cx.beginPath(); cx.ellipse(s * 1.15, 0, s * .55, s * .48, 0, 0, 7); cx.fill();
+        cx.fillStyle = '#1a1a10'; cx.beginPath(); cx.arc(s * 1.45, -s * .25, s * .12, 0, 7); cx.arc(s * 1.45, s * .25, s * .12, 0, 7); cx.fill();
     }
     else {
-        cx.fillStyle = '#efe3c4';
-        cx.beginPath();
-        cx.ellipse(-s * 1.1, 0, s * 1.3, s * .85, 0, 0, 7);
-        cx.fill();
-        cx.beginPath();
-        cx.ellipse(s * .3, 0, s * .75, s * .6, 0, 0, 7);
-        cx.fill();
-        cx.fillStyle = 'rgba(150,115,60,.35)';
-        cx.fillRect(-s * 1.7, -s * .1, s * 1.3, s * .2);
-        cx.fillStyle = '#c99a5a';
-        cx.beginPath();
-        cx.ellipse(s * 1.2, 0, s * .6, s * .55, 0, 0, 7);
-        cx.fill();
+        // the see-through abdomen with the dark gut inside and soft segment lines
+        g = cx.createRadialGradient(-s * 1.1, -s * .4, s * .1, -s * 1.1, 0, s * 1.4);
+        g.addColorStop(0, '#fffaf0'); g.addColorStop(.6, '#efe0c0'); g.addColorStop(1, '#c4a878');
+        cx.fillStyle = g; cx.beginPath(); cx.ellipse(-s * 1.1, 0, s * 1.35, s * .85, 0, 0, 7); cx.fill();
+        cx.fillStyle = 'rgba(120,80,40,.35)'; cx.beginPath(); cx.ellipse(-s * 1.15, 0, s * .8, s * .32, 0, 0, 7); cx.fill();
+        cx.strokeStyle = 'rgba(150,115,60,.45)'; cx.lineWidth = Math.max(.3, s * .08);
+        for (k = 0; k < 4; k++) { cx.beginPath(); cx.ellipse(-s * (.3 + k * .42), 0, s * .1, s * .8, 0, -1.4, 1.4); cx.stroke(); }
+        cx.fillStyle = 'rgba(255,255,255,.55)'; cx.beginPath(); cx.ellipse(-s * 1.2, -s * .45, s * .6, s * .15, 0, 0, 7); cx.fill();
+        cx.fillStyle = '#e8d6b0'; cx.beginPath(); cx.ellipse(s * .25, 0, s * .55, s * .48, 0, 0, 7); cx.fill();
+        // amber head with dark jaws
+        g = cx.createRadialGradient(s * .95, -s * .2, s * .05, s * 1, 0, s * .6);
+        g.addColorStop(0, '#f0b060'); g.addColorStop(1, '#a8601e');
+        cx.fillStyle = g; cx.beginPath(); cx.ellipse(s * 1.0, 0, s * .55, s * .5, 0, 0, 7); cx.fill();
+        cx.strokeStyle = '#3a1a08'; cx.lineWidth = Math.max(.4, s * .14);
+        cx.beginPath(); cx.moveTo(s * 1.4, -s * .15); cx.quadraticCurveTo(s * 1.8, -s * .35, s * 1.85, -s * .05); cx.moveTo(s * 1.4, s * .15); cx.quadraticCurveTo(s * 1.8, s * .35, s * 1.85, s * .05); cx.stroke();
+        cx.strokeStyle = '#7a5a34'; cx.lineWidth = Math.max(.3, s * .08);
+        cx.beginPath(); cx.moveTo(s * 1.2, -s * .3); cx.lineTo(s * 1.7, -s * .75); cx.moveTo(s * 1.2, s * .3); cx.lineTo(s * 1.7, s * .75); cx.stroke();
     }
     cx.restore();
 }

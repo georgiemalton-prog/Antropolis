@@ -173,40 +173,34 @@ function drawCrickets(now) {
         cx.globalAlpha = c.hp > 0 ? 1 : Math.max(0, 1 - (c.dt || 0) / 1.2);
         if (c.hp <= 0)
             cx.rotate(Math.PI * .5);
-        // long jumping legs
-        cx.strokeStyle = '#2a1c10';
-        cx.lineWidth = .8;
+        // long jumping legs: a thick shaded thigh, a spiny shin, short front legs
         for (l = -1; l <= 1; l += 2) {
-            cx.beginPath();
-            cx.moveTo(-1, l * 1.2);
-            cx.lineTo(-3.5, l * 3.6);
-            cx.lineTo(-6.5, l * 1.8);
-            cx.stroke();
-            cx.beginPath();
-            cx.moveTo(1.5, l * 1);
-            cx.lineTo(2.8, l * 2.8);
-            cx.stroke();
+            var fg = cx.createLinearGradient(-1, l * 1.2, -3.5, l * 3.6);
+            fg.addColorStop(0, '#a8804e'); fg.addColorStop(1, '#4a3018');
+            cx.fillStyle = fg;
+            cx.beginPath(); cx.moveTo(-.2, l * 1.2); cx.quadraticCurveTo(-2.4, l * 5, -4.6, l * 4.8); cx.quadraticCurveTo(-2.6, l * 3, -1.8, l * 1.2); cx.closePath(); cx.fill();
+            cx.strokeStyle = '#6a4a2a'; cx.lineWidth = .7;
+            cx.beginPath(); cx.moveTo(-4.4, l * 4.7); cx.lineTo(-7.8, l * 2.4); cx.stroke();
+            cx.lineWidth = .35;
+            for (var sp = 0; sp < 3; sp++) { var sx2 = -5.3 - sp * .9, sy2 = l * (4.2 - sp * .6); cx.beginPath(); cx.moveTo(sx2, sy2); cx.lineTo(sx2 - .3, sy2 + l * .6); cx.stroke(); }
+            cx.lineWidth = .6; cx.strokeStyle = '#4a3420';
+            cx.beginPath(); cx.moveTo(1.5, l * 1); cx.lineTo(2.6, l * 2.4); cx.lineTo(3.4, l * 2.9); cx.moveTo(.4, l * 1.1); cx.lineTo(.8, l * 2.6); cx.stroke();
         }
-        // humped, banded body
-        cx.fillStyle = '#5a4026';
-        cx.beginPath();
-        cx.ellipse(-.6, 0, 4.4, 2.3, 0, 0, 7);
-        cx.fill();
-        cx.strokeStyle = 'rgba(20,12,6,.8)';
-        cx.lineWidth = .5;
-        cx.stroke();
-        cx.strokeStyle = 'rgba(190,150,90,.55)';
-        cx.lineWidth = .5;
-        for (l = -2.6; l < 2; l += 1.3) {
-            cx.beginPath();
-            cx.moveTo(l, -2);
-            cx.lineTo(l, 2);
-            cx.stroke();
-        }
-        cx.fillStyle = '#3e2c1a';
-        cx.beginPath();
-        cx.arc(3.8, 0, 1.6, 0, 7);
-        cx.fill();
+        // humped, banded body with a sheen
+        var bg2 = cx.createRadialGradient(-.8, -1.1, .2, -.6, 0, 4.6);
+        bg2.addColorStop(0, '#9a7448'); bg2.addColorStop(.5, '#5a4026'); bg2.addColorStop(1, '#2a1c10');
+        cx.fillStyle = bg2;
+        cx.beginPath(); cx.ellipse(-.6, 0, 4.4, 2.3, 0, 0, 7); cx.fill();
+        cx.strokeStyle = 'rgba(20,12,6,.8)'; cx.lineWidth = .45; cx.stroke();
+        cx.strokeStyle = 'rgba(200,160,100,.5)'; cx.lineWidth = .45;
+        for (l = -2.6; l < 2; l += 1.3) { cx.beginPath(); cx.moveTo(l, -2); cx.quadraticCurveTo(l - .4, 0, l, 2); cx.stroke(); }
+        cx.fillStyle = 'rgba(255,240,210,.35)'; cx.beginPath(); cx.ellipse(-.8, -1.1, 2.6, .5, 0, 0, 7); cx.fill();
+        // head with an eye
+        var hg2 = cx.createRadialGradient(3.6, -.5, .1, 3.8, 0, 1.8);
+        hg2.addColorStop(0, '#7a5838'); hg2.addColorStop(1, '#2e2012');
+        cx.fillStyle = hg2; cx.beginPath(); cx.arc(3.8, 0, 1.6, 0, 7); cx.fill();
+        cx.fillStyle = '#0a0604'; cx.beginPath(); cx.arc(4.3, -.8, .45, 0, 7); cx.arc(4.3, .8, .45, 0, 7); cx.fill();
+        cx.fillStyle = 'rgba(255,240,220,.8)'; cx.beginPath(); cx.arc(4.4, -.9, .15, 0, 7); cx.fill();
         // very long feelers
         cx.strokeStyle = 'rgba(40,28,16,.9)';
         cx.lineWidth = .45;

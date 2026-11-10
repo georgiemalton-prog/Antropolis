@@ -281,10 +281,19 @@ function drawMole(now) {
         cx.beginPath();
         cx.ellipse(x0, y0 + 14, 40, 6, 0, 0, 7);
         cx.fill();
-        cx.fillStyle = '#2d2622';
+        var mg = cx.createRadialGradient(x0 - 6, y0 - 9, 2, x0, y0, 36 * br);
+        mg.addColorStop(0, '#5a4c44'); mg.addColorStop(.55, '#2d2622'); mg.addColorStop(1, '#120e0c');
+        cx.fillStyle = mg;
         cx.beginPath();
         cx.ellipse(x0, y0, 34 * br, 18 * br, 0, 0, 7);
         cx.fill();
+        // velvet fur strokes
+        cx.strokeStyle = 'rgba(160,140,125,.22)';
+        cx.lineWidth = .8;
+        for (i = 0; i < 16; i++) {
+            var fx2 = x0 - 26 + i * 3.4, fy2 = y0 - 10 + Math.sin(i * 1.7) * 5;
+            cx.beginPath(); cx.moveTo(fx2, fy2); cx.quadraticCurveTo(fx2 - 2, fy2 + 2, fx2 - 4, fy2 + 1.5); cx.stroke();
+        }
         cx.strokeStyle = 'rgba(255,215,185,.28)';
         cx.lineWidth = 1.4;
         cx.stroke();
@@ -297,9 +306,13 @@ function drawMole(now) {
             cx.save();
             cx.translate(x0 + 24, y0 + 8 + d[0] * 2);
             cx.rotate(.5 + d[0] * .2 + sw * .5 * d[0]);
+            var pg = cx.createRadialGradient(4, -2, .5, 6, 0, 10);
+            pg.addColorStop(0, '#f6c8c0'); pg.addColorStop(1, '#b06a66');
+            cx.fillStyle = pg;
             cx.beginPath();
             cx.ellipse(6, 0, 9, 5, 0, 0, 7);
             cx.fill();
+            cx.strokeStyle = 'rgba(90,40,40,.5)'; cx.lineWidth = .6; cx.stroke();
             cx.fillStyle = '#f4e6dc';
             for (var c2 = 0; c2 < 4; c2++) {
                 cx.beginPath();
@@ -311,10 +324,17 @@ function drawMole(now) {
             cx.fillStyle = '#e9a7a0';
             cx.restore();
         });
-        cx.fillStyle = '#2d2622';
+        var hg = cx.createRadialGradient(x0 + 28, y0 - 7, 1, x0 + 30, y0 - 3, 12);
+        hg.addColorStop(0, '#5a4c44'); hg.addColorStop(1, '#1a1412');
+        cx.fillStyle = hg;
         cx.beginPath();
         cx.ellipse(x0 + 30, y0 - 3, 11, 9, 0, 0, 7);
         cx.fill();
+        // tapering snout
+        cx.fillStyle = '#3a302a';
+        cx.beginPath(); cx.moveTo(x0 + 36, y0 - 8); cx.quadraticCurveTo(x0 + 42, y0 - 6, x0 + 41, y0 - 3); cx.quadraticCurveTo(x0 + 42, y0, x0 + 36, y0 + 2); cx.fill();
+        cx.strokeStyle = 'rgba(230,220,210,.35)'; cx.lineWidth = .5;
+        for (i = -2; i <= 2; i++) { cx.beginPath(); cx.moveTo(x0 + 38, y0 - 3 + i); cx.lineTo(x0 + 46, y0 - 3 + i * 3); cx.stroke(); }
         cx.fillStyle = '#ef8fa0';
         for (i = 0; i < 10; i++) {
             var a2 = i / 10 * 6.283 + Math.sin(t * 6) * .1;

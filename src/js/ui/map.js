@@ -162,13 +162,7 @@ function mapDraw() {
         } });
         deepList().forEach(function (e2) { line(mapPath(e2.f.q, e2.pr, 0), tw, '#9a8a78'); });
         line(mapPath(MAIN, 1, Math.max(0, 1 - S.dug)), tw * 1.25, '#e0b878');
-        g.fillStyle = '#e8b04a';
-        g.beginPath();
-        g.arc(X(QX), Y(QY), Math.max(4, 9 * sc), 0, 7);
-        g.fill();
-        g.strokeStyle = '#fff3c4';
-        g.lineWidth = 1.5;
-        g.stroke();
+        mapQueen(g, X(QX), Y(QY), Math.max(4, 9 * sc));
         g.restore();
         g = gMain;
     }
@@ -182,10 +176,8 @@ function mapDraw() {
     g.clip();
     var R = Math.min(6, Math.max(1.3, 2.2 * sc)), heroes = [];
     function dot(x, y, col, r) {
-        g.fillStyle = col;
-        g.beginPath();
-        g.arc(X(x), Y(y), r || R, 0, 7);
-        g.fill();
+        var sp = mapAnt(col, r || R, d);
+        g.drawImage(sp, X(x) - sp.width / d / 2, Y(y) - sp.height / d / 2, sp.width / d, sp.height / d);
     }
     farmAnts(performance.now(), function (fa, fwd, k) { dot(fa.x, fa.y, CC[k]); });
     crewA.forEach(function (a) { if (a.wx != null)
@@ -201,14 +193,8 @@ function mapDraw() {
     foes.forEach(function (f) {
         if (f.p < 0)
             return;
-        var a = at(Math.min(1, f.p));
-        g.fillStyle = '#ff3b2b';
-        g.strokeStyle = '#fff';
-        g.lineWidth = 1;
-        g.beginPath();
-        g.arc(X(a.x), Y(a.y), R * (f.boss ? 3 : 1.8), 0, 7);
-        g.fill();
-        g.stroke();
+        var a = at(Math.min(1, f.p)), sp = mapFoe(R * (f.boss ? 3 : 1.8), d);
+        g.drawImage(sp, X(a.x) - sp.width / d / 2, Y(a.y) - sp.height / d / 2, sp.width / d, sp.height / d);
     });
     if (gold && gold.x != null)
         dot(gold.x, gold.y, '#ffd23f', R * 2);
@@ -221,6 +207,7 @@ function mapDraw() {
         g.shadowBlur = 8;
         dot(m.wx, m.wy, h.c, R * 2.4);
         g.restore();
+        mapStar(g, X(m.wx), Y(m.wy) - R * 3, Math.max(2.5, R * 1.1), h.c);
         g.lineWidth = 3;
         g.strokeStyle = 'rgba(20,10,4,.85)';
         g.strokeText(h.n, X(m.wx) + 7, Y(m.wy) + 4);
@@ -239,7 +226,7 @@ function mapDraw() {
         g.fillText(l[0], lx + 11, ch - 12);
         lx += 18 + g.measureText(l[0]).width;
     });
-    function dot2(x, y, col) { g.fillStyle = col; g.beginPath(); g.arc(x, y, 3.5, 0, 7); g.fill(); }
+    function dot2(x, y, col) { var sp = col === '#ff3b2b' ? mapFoe(4, d) : mapAnt(col, 3, d); g.drawImage(sp, x - sp.width / d / 2, y - sp.height / d / 2, sp.width / d, sp.height / d); }
 }
 function mapJump(px, py) {
     if (!mapG)
@@ -317,3 +304,132 @@ function initMapGestures() {
     })();
 }
 function mapIsOpen() { var o = $('mapov'); return !!(o && o.classList.contains('on')); }
+
+// ---- map icons: little shaded ants, a spiky invader badge, the queen's crown. Ant and invader icons are
+// drawn once per colour and size into a cache, so a busy map is still just image copies.
+var MAPI = {};
+function mapIco(key, w, h, d, fn) {
+    var c = MAPI[key];
+    if (c)
+        return c;
+    c = document.createElement('canvas');
+    c.width = Math.ceil(w * d);
+    c.height = Math.ceil(h * d);
+    var g = c.getContext('2d');
+    g.scale(d, d);
+    fn(g);
+    if (Object.keys(MAPI).length > 200)
+        MAPI = {};
+    MAPI[key] = c;
+    return c;
+}
+function mapAnt(col, r, d) {
+    col = col || '#ffffff';
+    r = Math.round(r * 4) / 4;
+    var w = r * 3.4 + 2, h = r * 4.6 + 2;
+    return mapIco('a' + col + r + 'x' + d, w, h, d, function (g) {
+        var cx2 = w / 2, cy2 = h / 2;
+        g.strokeStyle = 'rgba(10,5,2,.9)';
+        g.lineWidth = Math.max(.6, r * .28);
+        g.lineCap = 'round';
+        var ty = cy2 - r * .1;
+        for (var j = -1; j <= 1; j++)
+            for (var sd = -1; sd <= 1; sd += 2) {
+                g.beginPath();
+                g.moveTo(cx2, ty + j * r * .2);
+                g.lineTo(cx2 + sd * r * .85, ty + j * r * .25 - r * .2);
+                g.lineTo(cx2 + sd * r * 1.45, ty + j * r * .95 + r * .15);
+                g.stroke();
+            }
+        [0, 1, 2].forEach(function (i) {
+            var by = cy2 + (i === 0 ? -r * 1.45 : i === 1 ? -r * .1 : r * 1.25), br = i === 0 ? r * .6 : i === 1 ? r * .5 : r * .78;
+            var gg = g.createRadialGradient(cx2 - br * .35, by - br * .4, br * .1, cx2, by, br * 1.1);
+            gg.addColorStop(0, antShade(col, 1.6));
+            gg.addColorStop(.6, col);
+            gg.addColorStop(1, antShade(col, .35));
+            g.fillStyle = gg;
+            g.beginPath();
+            g.arc(cx2, by, br, 0, 7);
+            g.fill();
+            g.strokeStyle = 'rgba(10,5,2,.75)';
+            g.lineWidth = Math.max(.4, r * .14);
+            g.stroke();
+        });
+    });
+}
+function mapFoe(r, d) {
+    r = Math.round(r * 4) / 4;
+    var w = r * 2.9 + 2;
+    return mapIco('f' + r + 'x' + d, w, w, d, function (g) {
+        var c = w / 2, i, a;
+        g.beginPath();
+        for (i = 0; i < 16; i++) {
+            a = i / 16 * 6.283;
+            var rr = i % 2 ? r * 1.05 : r * 1.4;
+            g.lineTo(c + Math.cos(a) * rr, c + Math.sin(a) * rr);
+        }
+        g.closePath();
+        var gg = g.createRadialGradient(c - r * .3, c - r * .4, r * .1, c, c, r * 1.4);
+        gg.addColorStop(0, '#ff8a6a');
+        gg.addColorStop(.6, '#e02a1a');
+        gg.addColorStop(1, '#6a0c06');
+        g.fillStyle = gg;
+        g.fill();
+        g.strokeStyle = 'rgba(255,240,230,.9)';
+        g.lineWidth = Math.max(.7, r * .16);
+        g.stroke();
+        // a little bug mark: body and two feelers
+        g.fillStyle = 'rgba(30,4,2,.85)';
+        g.beginPath();
+        g.ellipse(c, c + r * .15, r * .32, r * .45, 0, 0, 7);
+        g.arc(c, c - r * .38, r * .2, 0, 7);
+        g.fill();
+        g.strokeStyle = 'rgba(30,4,2,.85)';
+        g.lineWidth = Math.max(.5, r * .1);
+        g.beginPath();
+        g.moveTo(c - r * .1, c - r * .5);
+        g.lineTo(c - r * .4, c - r * .8);
+        g.moveTo(c + r * .1, c - r * .5);
+        g.lineTo(c + r * .4, c - r * .8);
+        g.stroke();
+    });
+}
+function mapQueen(g, x, y, r) {
+    var gg = g.createRadialGradient(x - r * .3, y - r * .35, r * .1, x, y, r * 1.1);
+    gg.addColorStop(0, '#ff6a50');
+    gg.addColorStop(.6, '#8a1a10');
+    gg.addColorStop(1, '#2a0603');
+    g.fillStyle = gg;
+    g.beginPath();
+    g.arc(x, y, r, 0, 7);
+    g.fill();
+    g.strokeStyle = '#ffd27a';
+    g.lineWidth = 1.5;
+    g.stroke();
+    // crown
+    var cw = r * 1.1, cy = y - r * .05;
+    g.fillStyle = '#ffd27a';
+    g.beginPath();
+    g.moveTo(x - cw * .6, cy + cw * .35);
+    g.lineTo(x - cw * .6, cy - cw * .25);
+    g.lineTo(x - cw * .3, cy + cw * .05);
+    g.lineTo(x, cy - cw * .4);
+    g.lineTo(x + cw * .3, cy + cw * .05);
+    g.lineTo(x + cw * .6, cy - cw * .25);
+    g.lineTo(x + cw * .6, cy + cw * .35);
+    g.closePath();
+    g.fill();
+}
+function mapStar(g, x, y, r, col) {
+    g.fillStyle = col;
+    g.strokeStyle = 'rgba(20,10,4,.85)';
+    g.lineWidth = 1;
+    g.beginPath();
+    for (var i = 0; i < 10; i++) {
+        var a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r;
+        g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+    }
+    g.closePath();
+    g.stroke();
+    g.fill();
+}
