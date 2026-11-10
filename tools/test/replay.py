@@ -42,7 +42,7 @@ SNAP = r"""(function(){
 # scripted session: each step = (label, js to run first, frames to play)
 SESSION = [
   ('start',      "document.getElementById('tgo') && document.getElementById('tgo').click();", 600),
-  ('stage2',     "devStage(2);", 1800),
+  ('stage2',     "go('tun'); devStage(2);", 1800),
   ('wave',       "nf = performance.now() + 3000;", 2400),
   ('stage4',     "devStage(4); S.reach = 2; S.sideTunnels = 19; for (var k = 0; k < 19; k++) S.sideDug[k] = 1; S.rare.nbf = 1; genPebs();", 1800),
   ('termites',   "trmT = 0; foes.length = 0; nf = performance.now() + 1e9;", 3000),
@@ -91,6 +91,8 @@ async def main():
             res[label] = hashlib.sha1(snap.encode()).hexdigest()[:12]
             if label in ('termites', 'mole', 'flight', 'end'):
                 open(out[:-5] + '_' + label + '.snap', 'w').write(snap)
+        # errors thrown inside game frames and timers are caught by the fake clock; report them too
+        errs += await pg.evaluate("window.__errs || []")
         res['pageerrors'] = errs
         json.dump(res, open(out, 'w'), indent=1)
         print(json.dumps(res))

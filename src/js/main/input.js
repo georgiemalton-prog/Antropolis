@@ -7,6 +7,11 @@ function initNestTaps() {
     cv.addEventListener('pointerdown', function (e) {
         if (tab !== 'nest' || dead)
             return;
+        var r = cv.getBoundingClientRect(), nf = nsFeatureAt(e.clientX - r.left, e.clientY - r.top);
+        if (nf) {
+            nsTapFeature(nf);
+            return;
+        }
         var cut = Math.min(2, layGap() * .05);
         S.layTimer = Math.max(0, S.layTimer - cut);
         S.queenTaps = (S.queenTaps || 0) + 1;
@@ -60,6 +65,8 @@ function initTapToSelect() {
         var moved = Math.hypot(e.clientX - tdn.x, e.clientY - tdn.y), dtp = performance.now() - tdn.t;
         tdn = null;
         if (moved > 8 || dtp > 450)
+            return;
+        if (tab === 'nest')
             return;
         var r0 = cv.getBoundingClientRect(), ri = roomAt(camX + (e.clientX - r0.left) / (K * uz), cam + (e.clientY - r0.top) / (K * uz));
         if (ri >= 0) {

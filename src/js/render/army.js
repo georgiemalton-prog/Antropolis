@@ -70,9 +70,19 @@ function drawFallen() {
 }
 
 function smoothPos(o, x, y, ang, now) {
+    // a bad position (eg a job that has not set its spot yet) is skipped, and a broken smoothed one is reset,
+    // so one bad frame can never leave an ant stuck as 'not a number' for good
+    if (!isFinite(x) || !isFinite(y)) {
+        x = isFinite(o.sx) ? o.sx : 0;
+        y = isFinite(o.sy) ? o.sy : 0;
+    }
+    if (!isFinite(ang))
+        ang = isFinite(o.sa) ? o.sa : 0;
+    if (!isFinite(o.sx) || !isFinite(o.sy) || !isFinite(o.sa))
+        o.sx = null;
     var dt = (now - (o.lt || 0)) / 1000;
     o.lt = now;
-    if (o.gp == null)
+    if (o.gp == null || !isFinite(o.gp))
         o.gp = Math.random() * 6;
     if (dt > 0 && dt < .25) {
         var still = o.rx != null && Math.abs(x - o.rx) < .06 && Math.abs(y - o.ry) < .06;

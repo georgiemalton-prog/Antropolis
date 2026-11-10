@@ -153,7 +153,9 @@ function frame(n) {
     }
     queueForagers();
     cam += (camT - cam) * Math.min(1, dt * 8);
-    if (tab !== 'col' && !mapIsOpen())
+    if (tab === 'nest' && !mapIsOpen())
+        drawNest(n);
+    else if (tab !== 'col' && !mapIsOpen())
         drawT(n);
     updateSel();
     simTick();
@@ -216,5 +218,5 @@ function drawDeadQueen() {
     cx.restore();
 }
 
-function drawT(now) { drawWorld(now); drawTrails(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); drawSkyBand(now); }
+function drawT(now) { drawWorld(now); drawTrails(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); }
 var lastTouchEnd = 0;
