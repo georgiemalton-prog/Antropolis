@@ -36,6 +36,7 @@ render/army.js
 render/workers.js
 render/foes.js
 render/fx.js
+render/skyband.js
 ui/hud.js
 ui/info.js
 ui/gift.js
