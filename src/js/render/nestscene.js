@@ -364,7 +364,7 @@ function nsBuilding(g, f, x, y, t, p) {
 
 // one of the colony's ants, drawn at the nest's closer scale. k: 0 nurse, 1 forager, 2 soldier, 3 scout, 4 super major, 6 worker (index into SZ and KD)
 function nsAnt(g, x, y, a, k, ph, leaf) {
-    drawAnt(x, y, a, SZ[k] * (k === 4 ? .9 : 1.8), leaf ? 1 : false, ph, KD[k]);
+    antDraw(x, y, a, SZ[k] * (k === 4 ? .9 : 1.8), leaf ? 1 : false, ph, KD[k], true);
 }
 
 // the colony's ants wander the cavern freely and stop at buildings now and then
