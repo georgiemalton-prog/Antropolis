@@ -101,72 +101,163 @@ function gen() {
        Every colony seed grows its own pattern: a mix of angular cracks (like sand-and-glass ant farms)
        and organic wandering tunnels, that loop back and join up. Purely visual. */
     FARM = [];
-    var fall = segs.concat(wsegs), fsrc = [{ p: MP, r: -1 }], fi, amix = .25 + rng(S.seed + 777)() * .65;
+    var fall = segs.concat(wsegs), fsrc = [{ p: MP, r: -1 }], fi;
     BRN.forEach(function (b, bi) { fsrc.push({ p: b, r: bi }); });
-    function nearP(px, py, g) {
-        var dx = g[2] - g[0], dy = g[3] - g[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - g[0]) * dx + (py - g[1]) * dy) / l2)), x = g[0] + dx * t, y = g[1] + dy * t;
-        return [x, y, Math.hypot(px - x, py - y)];
-    }
-    for (fi = 0; fi < 520 && FARM.length < 160; fi++) {
+    // every tunnel winds smoothly, never crosses another and keeps a little room from its neighbours;
+    // now and then one joins another, so there are a few loops but no tangle (see netGrow)
+    var fgrid = netGrid(.05);
+    fall.forEach(function (g) { fgrid.add(g); });
+    for (fi = 0; fi < 2000 && FARM.length < 160; fi++) {
         var fq = rng(S.seed + 31000 + fi * 331), pf = FARM.length > 5 && fq() < .6 ? FARM[Math.floor(fq() * FARM.length)] : null, sc = pf ? { p: pf.pts, r: pf.par } : fsrc[Math.floor(fq() * fsrc.length)],
             sgi = Math.floor(fq() * (sc.p.length - 1)), ft = .15 + .7 * fq(),
-            fx0 = sc.p[sgi][0] + (sc.p[sgi + 1][0] - sc.p[sgi][0]) * ft, fy0 = sc.p[sgi][1] + (sc.p[sgi + 1][1] - sc.p[sgi][1]) * ft, ow = fx0 < .5 ? -1 : 1,
-            ang = fq() < amix, vert = fq() < .45, th = Math.PI / 2 + (fq() - .5) * 2.4 + (fq() < .5 ? -Math.PI / 2 * (fq() < .75 ? ow : -ow) : 0),
-            fm = 3 + Math.floor(fq() * 5), fpts = [[fx0, fy0]], fx = fx0, fy = fy0, fst, fat, fnx, fny, snapped = false;
+            fx0 = sc.p[sgi][0] + (sc.p[sgi + 1][0] - sc.p[sgi][0]) * ft, fy0 = sc.p[sgi][1] + (sc.p[sgi + 1][1] - sc.p[sgi][1]) * ft, ow = fx0 < .5 ? -1 : 1, side = fx0 >= 0 && fx0 <= 1;
         if (fy0 < .1 || fy0 > .86)
             continue;
-        for (fst = 0; fst < fm && !snapped; fst++) {
-            var got = false;
-            for (fat = 0; fat < 6 && !got; fat++) {
-                var u = .05 + fq() * (ang ? .1 : .06), ddx, ddy;
-                if (ang) {
-                    if (fst > 0 && fq() < .75)
-                        vert = !vert;
-                    var sg2 = vert ? (fq() < .72 ? 1 : -1) : (fq() < .72 ? ow : -ow);
-                    ddx = vert ? (fq() - .5) * u * .5 : sg2 * u;
-                    ddy = vert ? sg2 * u : (fq() - .5) * u * .4;
-                }
-                else {
-                    th += (fq() - .5) * 1.3;
-                    ddx = Math.cos(th) * u;
-                    ddy = Math.sin(th) * u;
-                }
-                fnx = fx0 >= 0 && fx0 <= 1 ? Math.max(.02, Math.min(.98, fx + ddx)) : Math.max(-1.95, Math.min(2.95, fx + ddx));
-                fny = Math.max(.08, Math.min(.86, fy + ddy / YS));
-                if (Math.hypot(fnx - fx, (fny - fy) * YS) < .025)
+        var sdx = sc.p[sgi + 1][0] - sc.p[sgi][0], sdy = (sc.p[sgi + 1][1] - sc.p[sgi][1]) * YS, pd = Math.atan2(sdy, sdx), sa;
+        // off the main tunnel: straight out to one side (mostly the nearer edge); off a branch: a fork at 30-60
+        // degrees that keeps going the same way
+        if (!pf && sc.r < 0)
+            sa = (fq() < .7 ? ow > 0 : fq() < .5) ? (fq() - .5) * .6 : Math.PI + (fq() - .5) * .6;
+        else
+            sa = pd + (fq() < .5 ? 1 : -1) * (.5 + fq() * .5);
+        var fpts = netGrow(fgrid, fq, [fx0, fy0 * YS], sa, 3 + Math.floor(fq() * 4), {
+            u0: .05, u1: .085, turn: .42, clr: .02, snap: .03, join: .28,
+            x0: side ? .02 : -1.95, x1: side ? .98 : 2.95, y0: .08 * YS, y1: .86 * YS
+        });
+        if (!fpts)
+            continue;
+        FARM.push({ pts: fpts.p.map(function (p) { return [p[0], p[1] / YS]; }), par: sc.r, pi: pf ? FARM.indexOf(pf) : -1, ch: !fpts.joined && fq() < .4 });
+    }
+}
+
+/* ---- growing tunnels that wind but never cross ----
+   netGrid: segments [x0, y0, x1, y1, ...] bucketed into square cells of size cs, for quick neighbour checks. */
+function netGrid(cs) {
+    var m = {}, segs = [];
+    function cells(x0, y0, x1, y1, fn) {
+        for (var cx2 = Math.floor(Math.min(x0, x1) / cs); cx2 <= Math.floor(Math.max(x0, x1) / cs); cx2++)
+            for (var cy2 = Math.floor(Math.min(y0, y1) / cs); cy2 <= Math.floor(Math.max(y0, y1) / cs); cy2++)
+                fn(cx2 + ',' + cy2);
+    }
+    return {
+        add: function (g) {
+            var i = segs.length;
+            segs.push(g);
+            cells(g[0], g[1], g[2], g[3], function (k) { (m[k] = m[k] || []).push(i); });
+        },
+        near: function (x0, y0, x1, y1, pad) {
+            var seen = {}, out = [];
+            cells(Math.min(x0, x1) - pad, Math.min(y0, y1) - pad, Math.max(x0, x1) + pad, Math.max(y0, y1) + pad, function (k) {
+                (m[k] || []).forEach(function (i) { if (!seen[i] && !segs[i].dead) { seen[i] = 1; out.push(segs[i]); } });
+            });
+            return out;
+        }
+    };
+}
+function netPS(px, py, g) {
+    var dx = g[2] - g[0], dy = g[3] - g[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - g[0]) * dx + (py - g[1]) * dy) / l2)), x = g[0] + dx * t, y = g[1] + dy * t;
+    return [x, y, Math.hypot(px - x, py - y)];
+}
+function netCross(a, b) {
+    function o(ax, ay, bx, by, qx, qy) { var v = (by - ay) * (qx - bx) - (bx - ax) * (qy - by); return v > 1e-12 ? 1 : v < -1e-12 ? 2 : 0; }
+    var o1 = o(a[0], a[1], a[2], a[3], b[0], b[1]), o2 = o(a[0], a[1], a[2], a[3], b[2], b[3]), o3 = o(b[0], b[1], b[2], b[3], a[0], a[1]), o4 = o(b[0], b[1], b[2], b[3], a[2], a[3]);
+    return o1 && o2 && o3 && o4 && o1 !== o2 && o3 !== o4;
+}
+// distance between two segments that do not cross
+function netSS(a, b) { return Math.min(netPS(a[0], a[1], b)[2], netPS(a[2], a[3], b)[2], netPS(b[0], b[1], a)[2], netPS(b[2], b[3], a)[2]); }
+/* Grow one tunnel from start (on its parent) heading sa, up to n steps. Each step turns a little; a step that
+   would cross or crowd another tunnel is tried again in another direction, or stops the tunnel. Close to another
+   tunnel it may join it instead (o.join). Returns { p: points, joined } with a smoothed path, or null. */
+function netGrow(grid, rnd, start, sa, n, o) {
+    var pts = [start], x = start[0], y = start[1], th = sa, joined = false, st, at, mine = [];
+    for (st = 0; st < n && !joined; st++) {
+        var ok = false, nx, ny, seg;
+        for (at = 0; at < 8 && !ok; at++) {
+            var u = o.u0 + rnd() * (o.u1 - o.u0), t2 = th + (rnd() - .5) * o.turn * 2 * (1 + at * .35) + (o.down || 0);
+            nx = x + Math.cos(t2) * u;
+            ny = y + Math.sin(t2) * u;
+            if (nx < o.x0 || nx > o.x1 || ny < o.y0 || ny > o.y1)
+                continue;
+            seg = [x, y, nx, ny];
+            var near = grid.near(x, y, nx, ny, Math.max(o.clr, o.snap)), bad = false, best = null;
+            for (var k = 0; k < near.length && !bad; k++) {
+                var g = near[k];
+                if (mine.indexOf(g) >= 0 && mine.indexOf(g) >= mine.length - 1)
                     continue;
-                got = true;
-                var best = null, gu;
-                for (gu = 0; gu < fall.length; gu++) {
-                    var gg = fall[gu], pa = pseg(fx, fy * YS, gg);
-                    if (pa < .012)
-                        continue;
-                    var np = nearP(fnx, fny * YS, gg);
-                    if (np[2] < (fst === 0 ? .03 : .045) && (!best || np[2] < best[2]))
-                        best = np;
+                var d0 = netPS(x, y, g)[2];
+                if (d0 < 1e-6) {
+                    // the parent (or our own last step) touches where we start: only make sure we head away from it
+                    if (netPS(nx, ny, g)[2] < o.clr * .8)
+                        bad = true;
+                    continue;
                 }
-                if (best) {
-                    if (fst === 0)
-                        got = false;
-                    else {
-                        fnx = best[0];
-                        fny = best[1] / YS;
-                        snapped = true;
-                    }
+                if (netCross(seg, g)) {
+                    bad = true;
+                    break;
+                }
+                var e = netPS(nx, ny, g);
+                if (e[2] < o.snap && (!best || e[2] < best[2]))
+                    best = e;
+                if (netSS(seg, g) < o.clr)
+                    bad = 'close';
+            }
+            if (best && st >= 1 && rnd() < o.join) {
+                // join the nearby tunnel: end exactly on it, as long as that short step crosses nothing
+                var js = [x, y, best[0], best[1]], clash = false;
+                grid.near(x, y, best[0], best[1], 1e-3).forEach(function (g) { if (netPS(x, y, g)[2] > 1e-6 && netPS(best[0], best[1], g)[2] > 1e-6 && netCross(js, g)) clash = true; });
+                if (!clash && Math.hypot(best[0] - x, best[1] - y) > o.u0 * .3) {
+                    nx = best[0];
+                    ny = best[1];
+                    seg = js;
+                    joined = true;
+                    ok = true;
+                    break;
                 }
             }
-            if (!got)
-                break;
-            fx = fnx;
-            fy = fny;
-            fpts.push([fx, fy]);
+            if (bad)
+                continue;
+            ok = true;
+            th = Math.atan2(ny - y, nx - x);
         }
-        if (fpts.length < 2)
-            continue;
-        for (var fs = 1; fs < fpts.length; fs++)
-            fall.push([fpts[fs - 1][0], fpts[fs - 1][1] * YS, fpts[fs][0], fpts[fs][1] * YS, 300 + fi, 1]);
-        FARM.push({ pts: fpts, par: sc.r, pi: pf ? FARM.indexOf(pf) : -1, ch: !snapped && fq() < .4 });
+        if (!ok)
+            break;
+        grid.add(seg);
+        mine.push(seg);
+        x = nx;
+        y = ny;
+        pts.push([x, y]);
     }
+    if (pts.length < 2)
+        return null;
+    // round the corners (one pass of corner cutting; the two ends stay put)
+    if (pts.length > 2) {
+        var sm = [pts[0]], i;
+        for (i = 0; i < pts.length - 1; i++) {
+            var p0 = pts[i], p1 = pts[i + 1];
+            if (i > 0)
+                sm.push([p0[0] * .75 + p1[0] * .25, p0[1] * .75 + p1[1] * .25]);
+            if (i < pts.length - 2)
+                sm.push([p0[0] * .25 + p1[0] * .75, p0[1] * .25 + p1[1] * .75]);
+        }
+        sm.push(pts[pts.length - 1]);
+        // keep the sharper path if rounding it would cut across another tunnel
+        var cuts = false;
+        for (i = 1; i < sm.length && !cuts; i++) {
+            var sg2 = [sm[i - 1][0], sm[i - 1][1], sm[i][0], sm[i][1]];
+            grid.near(sg2[0], sg2[1], sg2[2], sg2[3], 1e-3).forEach(function (g) {
+                if (mine.indexOf(g) < 0 && netPS(start[0], start[1], g)[2] > 1e-6 && netPS(x, y, g)[2] > 1e-6 && netCross(sg2, g))
+                    cuts = true;
+            });
+        }
+        if (!cuts) {
+            // from now on other tunnels are checked against the rounded path, which is the one drawn
+            mine.forEach(function (g) { g.dead = 1; });
+            for (i = 1; i < sm.length; i++)
+                grid.add([sm[i - 1][0], sm[i - 1][1], sm[i][0], sm[i][1]]);
+            pts = sm;
+        }
+    }
+    return { p: pts, joined: joined };
 }
 
 function mk(pts) { var P2 = pts.map(function (p) { return [p[0] * W, p[1] * WH]; }), C = [0], L = 0; for (var i = 1; i < P2.length; i++) {
@@ -259,12 +350,8 @@ var DLAY = [
 function genDeep() {
     DEEP = [];
     DEEPP = [];
-    var top = deepTop(), lh = LH(), c = cavFull(), r = rng(S.seed + 91000), L, i, amix = .25 + rng(S.seed + 778)() * .65, segsD = [], byL = [[], [], [], []];
+    var top = deepTop(), lh = LH(), c = cavFull(), r = rng(S.seed + 91000), L, i, segsD = [], byL = [[], [], [], []];
     function addSegs(pts) { for (var j = 1; j < pts.length; j++) segsD.push([pts[j - 1][0] * W, pts[j - 1][1] * WH, pts[j][0] * W, pts[j][1] * WH]); }
-    function dseg(px, py, g) {
-        var dx = g[2] - g[0], dy = g[3] - g[1], l2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - g[0]) * dx + (py - g[1]) * dy) / l2)), x = g[0] + dx * t, y = g[1] + dy * t;
-        return [x, y, Math.hypot(px - x, py - y)];
-    }
     var px = .5, py = c.y + c.ry - 8;
     for (L = 0; L < 4; L++) {
         var by = top + (L + 1) * lh - lh * .22, pts = [[px, py / WH]], n = 4;
@@ -277,66 +364,30 @@ function genDeep() {
         byL[L].push(DEEP.length - 1);
         addSegs(pts);
     }
+    var dgrid = netGrid(30);
+    segsD.forEach(function (g) { dgrid.add(g); });
     for (L = 0; L < 4; L++) {
         var yA = top + L * lh + 10, yB = top + (L + 1) * lh - 10, made = 0, fi;
-        for (fi = 0; fi < 700 && made < 48; fi++) {
+        for (fi = 0; fi < 900 && made < 48; fi++) {
             var fq = rng(S.seed + 92000 + L * 7919 + fi * 331), srcI = byL[L][Math.floor(fq() * byL[L].length)], src = DEEP[srcI], sg = Math.floor(fq() * (src.pts.length - 1)), ft = .15 + .7 * fq(),
-                fx = (src.pts[sg][0] + (src.pts[sg + 1][0] - src.pts[sg][0]) * ft) * W, fy = (src.pts[sg][1] + (src.pts[sg + 1][1] - src.pts[sg][1]) * ft) * WH,
-                ow = fx < W / 2 ? -1 : 1, ang = fq() < amix, vert = fq() < .42, th = (fq() - .5) * 6.28, fm = 5 + Math.floor(fq() * 7), fpts = [[fx / W, fy / WH]], snapped = false, st, at, got, nx, ny;
+                fx = (src.pts[sg][0] + (src.pts[sg + 1][0] - src.pts[sg][0]) * ft) * W, fy = (src.pts[sg][1] + (src.pts[sg + 1][1] - src.pts[sg][1]) * ft) * WH;
             if (fy < yA || fy > yB)
                 continue;
-            // wandering tunnels set off towards the nearer edge so the sides of the deep layers fill in too
-            th = Math.atan2(Math.sin(th), Math.abs(Math.cos(th)) * ow);
-            for (st = 0; st < fm && !snapped; st++) {
-                got = false;
-                for (at = 0; at < 6 && !got; at++) {
-                    var u = (.06 + fq() * (ang ? .11 : .08)) * W, ddx, ddy;
-                    if (ang) {
-                        if (st > 0 && fq() < .75)
-                            vert = !vert;
-                        var sg2 = vert ? (fq() < .5 ? 1 : -1) : (fq() < .68 ? ow : -ow);
-                        ddx = vert ? (fq() - .5) * u * .5 : sg2 * u;
-                        ddy = vert ? sg2 * u : (fq() - .5) * u * .4;
-                    }
-                    else {
-                        th += (fq() - .5) * 1.3;
-                        ddx = Math.cos(th) * u;
-                        ddy = Math.sin(th) * u;
-                    }
-                    nx = made < 32 ? Math.max(.04 * W, Math.min(.96 * W, fx + ddx)) : Math.max(-1.95 * W, Math.min(2.95 * W, fx + ddx));
-                    ny = Math.max(yA, Math.min(yB, fy + ddy));
-                    if (Math.hypot(nx - fx, ny - fy) < 8)
-                        continue;
-                    got = true;
-                    var best = null, gu;
-                    for (gu = 0; gu < segsD.length; gu++) {
-                        var gg = segsD[gu];
-                        if (dseg(fx, fy, gg)[2] < 4)
-                            continue;
-                        var np = dseg(nx, ny, gg);
-                        if (np[2] < (st === 0 ? 10 : 15) && (!best || np[2] < best[2]))
-                            best = np;
-                    }
-                    if (best) {
-                        if (st === 0)
-                            got = false;
-                        else {
-                            nx = best[0];
-                            ny = best[1];
-                            snapped = true;
-                        }
-                    }
-                }
-                if (!got)
-                    break;
-                fx = nx;
-                fy = ny;
-                fpts.push([fx / W, fy / WH]);
-            }
-            if (fpts.length < 2)
+            // galleries leave their parent at right angles, lean out towards the nearer edge and slope gently down
+            // off the shaft: a gallery heads straight out to one side; off a gallery: a fork at 30-60 degrees
+            // that keeps going the same way, so the layer spreads wide instead of folding back on itself
+            var pd = Math.atan2((src.pts[sg + 1][1] - src.pts[sg][1]) * WH, (src.pts[sg + 1][0] - src.pts[sg][0]) * W), sa;
+            if (src.t)
+                sa = (fq() < .5 ? 0 : Math.PI) + (fq() - .5) * .5;
+            else
+                sa = pd + (fq() < .5 ? 1 : -1) * (.5 + fq() * .5);
+            var wide = made >= 32, dp = netGrow(dgrid, fq, [fx, fy], sa, 4 + Math.floor(fq() * 5), {
+                u0: .07 * W, u1: .12 * W, turn: .38, clr: 9, snap: 13, join: .22, down: .06,
+                x0: wide ? -1.95 * W : .04 * W, x1: wide ? 2.95 * W : .96 * W, y0: yA, y1: yB
+            });
+            if (!dp)
                 continue;
-            addSegs(fpts);
-            DEEP.push({ pts: fpts, L: L, pi: srcI, t: 0, ch: !snapped && fq() < .4 ? 1 : 0 });
+            DEEP.push({ pts: dp.p.map(function (p) { return [p[0] / W, p[1] / WH]; }), L: L, pi: srcI, t: 0, ch: !dp.joined && fq() < .4 ? 1 : 0 });
             byL[L].push(DEEP.length - 1);
             made++;
         }

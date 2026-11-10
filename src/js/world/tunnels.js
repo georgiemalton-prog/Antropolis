@@ -18,8 +18,54 @@ function farInit() {
     S.ddg = S.ddg || d;
     FDV++;
 }
+/* Build 74 redrew the ant-farm and deep-layer tunnels (smooth, never crossing). Saved dig progress is kept
+   per tunnel number, which now means a different tunnel, so once per save the same number of finished tunnels
+   is dug again in the new layout, in the usual order (shafts keep theirs). S.net (optional) marks it done. */
+function netMigrate() {
+    S.net = S.net || {};
+    var i, n, k;
+    if (!S.net.f && FARMP.length) {
+        S.net.f = 1;
+        n = 0;
+        for (k in S.fdg)
+            if (S.fdg[k] >= 1)
+                n++;
+        S.fdg = {};
+        for (i = 0; i < n; i++) {
+            farmList0();
+            if (!FQ.length)
+                break;
+            S.fdg[FQ[0].i] = 1;
+        }
+        FDV++;
+    }
+    if (!S.net.d && DEEPP.length) {
+        S.net.d = 1;
+        var per = [0, 0, 0, 0], keep = {};
+        for (k in S.ddg) {
+            var e = DEEPP[k];
+            if (e && e.t)
+                keep[k] = S.ddg[k];
+            else if (e && S.ddg[k] >= 1)
+                per[e.L]++;
+        }
+        S.ddg = keep;
+        for (var guard = 0; guard < 400; guard++) {
+            deepList0();
+            var pick = null;
+            DQ.forEach(function (q) { if (!pick && !DEEPP[q.i].t && per[q.L] > 0) pick = q; });
+            if (!pick)
+                break;
+            S.ddg[pick.i] = 1;
+            per[pick.L]--;
+        }
+        FDV++;
+    }
+}
 function deepList0() {
     farInit();
+    if (!S.net || !S.net.d)
+        netMigrate();
     var o = [], cnt = [0, 0, 0, 0], inc = [], rc = S.reach || 0, i, e, pr, at = S.deepAt || [], dd = S.ddg;
     DQ = [];
     if (!S.deep)
@@ -41,6 +87,8 @@ function deepList0() {
 }
 function farmList0() {
     farInit();
+    if (!S.net || !S.net.f)
+        netMigrate();
     var o = [], i, pr, n = 0, inc = [], rc = S.reach || 0, fd = S.fdg;
     FQ = [];
     for (i = 0; i < FARMP.length; i++) {
