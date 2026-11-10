@@ -429,7 +429,7 @@ function drawWorld(now) {
     for (i = 0; i < nl; i++) {
         cx.fillStyle = i % 2 ? '#6fbf4a' : '#4f9a35';
         cx.beginPath();
-        cx.ellipse(QX - rx * .72 + ((i * 17) % 9) * 4, QY + 2 + (i % 5) * 5, 4, 2.4, i, 0, 7);
+        cx.ellipse(QX + rx * .62 + ((i * 17) % 9) * 4, QY + 4 + (i % 5) * 4.5, 4, 2.4, i, 0, 7);
         cx.fill();
     }
     drawCushion(now);

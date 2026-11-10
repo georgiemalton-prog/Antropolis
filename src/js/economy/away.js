@@ -68,8 +68,18 @@ function catchUp(secs) {
         var dt = Math.min(30, secs - t);
         t += dt;
         var before = S.food, rf = S.foragersAtRate > 0 ? Math.min(3, S.foragers / S.foragersAtRate) : 1;
-        S.food = Math.min(foodCap(), S.food + rate * rf * dt);
+        var add = rate * rf * dt;
+        S.food = Math.min(foodCap(), S.food + add);
         r.got += S.food - before;
+        // with the Larder, what does not fit in a full store is put by as a reserve (S.lres) for later
+        if (larderOn() && add > S.food - before) {
+            var put = Math.min(add - (S.food - before), larderRoom());
+            S.lres = (S.lres || 0) + put;
+            r.got += put;
+            r.res = (r.res || 0) + put;
+        }
+        else if (add > S.food - before)
+            r.lost = (r.lost || 0) + add - (S.food - before);
         S.food = Math.max(0, S.food - upkeepRate(popn()) * dt);
         lay -= dt;
         while (lay <= 0) {
@@ -123,6 +133,10 @@ function awayText(r) {
     } });
     var s = '<h3>While you were away</h3><p class="mute" style="margin-top:-4px">' + dur + (r.capped ? ' (your ants work for up to ' + awayMax() / 3600 + ' hours)' : '') + '</p>';
     s += '<p>Your foragers gathered <b>' + fmt(Math.round(r.got)) + ' food</b>.</p>';
+    if (r.res >= 1)
+        s += '<p>The store filled up, so <b>' + fmt(Math.round(r.res)) + '</b> of it went into the <b>Larder</b>. It tops up the store as you use food.</p>';
+    else if (r.lost >= 1)
+        s += '<p class="mute">The food store filled up and ' + fmt(Math.round(r.lost)) + ' food was left on the surface.' + (S.tier >= 3 ? ' The Larder, down in the Clay layer, keeps the extra.' : '') + '</p>';
     s += total ? '<p>The queen raised <b>' + total + ' new ant' + (total > 1 ? 's' : '') + '</b>: ' + parts.join(', ') + '.</p>' : '';
     if (r.gold)
         s += '<p>A golden egg hatched a <b>Super Major</b>! +' + 10 * r.gold + ' jelly.</p>';

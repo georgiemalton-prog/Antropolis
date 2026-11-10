@@ -126,9 +126,14 @@ function mapDraw() {
                 g.moveTo(cxp, cyp);
         }
         g.closePath();
-        g.fillStyle = 'rgba(150,108,66,.35)';
+        // the same dark cavern as the Nest tab, glowing warm round the queen
+        var cg = g.createRadialGradient(X(QX), Y(QY), 2, X(QX), Y(QY), Math.max(8, cv0.rx * sc * 1.05));
+        cg.addColorStop(0, '#8a4020');
+        cg.addColorStop(.35, '#5a2814');
+        cg.addColorStop(1, '#1c0b05');
+        g.fillStyle = cg;
         g.fill();
-        g.strokeStyle = 'rgba(255,220,160,.45)';
+        g.strokeStyle = 'rgba(255,150,90,.55)';
         g.lineWidth = 1.5;
         g.stroke();
         function line(pts, w, col) {

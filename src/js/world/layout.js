@@ -109,7 +109,10 @@ function gen() {
     fall.forEach(function (g) { fgrid.add(g); });
     // the roof of the queen's cavern (as it is while still young, so a link always reaches in): tunnels near it
     // usually join it, giving the nest several ways in; and none can be drawn across it
-    netNestArc(fgrid, 200, 340, .4, 1 / W, YS / WH);
+    // worked out from the main tunnel's own end point (not QY or the nest stage, which change), so the
+    // layout comes out the same on every load
+    var qn = MP[8][1] - .06;
+    netNestArc(fgrid, 200, 340, .4, 1 / W, YS / WH, { x: W * .5, rx: W * .49, top: qn * WH, ry: (1.04 - qn) * WH });
     for (fi = 0; fi < 2000 && FARM.length < 160; fi++) {
         var fq = rng(S.seed + 31000 + fi * 331), pf = FARM.length > 5 && fq() < .6 ? FARM[Math.floor(fq() * FARM.length)] : null, sc = pf ? { p: pf.pts, r: pf.par } : fsrc[Math.floor(fq() * fsrc.length)],
             sgi = Math.floor(fq() * (sc.p.length - 1)), ft = .15 + .7 * fq(),
@@ -159,8 +162,8 @@ function netGrid(cs) {
 }
 // add the queen's cavern outline from angle a0 to a1 (degrees; 270 = the top) as join targets, for a cavern grown
 // to g (0..1, as cav()), in the grid's units: x * sx, y * sy
-function netNestArc(grid, a0, a1, g, sx, sy) {
-    var f = cavFull(), ry = f.ry * g, cy = f.top + ry, rx = f.rx * (.55 + .45 * g), a, px = null, py;
+function netNestArc(grid, a0, a1, g, sx, sy, cf) {
+    var f = cf || cavFull(), ry = f.ry * g, cy = f.top + ry, rx = f.rx * (.55 + .45 * g), a, px = null, py;
     for (a = a0; a <= a1; a += 5) {
         var t = a * Math.PI / 180, x = (f.x + Math.cos(t) * rx * cavM(t)) * sx, y = (cy + Math.sin(t) * ry * cavM(t)) * sy;
         if (px != null) {
@@ -374,7 +377,39 @@ var DLAY = [
     { n: 'Bedrock', a: '#1b1a1b', b: '#111113', c: '#c98a2f' }
 ];
 
+/* The deep layers are grown in one fixed reference frame (as on a 500 x 840 screen at the Supercolony stage) and
+   then fitted to this screen, so the same colony always gets the same tunnels whatever the screen size or nest
+   stage; saved dig progress is kept per tunnel number, so the layout must not shift. */
 function genDeep() {
+    var rW = W, rH = H, rWH = WH, rQY = QY, rT = deepTop(), rL = LH(), rTier = S.tier, RT, RL;
+    W = 500;
+    H = 840;
+    WH = H * 2.6;
+    QY = WH * .88;
+    S.tier = 4;
+    try {
+        genDeep0();
+        RT = deepTop();
+        RL = LH();
+    }
+    finally {
+        W = rW;
+        H = rH;
+        WH = rWH;
+        QY = rQY;
+        S.tier = rTier;
+    }
+    // one straight stretch from the top of the first layer, so lines stay straight and never come to cross
+    DEEP.forEach(function (f) {
+        f.pts = f.pts.map(function (p) { return [p[0], (rT + (p[1] * 840 * 2.6 - RT) * rL / RL) / WH]; });
+    });
+    DEEPP = DEEP.map(function (f) {
+        var lo = 9, hi = -9;
+        f.pts.forEach(function (p) { lo = Math.min(lo, p[0]); hi = Math.max(hi, p[0]); });
+        return { q: mk(f.pts), L: f.L, pi: f.pi, t: f.t, ch: f.ch, lo: lo, hi: hi };
+    });
+}
+function genDeep0() {
     DEEP = [];
     DEEPP = [];
     var top = deepTop(), lh = LH(), c = cavFull(), r = rng(S.seed + 91000), L, i, segsD = [], byL = [[], [], [], []];
@@ -397,7 +432,7 @@ function genDeep() {
     netNestArc(dgrid, 25, 155, 1, 1, 1);
     for (L = 0; L < 4; L++) {
         var yA = L ? top + L * lh + 10 : c.y, yB = top + (L + 1) * lh - 10, made = 0, fi;
-        for (fi = 0; fi < 1500 && made < 48; fi++) {
+        for (fi = 0; fi < 4000 && made < 48; fi++) {
             var fq = rng(S.seed + 92000 + L * 7919 + fi * 331), srcI = byL[L][Math.floor(fq() * byL[L].length)];
             // the outer galleries grow from the furthest-out tips, so each layer keeps spreading to the sides
             if (made >= 16)
@@ -432,11 +467,6 @@ function genDeep() {
             made++;
         }
     }
-    DEEPP = DEEP.map(function (f) {
-        var lo = 9, hi = -9;
-        f.pts.forEach(function (p) { lo = Math.min(lo, p[0]); hi = Math.max(hi, p[0]); });
-        return { q: mk(f.pts), L: f.L, pi: f.pi, t: f.t, ch: f.ch, lo: lo, hi: hi };
-    });
 }
 
 function tpath() {

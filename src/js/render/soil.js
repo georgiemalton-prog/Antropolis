@@ -140,8 +140,8 @@ function soilTex() {
         cx.quadraticCurveTo(r0 + 2, 26 + len * .3, r0 + 1, 26 + len * .5);
         cx.stroke();
     }
-    for (i = 0; i < 9 * WWf; i++) {
-        var sx = XL + r() * XW, sy = 60 + r() * (WH - 80), sr = 3 + r() * 5, rot = r() * 3;
+    for (i = 0; i < 34 * WWf; i++) {
+        var sx = XL + r() * XW, sy = 60 + r() * (WH - 80), sr = 1.6 + r() * r() * 6.5, rot = r() * 3;
         if (sx < VR.x0 - 12 || sx > VR.x1 + 12 || sy < VR.y0 - 12 || sy > VR.y1 + 12)
             continue;
         // a shaded stone with a contact shadow
@@ -157,6 +157,55 @@ function soilTex() {
         cx.beginPath();
         cx.ellipse(sx, sy, sr * 1.3, sr, rot, 0, 7);
         cx.fill();
+    }
+    // little things buried in the soil: seed husks, snail shells and tiny bones
+    var rb = rng(S.seed + 4471);
+    for (i = 0; i < 14 * WWf; i++) {
+        var bx = XL + rb() * XW, by = 70 + rb() * (WH - 100), kind = rb(), ba = rb() * 6.28;
+        if (bx < VR.x0 - 10 || bx > VR.x1 + 10 || by < VR.y0 - 10 || by > VR.y1 + 10)
+            continue;
+        cx.save();
+        cx.translate(bx, by);
+        cx.rotate(ba);
+        if (kind < .45) {
+            cx.fillStyle = '#8a6a3a';
+            cx.beginPath();
+            cx.ellipse(0, 0, 3.2, 1.6, 0, 0, 7);
+            cx.fill();
+            cx.strokeStyle = 'rgba(40,20,8,.6)';
+            cx.lineWidth = .4;
+            cx.beginPath();
+            cx.moveTo(-3, 0);
+            cx.lineTo(3, 0);
+            cx.stroke();
+        }
+        else if (kind < .75) {
+            var shg = cx.createRadialGradient(-1, -1, .3, 0, 0, 4);
+            shg.addColorStop(0, '#e8d2b0');
+            shg.addColorStop(1, '#7a5a3a');
+            cx.fillStyle = shg;
+            cx.beginPath();
+            cx.arc(0, 0, 3.4, 0, 7);
+            cx.fill();
+            cx.strokeStyle = 'rgba(70,44,24,.8)';
+            cx.lineWidth = .45;
+            cx.beginPath();
+            for (var tt = 0; tt < 14; tt += .35)
+                cx.lineTo(Math.cos(tt) * 3.2 * (1 - tt / 14), Math.sin(tt) * 3.2 * (1 - tt / 14));
+            cx.stroke();
+        }
+        else {
+            cx.strokeStyle = 'rgba(225,215,190,.7)';
+            cx.lineWidth = 1.1;
+            cx.lineCap = 'round';
+            cx.beginPath();
+            cx.moveTo(-3.5, 0);
+            cx.lineTo(3.5, 0);
+            cx.stroke();
+            cx.fillStyle = 'rgba(225,215,190,.8)';
+            [-3.5, 3.5].forEach(function (ex) { cx.beginPath(); cx.arc(ex, -.6, .8, 0, 7); cx.arc(ex, .6, .8, 0, 7); cx.fill(); });
+        }
+        cx.restore();
     }
 }
 

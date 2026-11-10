@@ -297,7 +297,9 @@ function renderGoals() {
     p.style.display = 'none';
     G = GOALS[S.goalIndex];
     g.innerHTML = '<div class="gcard"><div class="gh">Goal ' + (S.goalIndex + 1) + ' of ' + GOALS.length + ' <span>Reward: ' + G.r + '</span></div><div class="gi on"><span class="gk">▶</span><span class="gt">' + G.t + (G.n ? ' <em>' + G.n() + '</em>' : '') + '</span></div>' + (G.h ? '<div class="gh2">' + G.h + '</div>' : '') + '</div>';
-    document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('nudge', !!G.tab && b.dataset.t === G.tab && tab !== G.tab); });
+    // a first invasion pulls towards the Tunnel tab; during any fight the goal card does not pull away from it
+    var nt = (wvi.ff && foes.length) || (ffW > 0 && !S.firstFoes) ? 'tun' : foes.length && tab === 'tun' ? null : G.tab;
+    document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('nudge', !!nt && b.dataset.t === nt && tab !== nt); });
 }
 
 function foldSections() {

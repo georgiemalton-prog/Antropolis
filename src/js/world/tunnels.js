@@ -21,11 +21,13 @@ function farInit() {
 /* Build 74 redrew the ant-farm and deep-layer tunnels (smooth, never crossing). Saved dig progress is kept
    per tunnel number, which now means a different tunnel, so once per save the same number of finished tunnels
    is dug again in the new layout, in the usual order (shafts keep theirs). S.net (optional) marks it done. */
+// 2 = build 75: the layout no longer shifts between loads, so build 74 saves are fitted once more
+var NETV = 2;
 function netMigrate() {
     S.net = S.net || {};
     var i, n, k;
-    if (!S.net.f && FARMP.length) {
-        S.net.f = 1;
+    if ((S.net.f || 0) < NETV && FARMP.length) {
+        S.net.f = NETV;
         n = 0;
         for (k in S.fdg)
             if (S.fdg[k] >= 1)
@@ -39,8 +41,8 @@ function netMigrate() {
         }
         FDV++;
     }
-    if (!S.net.d && DEEPP.length) {
-        S.net.d = 1;
+    if ((S.net.d || 0) < NETV && DEEPP.length) {
+        S.net.d = NETV;
         var per = [0, 0, 0, 0], keep = {};
         for (k in S.ddg) {
             var e = DEEPP[k];
@@ -64,7 +66,7 @@ function netMigrate() {
 }
 function deepList0() {
     farInit();
-    if (!S.net || !S.net.d)
+    if (!S.net || (S.net.d || 0) < NETV)
         netMigrate();
     var o = [], cnt = [0, 0, 0, 0], inc = [], rc = S.reach || 0, i, e, pr, at = S.deepAt || [], dd = S.ddg;
     DQ = [];
@@ -87,7 +89,7 @@ function deepList0() {
 }
 function farmList0() {
     farInit();
-    if (!S.net || !S.net.f)
+    if (!S.net || (S.net.f || 0) < NETV)
         netMigrate();
     var o = [], i, pr, n = 0, inc = [], rc = S.reach || 0, fd = S.fdg;
     FQ = [];

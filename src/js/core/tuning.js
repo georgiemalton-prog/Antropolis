@@ -47,7 +47,7 @@ var TUNING = {
         lootShare: .03        // food won per cricket beaten
     },
     // Deep layers (layers/*.js)
-    larder: { carriers: 6, nursesPer: 8, storeBonus: 1.25, awayHours: 10, awayHoursOff: 8 },
+    larder: { carriers: 6, nursesPer: 8, storeBonus: 1.25, awayHours: 10, awayHoursOff: 8, reserve: 1, refill: .02 },
     armoury: { drillers: 6, soldiersPer: 10, injuryMul: .75 },
     caves: { scouts: 4, scoutsPer: 6, shardsPerJelly: 6, jellyPerDay: 4, goldenMul: 1.5 }
 };

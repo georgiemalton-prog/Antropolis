@@ -4,6 +4,18 @@
 
 // the Larder: the chamber at the end of the clay layer's main shaft, ready once that shaft is dug
 function larderOn() { return (S.deep || 0) >= 1; }
+// the Larder reserve (S.lres, optional): food put by while away when the store was full. It holds up to one
+// more full store and pours back into the store whenever there is room, a little each second.
+function larderRoom() { return Math.max(0, foodCap() * TUNING.larder.reserve - (S.lres || 0)); }
+function larderTick(dt) {
+    if (!(S.lres > 0))
+        return;
+    var mv = Math.min(S.lres, Math.max(0, foodCap() - S.food), foodCap() * TUNING.larder.refill * dt);
+    if (mv > 0) {
+        S.food += mv;
+        S.lres -= mv;
+    }
+}
 function larderPos() {
     var o = null;
     deepList().forEach(function (e) { if (!o && e.f.L === 0 && e.f.t && e.pr >= 1) o = e; });
@@ -30,8 +42,9 @@ function drawLarder(now) {
     cx.lineWidth = 2 * sc;
     cx.strokeStyle = 'rgba(0,0,0,.65)';
     cx.fillStyle = 'rgba(255,245,220,.92)';
-    cx.strokeText('The Larder', lp.x, lp.y - 15 * sc);
-    cx.fillText('The Larder', lp.x, lp.y - 15 * sc);
+    var lt = S.lres >= 1 ? 'The Larder · ' + fmt(Math.round(S.lres)) + ' put by' : 'The Larder';
+    cx.strokeText(lt, lp.x, lp.y - 15 * sc);
+    cx.fillText(lt, lp.x, lp.y - 15 * sc);
     cx.restore();
 }
 

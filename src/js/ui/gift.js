@@ -51,7 +51,8 @@ function giftCheck() {
     var t = $('title');
     if (dead || S.totalHatched < 5 || fighting() || (t && t.style.display !== 'none' && !navigator.webdriver))
         return;
-    if ($('intro').classList.contains('on') || ($('away') && $('away').classList.contains('on')) || $('endscr').classList.contains('on') || $('gift').classList.contains('on'))
+    // wait while any other pop-up is open (welcome back, a new generation, an event, the opening...), so they never stack
+    if ($('intro').classList.contains('on') || ($('away') && $('away').classList.contains('on')) || $('gift').classList.contains('on') || document.querySelector('.over.on') || document.querySelector('.intro.on'))
         return;
     if ((P.wn || 0) < WN_V) {
         P.wn = WN_V;

@@ -39,12 +39,21 @@ function wave() {
    into the half-dug tunnel and crawl towards the queen, long before real waves start at the surface.
    Once per colony (optional save field S.firstFoes). Does not count as a wave. */
 var ffT = TUNING.start.firstFoesDelay;
+var ffW = 0;
 function firstFoesTick(dt) {
     if (S.firstFoes || S.dug >= 1 || S.tier < 1 || S.dug < .15 || healthy(2) < 2 || foes.length || wvi.w || RAID || trm.length)
         return;
     ffT -= dt;
     if (ffT > 0)
         return;
+    // the very first invaders: if the player is not watching the tunnel, warn first and let them break in when the
+    // Tunnel tab is opened (or after 20 seconds anyway), so the first fight is seen rather than read about
+    if (tab !== 'tun' && ffW < 20) {
+        if (!ffW)
+            toast('Something is scratching at your tunnel! Open the Tunnel tab to see.');
+        ffW += dt;
+        return;
+    }
     S.firstFoes = 1;
     var p0 = 1 - S.dug + .01, cnt = TUNING.start.firstFoes, h = Math.max(4, dps() * TUNING.start.firstFoesHp), a = at(p0), i;
     foes = [];

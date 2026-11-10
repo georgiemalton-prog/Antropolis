@@ -71,6 +71,25 @@ function drawFallen() {
 
 // a fixed number per ant for its idle sways and lunges. (m.ph is the walking phase, which keeps
 // running every frame, so a sway built on it jumped to a new angle each frame: the wobble.)
+// where the main tunnel enters the queen's cavern (share of the tunnel), and the food pile beside her bed
+var DROP = { k: '' };
+function dropP() {
+    var c = cav(), key = layoutV + '|' + Math.round(c.rx) + '|' + Math.round(c.ry) + '|' + LEN;
+    if (DROP.k !== key) {
+        DROP.k = key;
+        DROP.p = 1;
+        for (var q = .999; q > .5; q -= .002) {
+            var a = at(q);
+            if (a.y < cavTop(a.x) - 1) {
+                DROP.p = Math.min(.999, q + .002);
+                break;
+            }
+        }
+    }
+    return DROP.p;
+}
+function dropPile() { var rx = 62 + S.tier * 5; return { x: QX + rx * .62 + 16, y: QY + 13 }; }
+
 function mSeed(m) { return (m.u || 0) * 61 + (m.fi || 0) * .37; }
 
 function smoothPos(o, x, y, ang, now) {
@@ -257,6 +276,14 @@ function drawArmy(now) {
                 x = a.x + a.nx * sdp * tw * .3;
                 y = a.y + a.ny * sdp * tw * .3;
                 ang = a.ang + sdp * 1.35 + Math.sin(now * .012 + mSeed(m)) * .12;
+            }
+            // inside the cavern a forager heads for the food pile beside the queen's bed, not through her
+            if (k === 1 && !m.sf && m.p > dropP()) {
+                // a curve round the top of the bed and down its far side, so the line never crosses the queen
+                var dp0 = at(dropP()), dpe = dropPile(), du = (m.p - dropP()) / Math.max(1e-6, 1 - dropP()), cpx = dpe.x - (dpe.x < QX ? 14 : -14), cpy = Math.min(dp0.y, QY - 36 - S.tier * 2), iu = 1 - du;
+                x = iu * iu * dp0.x + 2 * iu * du * cpx + du * du * dpe.x + a.nx * o * iu;
+                y = iu * iu * dp0.y + 2 * iu * du * cpy + du * du * dpe.y + a.ny * o * iu;
+                ang = Math.atan2(2 * iu * (cpy - dp0.y) + 2 * du * (dpe.y - cpy), 2 * iu * (cpx - dp0.x) + 2 * du * (dpe.x - cpx)) + (m.d === 1 ? 0 : Math.PI);
             }
             if (m.wait > 0 && k === 1 && !m.inj)
                 ang += Math.sin(now * .004 + mSeed(m) * 7) * .45;
