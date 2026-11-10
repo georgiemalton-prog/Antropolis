@@ -146,3 +146,14 @@ body.nt #ninfo{display:block}
 .bcrow.off{opacity:.62}
 .bcrow .card{margin:4px 0 0;display:flex;justify-content:space-between;align-items:center;width:100%}
 .bcrow .bar{margin:4px 0}
+/* build 79: the Nest and Tunnel tabs fill the whole screen; the tab bar, counters, goal card and Menu float over the scene */
+body.nt .scene,body.tt .scene{position:fixed;top:0;bottom:0;left:max(0px,calc(50% - 260px));right:max(0px,calc(50% - 260px));border-radius:0;box-shadow:none;z-index:1}
+body.nt .hud,body.tt .hud{top:calc(10px + env(safe-area-inset-top,0px))}
+body.nt .brand,body.nt .tpw{display:none}
+body.nt .top{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);margin:0;z-index:3}
+body.nt .top .link{padding:6px 12px;background:rgba(26,17,10,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+body.nt #goals,body.nt #goal{position:fixed;top:calc(72px + env(safe-area-inset-top,0px));left:max(10px,calc(50% - 250px));right:max(10px,calc(50% - 250px));margin:0;z-index:3}
+body.nt #goals .gcard{margin:0;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+body.tt #tstw{top:calc(8px + env(safe-area-inset-top,0px))}
+body.tt #tzoom{top:calc(44px + env(safe-area-inset-top,0px))}
+body.tt #tbot{bottom:calc(86px + env(safe-area-inset-bottom,0px))}

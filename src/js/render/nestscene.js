@@ -10,15 +10,15 @@
 
 // where each feature sits, as a share of the scene's width and usable height
 var NSF = [
-    { id: 'barracks', n: 'Barracks', x: .5, y: .2 },
-    { id: 'tower', n: 'Watchtower', x: .16, y: .33 },
-    { id: 'archive', n: 'Archive', x: .85, y: .3 },
-    { id: 'fungus', n: 'Fungus Garden', x: .17, y: .58 },
-    { id: 'infirmary', n: 'Infirmary', x: .83, y: .58 },
-    { id: 'store', n: 'Food Store', x: .17, y: .87 },
-    { id: 'nursery', n: 'Nursery', x: .83, y: .87 }
+    { id: 'barracks', n: 'Barracks', x: .5, y: .09 },
+    { id: 'tower', n: 'Watchtower', x: .17, y: .15 },
+    { id: 'archive', n: 'Archive', x: .83, y: .15 },
+    { id: 'fungus', n: 'Fungus Garden', x: .17, y: .35 },
+    { id: 'infirmary', n: 'Infirmary', x: .83, y: .35 },
+    { id: 'store', n: 'Food Store', x: .2, y: .89 },
+    { id: 'nursery', n: 'Nursery', x: .8, y: .89 }
 ];
-var NS = { c: null, key: '', W: 0, H: 0, Hs: 0, ants: null, lt: 0 };
+var NS = { c: null, key: '', W: 0, H: 0, Hs: 0, T: 0, ants: null, lt: 0 };
 
 // the colony's real progress for each feature: built?, level dots, under construction (0..1 or -1), can upgrade now?
 function nsState(id) {
@@ -38,22 +38,33 @@ function nsState(id) {
 function bIdx(k) { for (var i = 0; i < BDEF.length; i++) if (BDEF[i].id === k) return i; return -1; }
 function bCanUp(i) { var b = BDEF[i]; return !S.proj && S.bld[b.id] < 4 && S.tier >= b.t && S.food >= bCost(i); }
 
-// scene size: the canvas, minus the strip hidden behind the tab bar
+// scene size: the canvas, minus the strip hidden behind the tab bar (Hs) and the strip under the
+// counters and goal card at the top (T); the buildings and the queen are laid out between the two
 function nsSize() {
-    var cw = cv.clientWidth || 360, ch = cv.clientHeight || 540, nv = document.querySelector('.nav'), hs = ch;
-    if (nv) { var r = cv.getBoundingClientRect(), nt = nv.getBoundingClientRect().top - r.top; if (nt > ch * .5 && nt < ch) hs = nt; }
-    NS.W = cw; NS.H = ch; NS.Hs = hs;
+    var cw = cv.clientWidth || 360, ch = cv.clientHeight || 540, nv = document.querySelector('.nav'), hs = ch, r = cv.getBoundingClientRect(), top = 0;
+    if (nv) { var nt = nv.getBoundingClientRect().top - r.top; if (nt > ch * .5 && nt < ch) hs = nt; }
+    if (document.body.classList.contains('nt')) {
+        top = 62;
+        ['goals', 'goal'].forEach(function (id) { var e = $(id), b = e && e.offsetHeight ? e.getBoundingClientRect().bottom - r.top : 0; if (b > top && b < ch * .4) top = b; });
+        top = Math.ceil(top / 6) * 6;
+        var ni = $('ninfo'); if (ni && ni.style.top !== top + 8 + 'px') ni.style.top = top + 8 + 'px';
+    }
+    NS.W = cw; NS.H = ch; NS.Hs = hs; NS.T = top;
 }
+// a height in the laid-out part of the scene: 0 = just under the top strip, 1 = the tab bar
+function nsY(f) { return NS.T + f * (NS.Hs - NS.T); }
+// where the queen's bed sits: the middle of the cavern
+function nsQY() { return nsY(.6); }
 
 // world -> scene: the queen's home spot lands on her bed, at a fixed scale
-function nsXf() { return { s: 1.1, x: NS.W * .5 - 14, y: NS.Hs * .84 - 30 }; }
+function nsXf() { return { s: 1.1, x: NS.W * .5 - 14, y: nsQY() - 30 }; }
 
 function drawNest(now) {
     nsSize();
     var W = NS.W, H = NS.H, Hs = NS.Hs, t = now * .001, d = dpr, ouz = uz;
     // the nest is a close view: draw every ant in full detail
     uz = Math.max(uz, 1.2 / K);
-    var key = [W, H, Hs, d, S.tier, P.theme || ''].concat(NSF.map(function (f) { var s = nsState(f.id); return (s.on ? 1 : 0) + ':' + s.lv + ':' + (s.prog >= 0 ? Math.floor(s.prog * 10) : -1); })).join('|') + '|' + Math.round(Math.min(1, S.food / foodCap()) * 6);
+    var key = [W, H, Hs, NS.T, d, S.tier, P.theme || ''].concat(NSF.map(function (f) { var s = nsState(f.id); return (s.on ? 1 : 0) + ':' + s.lv + ':' + (s.prog >= 0 ? Math.floor(s.prog * 10) : -1); })).join('|') + '|' + Math.round(Math.min(1, S.food / foodCap()) * 6);
     if (key !== NS.key || !NS.c) {
         NS.key = key;
         NS.c = NS.c || document.createElement('canvas');
@@ -89,7 +100,7 @@ function drawNest(now) {
     nsQueenInfo(g, W, Hs, t, xf);
     // upgrade arrows and building progress on top
     NSF.forEach(function (f) {
-        var s = nsState(f.id), x = f.x * W, y = f.y * Hs;
+        var s = nsState(f.id), x = f.x * W, y = nsY(f.y);
         if (s.prog >= 0) nsBuilding(g, f, x, y, t, s.prog);
         else if (s.on && s.up) { g.font = '600 9.5px Inter, system-ui, sans-serif'; var tw = g.measureText(f.n).width / 2 + 8, ay = y + 14 + Math.sin(t * 4) * 1.5; g.fillStyle = '#ffd35a'; g.beginPath(); g.moveTo(x + tw, ay - 5); g.lineTo(x + tw + 4.5, ay + 1); g.lineTo(x + tw - 4.5, ay + 1); g.closePath(); g.fill(); }
     });
@@ -99,7 +110,7 @@ function drawNest(now) {
 // the feature under a tap at canvas css point (px, py), or null
 function nsFeatureAt(px, py) {
     var best = null, bd = 44;
-    NSF.forEach(function (f) { var d = Math.hypot(f.x * NS.W - px, f.y * NS.Hs - 14 - py); if (d < bd) { bd = d; best = f; } });
+    NSF.forEach(function (f) { var d = Math.hypot(f.x * NS.W - px, nsY(f.y) - 14 - py); if (d < bd) { bd = d; best = f; } });
     return best;
 }
 
@@ -165,9 +176,9 @@ function nsStatic(g, W, H, Hs) {
     g.fillStyle = fg; g.fillRect(0, Hs * .8, W, H - Hs * .8);
     for (i = 0; i < 40; i++) { var px = R() * W, py = Hs * (.86 + R() * .13), ps = 1 + R() * 3; g.fillStyle = 'rgba(30,14,7,.6)'; g.beginPath(); g.ellipse(px, py + 1, ps * 1.2, ps * .5, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(170,120,90,.6)'; g.beginPath(); g.ellipse(px, py, ps, ps * .6, 0, 0, 7); g.fill(); }
     // the queen's bed (and the Royal Court's lit pillars once it is open)
-    nsBed(g, nsXf().x + 14, Hs * .84);
+    nsBed(g, nsXf().x + 14, nsQY());
     NSF.forEach(function (f) {
-        var s = nsState(f.id), x = f.x * W, y = f.y * Hs;
+        var s = nsState(f.id), x = f.x * W, y = nsY(f.y);
         if (s.prog >= 0) { g.save(); g.globalAlpha = .3 + .7 * s.prog; nsFeature(g, f.id, x, y); g.restore(); }
         else if (s.on) nsFeature(g, f.id, x, y);
         else nsMark(g, x, y);
@@ -320,12 +331,12 @@ function nsFeature(g, id, x, y) {
 function nsDynamic(g, W, Hs, t) {
     var i, R = nsRand(77);
     g.save(); g.globalCompositeOperation = 'lighter';
-    var qx = nsXf().x + 14, ql = g.createRadialGradient(qx, Hs * .76, 10, qx, Hs * .76, W * .8);
+    var qx = nsXf().x + 14, ql = g.createRadialGradient(qx, nsQY() - 40, 10, qx, nsQY() - 40, W * .8);
     ql.addColorStop(0, 'rgba(255,70,40,' + (.13 + .04 * Math.sin(t * 2)) + ')'); ql.addColorStop(1, 'rgba(255,70,40,0)');
     g.fillStyle = ql; g.fillRect(0, 0, W, Hs); g.restore();
-    if (S.tier > 3) [-1, 1].forEach(function (dd) { nsGlow(g, qx + dd * 118, Hs * .84 - 64, 34, '255,90,60', .4 + .1 * Math.sin(t * 2.2 + dd)); });
+    if (S.tier > 3) [-1, 1].forEach(function (dd) { nsGlow(g, qx + dd * 118, nsQY() - 64, 34, '255,90,60', .4 + .1 * Math.sin(t * 2.2 + dd)); });
     NSF.forEach(function (f) {
-        var s = nsState(f.id), x = f.x * W, y = f.y * Hs;
+        var s = nsState(f.id), x = f.x * W, y = nsY(f.y);
         if (!s.on || s.prog >= 0) return;
         if (f.id === 'fungus') {
             NS_MUSH.forEach(function (m, k) { var s2 = m[1]; nsGlow(g, x + m[0], y - 6 - (k % 3) * 3 - s2 * 1.1, s2 * 1.8, '120,255,190', .12 + .05 * Math.sin(t * 2 + k)); });
@@ -375,7 +386,7 @@ function nsRoam(g, W, Hs, t) {
         for (i = 0; i < n; i++) {
             var pick = R() * Math.max(1, tot), k = 0, acc = c[0];
             while (k < 4 && pick > acc) { k++; acc += c[k]; }
-            var o = old[i] || { x: W * (.15 + R() * .7), y: Hs * (.3 + R() * .6), tx: 0, ty: 0, w: 0, ph: R() * 6, a: 0 };
+            var o = old[i] || { x: W * (.15 + R() * .7), y: nsY(.08 + R() * .88), tx: 0, ty: 0, w: 0, ph: R() * 6, a: 0 };
             o.k = tot ? k : 0;
             a.push(o);
         }
@@ -387,8 +398,8 @@ function nsRoam(g, W, Hs, t) {
         else {
             var dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy);
             if (!a.tx || d < 3) {
-                if (Math.random() < .35) { var f = NSF[Math.floor(Math.random() * NSF.length)]; a.tx = f.x * W + (Math.random() - .5) * 40; a.ty = f.y * Hs - 4; }
-                else { a.tx = W * (.12 + Math.random() * .76); a.ty = Hs * (.25 + Math.random() * .68); }
+                if (Math.random() < .35) { var f = NSF[Math.floor(Math.random() * NSF.length)]; a.tx = f.x * W + (Math.random() - .5) * 40; a.ty = nsY(f.y) - 4; }
+                else { a.tx = W * (.12 + Math.random() * .76); a.ty = nsY(.06 + Math.random() * .9); }
                 a.w = Math.random() < .5 ? .5 + Math.random() * 2 : 0;
             } else {
                 var sp = 26 * (a.k === 4 ? .6 : 1), ta = Math.atan2(dy, dx), da = ((ta - a.a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;

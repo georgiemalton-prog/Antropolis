@@ -295,23 +295,23 @@ function mk(pts) { var P2 = pts.map(function (p) { return [p[0] * W, p[1] * WH];
     C.push(L);
 } return { PT: P2, CUM: C, LEN: L }; }
 
-// how tall the map is: as much of the screen as fits, between 400 and 640 pixels
 function genPebs() {
     pebs = [];
     for (var k = 0, tot = 260 * (1 + (S.reach || 0) * 2) * WHX() / WH; k < tot; k++)
         pebs.push([wideL() + Math.random() * (wideR() - wideL()), 24 + Math.random() * (WHX() - 24), 1 + Math.random() * 2, Math.random()]);
 }
 
+// the Nest and Tunnel tabs fill the whole screen (the tab bar and counters float over the scene)
 function viewH() {
-    var nv = document.querySelector('.nav'), nt = nv ? nv.getBoundingClientRect().top : document.documentElement.clientHeight - 100;
-    if (document.body.classList.contains('tt'))
-        return Math.max(340, Math.round(nt - 28));
-    // the Nest tab is just the nest: the cavern runs from under the goal card down to the tab bar
-    if (document.body.classList.contains('nt')) {
-        var vt = $('view').getBoundingClientRect().top + (window.scrollY || 0);
-        return Math.max(300, Math.round(nt - vt - 10));
-    }
+    if (fullTab())
+        return Math.max(340, document.documentElement.clientHeight);
     return Math.max(400, Math.min(640, Math.round((document.documentElement.clientHeight - 300) / 20) * 20));
+}
+function fullTab() { var c = document.body.classList; return c.contains('tt') || c.contains('nt'); }
+// screen pixels at the bottom of a full-screen scene that sit behind the tab bar
+function navPad() {
+    var nv = document.querySelector('.nav');
+    return fullTab() && nv ? Math.max(0, document.documentElement.clientHeight - nv.getBoundingClientRect().top + 8) : 0;
 }
 
 function sizeT() {

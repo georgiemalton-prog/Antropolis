@@ -375,6 +375,14 @@ function drawWorld(now) {
         wTips();
         cx.restore();
     }
+    // scrolled past the bottom of the world (the strip behind the tab bar): solid dark earth
+    if (cam + H / uz > WHX()) {
+        var eg = cx.createLinearGradient(0, WHX() - cam - 6, 0, WHX() - cam + 30);
+        eg.addColorStop(0, 'rgba(12,6,4,0)');
+        eg.addColorStop(1, '#0c0604');
+        cx.fillStyle = eg;
+        cx.fillRect(camX - 10, WHX() - cam - 6, W / uz + 20, H / uz);
+    }
     cx.save();
     cx.translate(0, -cam);
     // the moving bits of the ground: twinkling crystals, springs, neighbour colonies

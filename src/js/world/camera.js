@@ -64,7 +64,8 @@ function wideL() { return -(S.reach || 0) * W; }
 function wideR() { return W + (S.reach || 0) * W; }
 function camXc(v) { return Math.max(wideL(), Math.min(wideR() - W / uz, v)); }
 
-function camClamp(v) { return Math.max(-SK, Math.min(WHX() - H / uz, v)); }
+// the view can scroll far enough for the bottom of the world to clear the tab bar
+function camClamp(v) { return Math.max(-SK, Math.min(WHX() - H / uz + navPad() / (K * uz), v)); }
 
 // closest zoom: as the colony grows the world gets wider and is shrunk to fit the screen, so the cap
 // grows with it and the closest view stays the same size as in a new colony (4x at the start)
