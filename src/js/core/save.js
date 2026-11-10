@@ -4,7 +4,7 @@
 
 // ---- saving, loading and starting a new colony ----
 
-function fresh() { return { totalHatched: 0, upgrades: {}, tier: 0, dug: 0, food: 14, queenHp: 100, wave: 0, savedAt: Date.now(), seed: (Math.random() * 4e9) >>> 0, sideTunnels: 0, sideDug: [], nurses: 1, foragers: 2, soldiers: 1, scouts: 1, superMajors: 0, workers: 1, injured: [0, 0, 0, 0, 0, 0, 0], eggs: [], layTimer: 8, killTimer: 5, injuryTimer: 2, healProgress: 0, classLevel: [0, 0, 0, 0, 0, 0, 0], queenLevel: 0, jelly: 0, foodSpots: [], goalIndex: 0, goalV: 3, queenTaps: 0, deliveries: 0, deepFirst: 1, orders: { wk: 1, fg: 0, gd: 50, nu: 50 }, bld: { store: 0, nest: 0, farm: 0, rax: 0, archive: 0, hatch: 0, tower: 0 }, proj: null, rare: {}, spores: 0 }; }
+function fresh() { return { totalHatched: 0, upgrades: {}, tier: 0, dug: 0, food: 14, queenHp: 100, wave: 0, savedAt: Date.now(), seed: (Math.random() * 4e9) >>> 0, sideTunnels: 0, sideDug: [], nurses: 1, foragers: 2, soldiers: 1, scouts: 1, superMajors: 0, workers: 1, injured: [0, 0, 0, 0, 0, 0, 0], eggs: [], layTimer: 8, killTimer: 5, injuryTimer: 2, healProgress: 0, classLevel: [0, 0, 0, 0, 0, 0, 0], queenLevel: 0, jelly: 0, foodSpots: [], goalIndex: 0, goalV: 4, queenTaps: 0, deliveries: 0, deepFirst: 1, orders: { wk: 1, fg: 0, gd: 50, nu: 50 }, bld: { store: 0, nest: 0, farm: 0, rax: 0, archive: 0, hatch: 0, tower: 0 }, proj: null, rare: {}, spores: 0 }; }
 
 /* Saves are stored as { v: version, S: colony, P: legacy perks, m: muted }.
    Version 3 renamed the short field names (fd, dg, ...) to readable ones.
@@ -77,7 +77,14 @@ function load() {
                 else if (S.goalIndex >= 13)
                     S.goalIndex += 1;
             }
-            S.goalV = 3;
+            if ((d.S.goalV || 0) < 4 && S.goalIndex < 99) {
+                // two building goals were added (after "Reach 15 ants" and "Reach 25 ants"): move saved colonies along
+                if (S.goalIndex >= 11)
+                    S.goalIndex += 2;
+                else if (S.goalIndex >= 8)
+                    S.goalIndex += 1;
+            }
+            S.goalV = 4;
             S.orders = Object.assign(fresh().orders, S.orders);
             S.bld = Object.assign(fresh().bld, S.bld);
             P = Object.assign({ legacy: 0, legacyEver: 0, perks: {} }, d.P);

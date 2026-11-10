@@ -546,9 +546,11 @@ var GOALS = [
     { t: 'Dig your first nest upgrade', h: 'Open the Colony tab and tap Dig a Burrow.', tab: 'col', ok: function () { return S.tier >= 1; }, jl: 3, r: '+3 royal jelly' },
     { t: 'Level up an ant with royal jelly', h: 'Colony tab, Your ants and queen. Tap a card to spend jelly.', tab: 'col', ok: function () { return S.queenLevel > 0 || S.classLevel.some(function (l) { return l > 0; }); }, fd: 40, r: '+40 food' },
     { t: 'Reach 15 ants', h: 'Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(15, popn()) + ' / 15'; }, ok: function () { return popn() >= 15; }, fd: 40, r: '+40 food' },
+    { t: 'Start your first building', h: 'Colony tab, Build. Tap Food store or Extra nursery and your workers build it.', tab: 'col', ok: function () { return !!S.proj || Object.keys(S.bld).some(function (k) { return S.bld[k] > 0; }); }, jl: 2, r: '+2 royal jelly' },
     { t: 'Bring home 15 loads of food', h: 'More foragers means more food.', tab: 'tun', n: function () { return Math.min(15, S.deliveries || 0) + ' / 15'; }, ok: function () { return (S.deliveries || 0) >= 15; }, jl: 2, r: '+2 royal jelly' },
     { t: 'Reach 20 ants', h: 'More ants means more foragers and more food.', tab: 'nest', n: function () { return Math.min(20, popn()) + ' / 20'; }, ok: function () { return popn() >= 20; }, jl: 1, fd: 40, r: '+1 jelly, +40 food' },
     { t: 'Reach 25 ants', h: 'Bigger nests hold more ants.', tab: 'nest', n: function () { return Math.min(25, popn()) + ' / 25'; }, ok: function () { return popn() >= 25; }, fd: 60, r: '+60 food' },
+    { t: 'Upgrade a nest chamber', h: 'Colony tab, Build, Nest chambers. Upgrades cost food and royal jelly.', tab: 'col', ok: function () { return (S.roomLv || []).some(function (l) { return l > 0; }); }, fd: 60, r: '+60 food' },
     { t: 'Bring home 40 loads of food', h: 'Send more foragers out by hatching more eggs.', tab: 'tun', n: function () { return Math.min(40, S.deliveries || 0) + ' / 40'; }, ok: function () { return (S.deliveries || 0) >= 40; }, fd: 80, r: '+80 food' },
     { t: 'Dig your first side tunnel', h: 'Workers dig it by themselves. It leads to chambers and finds.', tab: 'tun', ok: function () { return S.sideTunnels > 0 && S.sideDug[0] >= 1; }, jl: 2, r: '+2 royal jelly' },
     { t: 'Reach 30 ants', h: 'Your nest fits 40. Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(30, popn()) + ' / 30'; }, ok: function () { return popn() >= 30; }, jl: 1, fd: 60, r: '+1 jelly, +60 food' },
@@ -626,7 +628,7 @@ catch (e) { } }
 
 // ---- saving, loading and starting a new colony ----
 
-function fresh() { return { totalHatched: 0, upgrades: {}, tier: 0, dug: 0, food: 14, queenHp: 100, wave: 0, savedAt: Date.now(), seed: (Math.random() * 4e9) >>> 0, sideTunnels: 0, sideDug: [], nurses: 1, foragers: 2, soldiers: 1, scouts: 1, superMajors: 0, workers: 1, injured: [0, 0, 0, 0, 0, 0, 0], eggs: [], layTimer: 8, killTimer: 5, injuryTimer: 2, healProgress: 0, classLevel: [0, 0, 0, 0, 0, 0, 0], queenLevel: 0, jelly: 0, foodSpots: [], goalIndex: 0, goalV: 3, queenTaps: 0, deliveries: 0, deepFirst: 1, orders: { wk: 1, fg: 0, gd: 50, nu: 50 }, bld: { store: 0, nest: 0, farm: 0, rax: 0, archive: 0, hatch: 0, tower: 0 }, proj: null, rare: {}, spores: 0 }; }
+function fresh() { return { totalHatched: 0, upgrades: {}, tier: 0, dug: 0, food: 14, queenHp: 100, wave: 0, savedAt: Date.now(), seed: (Math.random() * 4e9) >>> 0, sideTunnels: 0, sideDug: [], nurses: 1, foragers: 2, soldiers: 1, scouts: 1, superMajors: 0, workers: 1, injured: [0, 0, 0, 0, 0, 0, 0], eggs: [], layTimer: 8, killTimer: 5, injuryTimer: 2, healProgress: 0, classLevel: [0, 0, 0, 0, 0, 0, 0], queenLevel: 0, jelly: 0, foodSpots: [], goalIndex: 0, goalV: 4, queenTaps: 0, deliveries: 0, deepFirst: 1, orders: { wk: 1, fg: 0, gd: 50, nu: 50 }, bld: { store: 0, nest: 0, farm: 0, rax: 0, archive: 0, hatch: 0, tower: 0 }, proj: null, rare: {}, spores: 0 }; }
 
 /* Saves are stored as { v: version, S: colony, P: legacy perks, m: muted }.
    Version 3 renamed the short field names (fd, dg, ...) to readable ones.
@@ -699,7 +701,14 @@ function load() {
                 else if (S.goalIndex >= 13)
                     S.goalIndex += 1;
             }
-            S.goalV = 3;
+            if ((d.S.goalV || 0) < 4 && S.goalIndex < 99) {
+                // two building goals were added (after "Reach 15 ants" and "Reach 25 ants"): move saved colonies along
+                if (S.goalIndex >= 11)
+                    S.goalIndex += 2;
+                else if (S.goalIndex >= 8)
+                    S.goalIndex += 1;
+            }
+            S.goalV = 4;
             S.orders = Object.assign(fresh().orders, S.orders);
             S.bld = Object.assign(fresh().bld, S.bld);
             P = Object.assign({ legacy: 0, legacyEver: 0, perks: {} }, d.P);
@@ -11198,7 +11207,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 59, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 60, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
