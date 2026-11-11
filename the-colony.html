@@ -457,7 +457,7 @@ var TUNING = {
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 // the GoatCounter site code (the "abc" in abc.goatcounter.com); empty = stats off
-var STATS_CODE = '';
+var STATS_CODE = 'antropolis';
 var STATS_KEY = 'thecolony_stats';   // localStorage: { off, first (day number), sent: { name: 1 } }
 var ST = null, stPlay = 0, stNext = 0;
 
@@ -12457,7 +12457,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 79, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 80, FEEDBACK_EMAIL = 'CHANGE-ME@example.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }

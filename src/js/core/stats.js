@@ -7,7 +7,7 @@
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
 // the GoatCounter site code (the "abc" in abc.goatcounter.com); empty = stats off
-var STATS_CODE = '';
+var STATS_CODE = 'antropolis';
 var STATS_KEY = 'thecolony_stats';   // localStorage: { off, first (day number), sent: { name: 1 } }
 var ST = null, stPlay = 0, stNext = 0;
 
