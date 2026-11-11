@@ -501,18 +501,43 @@ function statsPlatform() {
     return 'web';
 }
 
-// send one milestone, once per device
+// send one milestone, once per device. Pings go out one at a time, at most one every 1.5 s (GoatCounter turns
+// away bursts, and the first check after loading can find a dozen milestones at once), and a milestone only
+// counts as sent once GoatCounter has answered; one that was lost goes again on a later check
+var stQ = [], stBusy = false, stTry = {};
 function statsOnce(name) {
-    if (!statsOn() || ST.sent[name])
+    if (!statsOn() || ST.sent[name] || stQ.indexOf(name) >= 0 || (stTry[name] || 0) >= 3)
         return;
-    ST.sent[name] = 1;
-    statsSave();
+    stQ.push(name);
+    statsPump();
+}
+function statsPump() {
+    if (stBusy || !stQ.length)
+        return;
+    stBusy = true;
+    var name = stQ.shift(), img = new Image(), done = false;
+    stTry[name] = (stTry[name] || 0) + 1;
+    statsPump.img = img;   // keep a hold of it so the request isn't dropped
+    function next(ok) {
+        if (done)
+            return;
+        done = true;
+        if (ok) {
+            ST.sent[name] = 1;
+            statsSave();
+        }
+        setTimeout(function () { stBusy = false; statsPump(); }, 1500);
+    }
+    img.onload = function () { next(true); };
+    img.onerror = function () { next(false); };
+    setTimeout(function () { next(false); }, 15000);
     try {
-        var img = new Image();
         img.src = 'https://' + STATS_CODE + '.goatcounter.com/count?e=true&p=' + encodeURIComponent(name) +
             '&t=' + encodeURIComponent(statsPlatform() + ' ' + APP_VER) + '&rnd=' + Date.now();
     }
-    catch (e) { }
+    catch (e) {
+        next(false);
+    }
 }
 
 // the game hit a script error: count it (build and line only, never the player's data), at most three
@@ -520,7 +545,7 @@ function statsOnce(name) {
 function statsError(line) {
     if (!ST)
         statsLoad();
-    var b = 'error-build-' + BUILD, n = Object.keys(ST.sent).filter(function (k) { return k.indexOf(b) === 0; }).length;
+    var b = 'error-build-' + BUILD, n = Object.keys(ST.sent).concat(stQ).filter(function (k) { return k.indexOf(b) === 0; }).length;
     if (n < 3)
         statsOnce(b + '-line-' + (line || 0));
 }
@@ -12457,7 +12482,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 80, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 81, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
