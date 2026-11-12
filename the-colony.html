@@ -175,13 +175,15 @@ html.full .scene{touch-action:none}
 html.full .toast{top:calc(72px + env(safe-area-inset-top,0px));bottom:auto;transform:translateY(-10px);padding:9px 14px;font-size:14px}
 html.full .toast.on{transform:none}
 html.full body.tt .toast{top:calc(8px + env(safe-area-inset-top,0px))}
+/* royal jelly stands out in gold next to the food count, so it is easy to find */
+.hchip .jlc{margin-left:6px;font:700 13px var(--ff);color:#ffd23f;white-space:nowrap}.hchip .jlc::before{content:"\2B22";font-size:10px;margin-right:3px;vertical-align:1px}.hchip small .jlc b{font:800 14px var(--ff);color:#ffd23f}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
 <div class="top"><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
 <div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
 <div id="goals"></div><p id="goal" class="gline"></p>
-<div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food · <b id="jel">0</b> jelly</small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><button id="ninfo" aria-label="Queen and eggs: health, next egg, egg chances">i</button><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
+<div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food <span class="jlc"><b id="jel">0</b> jelly</span></small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><button id="ninfo" aria-label="Queen and eggs: health, next egg, egg chances">i</button><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
  <div id="tzoom"><button class="card" id="tmap">Map</button><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
  <div id="tbot"><div id="abil" style="display:none;gap:6px"><button class="card" id="abR">Rally</button><button class="card" id="abA">Sound the alarm</button></div>
  <div id="wrow" style="display:none;gap:6px"><button class="card" id="jw">&#9664; West</button><button class="card" id="jh">Home</button><button class="card" id="je">East &#9654;</button></div>
@@ -908,17 +910,26 @@ function headStart() {
         return;
     var t = gn >= 2 ? 2 : 1;
     S.tier = t;
-    S.dug = 1;
+    // dug to just under the grass, as in any colony: it breaks through (and invaders start coming) at the Colony
+    // stage with 40 ants. Dug right through, a new colony met waves at once and lost ants as fast as it laid them
+    S.dug = .8;
     S.food = Math.min(foodCap(), 60 + 140 * gn);
     S.nurses += 2 + 2 * gn;
     S.foragers += 4 + 4 * gn;
     S.soldiers += 2 * gn;
+    // diggers too, and the first side tunnel comes dug like the main tunnel: with the tunnel already open the
+    // workers live up on the surface, so a new colony waited minutes on the "Dig your first side tunnel" goal
+    S.workers += 2 + gn;
+    S.sideTunnels = 1;
+    S.sideDug = [1];
+    // food spots are found while the main tunnel is being dug, and this one starts dug: put them in now (as loading does)
+    [.25, .5, .75].forEach(function (f) { addSpotAt(f, true); });
     S.jelly += Math.min(12, 3 * gn);
 }
 
 function headText(gn) {
     var t = gn >= 2 ? 'Colony' : 'Burrow';
-    return 'Starts as a ' + t + ' with the tunnel dug, ' + (2 + 2 * gn + 4 + 4 * gn + 2 * gn) + ' ants, ' + Math.min(12, 3 * gn) + ' jelly and a store of food.';
+    return 'Starts as a ' + t + ' with the tunnel dug almost to the surface, ' + (2 + 2 * gn + 4 + 4 * gn + 2 * gn + 2 + gn) + ' ants, ' + Math.min(12, 3 * gn) + ' jelly and a store of food.';
 }
 
 function newRunFound(lp) { newRunBase(lp); S.nurses += 3 * pk('found'); headStart(); S.jelly += 2 * pk('heir'); sync(); }
@@ -10248,7 +10259,8 @@ function nextUp() {
         c.push({ k: 'nest', n: 'Dig a ' + nt.n, ok: pop >= TP[S.tier + 1] && f >= TF[S.tier + 1], f: TF[S.tier + 1], j: 0, to: 'tier', pf: Math.min(1, pop / TP[S.tier + 1], f / TF[S.tier + 1]), x: tierNeed(pop) });
     [6, 0, 1, 2, 3, 4, 5].forEach(function (ri) {
         var q = ri === 5, lv = q ? S.queenLevel : S.classLevel[ri];
-        if (lv < 8 && (ri !== 4 || S.superMajors > 0 || S.tier >= 3))
+        // super majors only once there are some: their card is hidden until then, so it can't be suggested
+        if (lv < 8 && (ri !== 4 || S.superMajors > 0))
             add('cl' + ri, (q ? 'The Queen' : CN[ri] + 's') + ' to level ' + (lv + 1), j >= clCost(ri), 0, clCost(ri), 'bl', 'Costs ' + clCost(ri) + ' jelly.');
     });
     BDEF.forEach(function (b, bi) {

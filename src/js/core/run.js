@@ -10,17 +10,26 @@ function headStart() {
         return;
     var t = gn >= 2 ? 2 : 1;
     S.tier = t;
-    S.dug = 1;
+    // dug to just under the grass, as in any colony: it breaks through (and invaders start coming) at the Colony
+    // stage with 40 ants. Dug right through, a new colony met waves at once and lost ants as fast as it laid them
+    S.dug = .8;
     S.food = Math.min(foodCap(), 60 + 140 * gn);
     S.nurses += 2 + 2 * gn;
     S.foragers += 4 + 4 * gn;
     S.soldiers += 2 * gn;
+    // diggers too, and the first side tunnel comes dug like the main tunnel: with the tunnel already open the
+    // workers live up on the surface, so a new colony waited minutes on the "Dig your first side tunnel" goal
+    S.workers += 2 + gn;
+    S.sideTunnels = 1;
+    S.sideDug = [1];
+    // food spots are found while the main tunnel is being dug, and this one starts dug: put them in now (as loading does)
+    [.25, .5, .75].forEach(function (f) { addSpotAt(f, true); });
     S.jelly += Math.min(12, 3 * gn);
 }
 
 function headText(gn) {
     var t = gn >= 2 ? 'Colony' : 'Burrow';
-    return 'Starts as a ' + t + ' with the tunnel dug, ' + (2 + 2 * gn + 4 + 4 * gn + 2 * gn) + ' ants, ' + Math.min(12, 3 * gn) + ' jelly and a store of food.';
+    return 'Starts as a ' + t + ' with the tunnel dug almost to the surface, ' + (2 + 2 * gn + 4 + 4 * gn + 2 * gn + 2 + gn) + ' ants, ' + Math.min(12, 3 * gn) + ' jelly and a store of food.';
 }
 
 function newRunFound(lp) { newRunBase(lp); S.nurses += 3 * pk('found'); headStart(); S.jelly += 2 * pk('heir'); sync(); }

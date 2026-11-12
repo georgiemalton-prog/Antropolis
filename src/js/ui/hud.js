@@ -83,7 +83,8 @@ function nextUp() {
         c.push({ k: 'nest', n: 'Dig a ' + nt.n, ok: pop >= TP[S.tier + 1] && f >= TF[S.tier + 1], f: TF[S.tier + 1], j: 0, to: 'tier', pf: Math.min(1, pop / TP[S.tier + 1], f / TF[S.tier + 1]), x: tierNeed(pop) });
     [6, 0, 1, 2, 3, 4, 5].forEach(function (ri) {
         var q = ri === 5, lv = q ? S.queenLevel : S.classLevel[ri];
-        if (lv < 8 && (ri !== 4 || S.superMajors > 0 || S.tier >= 3))
+        // super majors only once there are some: their card is hidden until then, so it can't be suggested
+        if (lv < 8 && (ri !== 4 || S.superMajors > 0))
             add('cl' + ri, (q ? 'The Queen' : CN[ri] + 's') + ' to level ' + (lv + 1), j >= clCost(ri), 0, clCost(ri), 'bl', 'Costs ' + clCost(ri) + ' jelly.');
     });
     BDEF.forEach(function (b, bi) {
