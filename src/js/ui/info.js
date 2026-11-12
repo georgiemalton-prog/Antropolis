@@ -99,7 +99,7 @@ function antInfo0(s) {
     else if (o.k === 3)
         a = o.cr && o.act ? o.act : 'Exploring the side tunnels';
     else
-        a = (o.dr || o.mo) && o.act ? o.act : foes.length ? 'Fighting invaders' : 'Standing guard';
+        a = (o.dr || o.mo) && o.act ? o.act : foes.length ? 'Fighting invaders' : o.act || 'Standing guard';
     return [t, a];
 }
 

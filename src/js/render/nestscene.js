@@ -413,7 +413,12 @@ function nsRoam(g, W, Hs, t) {
         else {
             var dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy);
             if (!a.tx || d < 3) {
-                if (Math.random() < .35) { var f = NSF[Math.floor(Math.random() * NSF.length)]; a.tx = f.x * W + (Math.random() - .5) * 40; a.ty = nsY(f.y) - 4; }
+                var sol = a.k === 2 || a.k === 4;
+                // soldiers in the nest: a fight in the tunnel sends them running out of the way in at the top;
+                // otherwise they keep near the Barracks and the way in, and stand watch there a while (build 83)
+                if (sol && foes.length) { a.tx = W * (.44 + Math.random() * .12); a.ty = nsY(0) - 10; a.w = 0; }
+                else if (sol && Math.random() < .7) { var bf = NSF[0]; a.tx = bf.x * W + (Math.random() - .5) * 120; a.ty = nsY(bf.y) + 6 + Math.random() * 40; a.w = 2 + Math.random() * 5; }
+                else if (Math.random() < .35) { var f = NSF[Math.floor(Math.random() * NSF.length)]; a.tx = f.x * W + (Math.random() - .5) * 40; a.ty = nsY(f.y) - 4; }
                 else { a.tx = W * (.12 + Math.random() * .76); a.ty = nsY(.06 + Math.random() * .9); }
                 a.w = Math.random() < .5 ? .5 + Math.random() * 2 : 0;
             } else {
@@ -422,6 +427,7 @@ function nsRoam(g, W, Hs, t) {
                 a.x += Math.cos(a.a) * sp * dt; a.y += Math.sin(a.a) * sp * dt; a.ph += dt * 10;
             }
         }
+        if ((a.k === 2 || a.k === 4) && foes.length && a.y < nsY(0) - 4) return;
         nsAnt(g, a.x, a.y, a.a, a.k, a.ph, a.k === 1 && k % 3 === 0);
     });
 }

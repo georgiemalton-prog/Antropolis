@@ -446,6 +446,28 @@ function drawWorld(now) {
     cx.restore();
 }
 
+// alarm trail (build 83): like the scent trail real ants lay to call soldiers to a fight, a pulsing orange trail runs
+// from the queen's door up the tunnel to the front invader while a fight is on
+function drawAlarm(now) {
+    if (!foes.length || !tunOK())
+        return;
+    var fp = 1;
+    foes.forEach(function (f) { fp = Math.min(fp, f.p); });
+    var lo = Math.max(1 - S.dug, fp), n = Math.max(6, Math.floor((1 - lo) * LEN / 9)), off = (now * .0012) % 1, i, a, u, al;
+    cx.save();
+    cx.translate(0, -cam);
+    for (i = 0; i < n; i++) {
+        // the dashes flow from the nest towards the fight, the way the soldiers run
+        u = 1 - (i + off) / n * (1 - lo);
+        a = at(u);
+        al = (.25 + .35 * Math.sin(now * .008 - i * .5) * .5 + .17) * (alarmT > 0 ? 1.4 : 1);
+        cx.fillStyle = 'rgba(255,110,40,' + Math.min(.85, al) + ')';
+        cx.beginPath();
+        cx.arc(a.x + a.nx * 2, a.y + a.ny * 2, 1.4, 0, 7);
+        cx.fill();
+    }
+    cx.restore();
+}
 function drawTrails(now) {
     if (S.dug < .99)
         return;

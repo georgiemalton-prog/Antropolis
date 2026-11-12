@@ -68,6 +68,13 @@ function armyCounts() {
     cricDef.length = 0;
     if (C.crLive && !foes.length && !trm.length)
         C.drCap = Math.max(C.drCap, Math.min(8, 2 + Math.floor(S.soldiers / 20)));
+    // door guards (build 83): like real soldier ants plugging the nest holes, a couple of the biggest stand in the
+    // tunnel mouth and a couple at the queen's door, heads facing out; super majors first, then soldiers
+    var cand = [];
+    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !(m.nap > 0)) cand.push(m); });
+    cand.sort(function (a, b) { return (b.k - a.k) || (a.u - b.u); });
+    C.doorTop = S.dug >= 1 && tunOK() ? cand.slice(0, 2) : [];
+    C.doorNest = cand.slice(C.doorTop.length, C.doorTop.length + 2);
     C.keepCap = C.keepRooms.length ? Math.min(C.keepRooms.length * 2, Math.floor(C.nN / 4)) : 0;
     C.keepRecall = C.injPos.length > 0 && C.nN - C.keepTot < C.tend + 1;
     return C;
@@ -397,27 +404,59 @@ function soldierCharge(m, dt) {
     m.d = dpf > 0 ? 1 : -1;
 }
 
-// no invaders: walk to a guard post (near the tunnel mouth or at a side-tunnel junction) and keep watch there.
-// From 25 s before a wave is due everyone musters near the tunnel mouth; tired soldiers wait in the nest.
+// no invaders. Build 83, after how real colonies defend: a few door guards plug the entrances (heads out), the rest
+// patrol a stretch of tunnel each, or keep watch where a side tunnel joins. When a wave is due the patrols spread out
+// into a defensive line down the upper tunnel instead of all crowding the mouth. Tired soldiers wait in the nest.
 function soldierGuard(m, dt, t, C) {
-    var k = m.k, lo = C.lo;
-    var G = 3 + Math.min(S.sideTunnels, 6), isG = m.u < S.orders.gd / 100 || G === 3, sl = isG ? m.fi % 3 : 3 + m.fi % (G - 3), post = (sl < 3 || !(S.sideDug[sl - 3] >= 1)) ? lo + .025 + m.u * (.06 + .0025 * Math.min(S.soldiers, 60)) : juncP(sl - 3) + (m.u * .03 - .015);
-    // a wave is due in a few seconds: everyone musters near the tunnel mouth
+    var k = m.k, lo = C.lo, top = C.doorTop.indexOf(m), nest = C.doorNest.indexOf(m), post, spd = k === 4 ? 12 : 26, look = false;
+    var G = 3 + Math.min(S.sideTunnels, 6), isG = m.u < S.orders.gd / 100 || G === 3, sl = isG ? m.fi % 3 : 3 + m.fi % (G - 3);
     var due = nf - performance.now(), mu = S.dug >= 1 && due < 25000 && due > -5000 && !(MF && !MF.end) && !m.tired && tunOK();
-    if (mu)
-        post = lo + .03 + m.u * .1;
     if (!tunOK() || m.tired)
         post = Math.max(1 - .006 - (m.fi % 14) * .004, 1 - S.dug * .9);
-    else if (k === 4)
+    else if (top >= 0) {
+        // in the tunnel mouth, one just behind the other
+        post = lo + .006 + top * .007;
+        look = true;
+    }
+    else if (nest >= 0) {
+        post = 1 - .012 - nest * .008;
+        look = true;
+    }
+    else if (mu) {
+        // a defensive line: spread along the upper third of the tunnel, a little way apart
+        post = lo + .03 + m.u * .32 * (1 - lo);
+        spd = k === 4 ? 50 : 80;
+    }
+    else if (!isG && S.sideDug[sl - 3] >= 1) {
+        // watch post where a side tunnel joins
+        post = juncP(sl - 3) + (m.u * .03 - .015);
+        look = true;
+    }
+    else {
+        // patrol: each soldier walks up and down its own stretch of the tunnel, stopping now and then to look about
+        var a = lo + .04, span = Math.max(.02, (1 - .05) - a), sec = Math.floor(trait(m, 3) * 4), s0 = a + sec * span / 4;
+        if (m.pt == null || m.pt < s0 - .001 || m.pt > s0 + span / 4 + .001)
+            m.pt = s0 + trait(m, 4) * span / 4;
+        if (Math.abs(m.pt - m.p) < .004) {
+            m.pw = (m.pw || 0) - dt;
+            if (m.pw <= 0) {
+                m.pt = s0 + Math.random() * span / 4;
+                m.pw = 1.5 + Math.random() * 4;
+            }
+        }
+        post = m.pt;
+    }
+    if (k === 4 && !look && !mu && tunOK() && !m.tired)
         post += Math.sin(t * .05 + mSeed(m)) * Math.min(.03, 40 / Math.max(1, LEN));
     m.sp = (m.sp || 0) - dt;
     if (m.sp <= 0) {
         m.sp = (3 + Math.random() * 5) * (.7 + trait(m, 6));
-        m.mode = k !== 4 && Math.random() < .15 + trait(m, 5) * .45 ? 1 : 0;
+        m.mode = k !== 4 && !look && Math.random() < .15 + trait(m, 5) * .45 ? 1 : 0;
     }
     var d2 = post - m.p;
+    m.act = top >= 0 ? 'Guarding the tunnel mouth' : nest >= 0 ? 'Guarding the queen\'s door' : mu ? 'Holding the line: a wave is coming' : m.pt != null && post === m.pt ? 'On patrol' : null;
     if (Math.abs(d2) > .004) {
-        m.p += Math.sign(d2) * Math.min(Math.abs(d2), dt * (mu ? (k === 4 ? 50 : 80) : k === 4 ? 12 : 26) * (m.v || 1) / Math.max(1, LEN));
+        m.p += Math.sign(d2) * Math.min(Math.abs(d2), dt * spd * (m.v || 1) / Math.max(1, LEN));
         m.d = d2 > 0 ? 1 : -1;
     }
     else if (m.mode === 1) {
@@ -425,6 +464,7 @@ function soldierGuard(m, dt, t, C) {
         m.p = post + Math.sin(t * 5 + mSeed(m)) * .0022;
     }
     else {
+        // standing still: face out, towards where trouble comes from
         m.d = -1;
         m.p = post;
     }
