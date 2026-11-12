@@ -57,6 +57,7 @@ function rivalRaid() {
     for (var i = 0; i < cnt; i++)
         foes.push({ p: jp - .015 * i, rv: 1, ex: jp, dir: 1, tp: 4, boss: false, hp: unit, max: unit, kl: 0, kt: 9, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i % 3 - 1) * 2 });
     var a = at(jp);
+    alarmAt(a.x, a.y);
     burst(a.x, a.y, 16, ['#5a3a8a', '#2a1a40', '#c9a6ff'], 70);
     fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#c9a6ff', g: 0, pop: 1 });
     toast('Raid! ' + cnt + ' rival ants are coming for your eggs. Your soldiers are on their way.');

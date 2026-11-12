@@ -431,6 +431,13 @@ function nsRoam(g, W, Hs, t) {
             }
         }
         if ((a.k === 2 || a.k === 4) && foes.length && a.y < nsY(0) - 4) return;
+        // the alarm spreading down from the way in: ants it has reached glow red; workers, nurses and foragers
+        // gather round the queen while it lasts
+        if (ALM && ALM.t < SIGT.alarmFor + 6 && a.y - nsY(0) < (ALM.t - 2) * 90) {
+            if (!a.alm) { a.alm = 1; g.strokeStyle = 'rgba(255,90,60,.9)'; g.lineWidth = 1.5; g.beginPath(); g.arc(a.x, a.y, 9, 0, 7); g.stroke(); if (a.k !== 2 && a.k !== 4) { a.tx = W * .5 + Math.sin(k * 2.1) * 60; a.ty = nsQY() + Math.cos(k * 1.3) * 15; a.w = 0; } }
+            g.fillStyle = 'rgba(255,60,30,' + (.22 + .1 * Math.sin(t * 8 + k)) + ')'; g.beginPath(); g.arc(a.x, a.y, 9, 0, 7); g.fill();
+        }
+        else a.alm = 0;
         nsAnt(g, a.x, a.y, a.a, a.k, a.ph, a.k === 1 && k % 3 === 0);
     });
 }

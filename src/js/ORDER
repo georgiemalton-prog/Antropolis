@@ -36,6 +36,7 @@ render/queen.js
 render/army.js
 render/workers.js
 render/foes.js
+render/signals.js
 render/fx.js
 render/nestscene.js
 ui/hud.js

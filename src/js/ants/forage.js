@@ -7,6 +7,7 @@ function addSpotAt(p, quiet) {
     S.foodSpots.push(sp);
     if (!quiet) {
         var a = at(p);
+        recruitFrom(p);
         toast(S.foodSpots.length === 1 ? 'Your workers found a food spot! Foragers will harvest it, and it slowly grows back.' : 'Your workers found another food spot.');
         SFX.buy();
         for (var i = 0; i < 8; i++)

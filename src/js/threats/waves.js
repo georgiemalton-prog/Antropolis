@@ -27,6 +27,7 @@ function wave() {
     SFX.alarm();
     alarmT = 5;
     var en = at(0);
+    alarmAt(en.x, en.y);
     burst(en.x, en.y, boss ? 26 : 14, ['#a07a50', '#7a5636', '#c9a46a'], boss ? 90 : 60);
     fx.push({ x: en.x, y: en.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
     fx.push({ x: en.x, y: en.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: boss ? 22 : 17, c: '#ff5a3a', g: 0, pop: 1 });
@@ -65,6 +66,8 @@ function firstFoesTick(dt) {
     burst(a.x, a.y, 16, ['#a07a50', '#7a5636', '#c9a46a'], 60);
     fx.push({ x: a.x, y: a.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
     fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#ff5a3a', g: 0, pop: 1 });
+    var fa = at(Math.max(0, 1 - S.dug));
+    alarmAt(fa.x, fa.y);
     toast('Wood lice dug into your tunnel! Your soldiers march out to stop them.' + (tab === 'tun' ? '' : ' Watch on the Tunnel tab.'));
 }
 
