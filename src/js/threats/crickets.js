@@ -97,7 +97,7 @@ function cricTick(dt) {
             toast('Your soldiers squashed the cave crickets! +' + fmt(loot) + ' food.');
             if (Math.random() < .2)
                 gainJelly(1);
-            SFX.win();
+            SFX.victory();
         }
     }
     if (!cric.length)

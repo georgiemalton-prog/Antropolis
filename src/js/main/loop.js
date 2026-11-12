@@ -20,6 +20,7 @@ function frame(n) {
     var dt = Math.min((n - lt) / 1000, .1);
     lt = n;
     statsTick(dt);
+    ambTick(dt);
     if (tab !== 'col' && !battery)
         rqTick(dt, fpsCap);
     if (!dead) {
@@ -88,6 +89,8 @@ function frame(n) {
                     shake = .7;
                     SFX.boom();
                 }
+                else
+                    SFX.squish();
                 lastP = f.p;
                 // flips over, twitches and sinks; the carcass is left once it has settled
                 dyingF.push({ p: f.p, o: f.o, tp: f.tp, sz: foeSz(f), boss: f.boss, t: 0, c: { x: a.x, y: a.y, t: 10, tp: f.tp, v: Math.ceil((4 + S.tier * 5) * (f.boss ? 4 : 1)) } });

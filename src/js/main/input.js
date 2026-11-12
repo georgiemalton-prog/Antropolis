@@ -35,7 +35,7 @@ function initNestTaps() {
         S.queenTaps = (S.queenTaps || 0) + 1;
         pulseRing('255,233,168');
         pulse = 1;
-        SFX.lay();
+        SFX.tap();
         fx.push({ x: QX + Q.ox + Math.random() * 50 - 25, y: QY + Q.oy - 31, vx: 0, vy: -40, l: .9, t: '-' + cut.toFixed(1) + 's', f: 13, c: '#ffe9a8', g: 0 });
     });
 }

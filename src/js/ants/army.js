@@ -456,7 +456,7 @@ function rallyGo() {
     rallyCd = 40;
     pulseRing('255,150,60');
     flash = .35;
-    SFX.win();
+    SFX.rally();
     toast('Rally! Soldiers hit 50% harder for 10 seconds.');
     abilityUi(true);
 }

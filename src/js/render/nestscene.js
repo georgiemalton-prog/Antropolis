@@ -66,6 +66,8 @@ function drawNest(now) {
     // the nest is a close view: draw every ant in full detail
     uz = Math.max(uz, 1.2 / K);
     var key = [W, H, Hs, NS.T, d, S.tier, P.theme || ''].concat(NSF.map(function (f) { var s = nsState(f.id); return (s.on ? 1 : 0) + ':' + s.lv + ':' + (s.prog >= 0 ? Math.floor(s.prog * 10) : -1); })).join('|') + '|' + Math.round(Math.min(1, S.food / foodCap()) * 6);
+    // the jelly comb and the larvae on the nursery bed follow the colony
+    key += '|' + Math.min(20, Math.floor(S.jelly / 3)) + '|' + Math.min(6, S.eggs.length);
     if (key !== NS.key || !NS.c) {
         NS.key = key;
         NS.c = NS.c || document.createElement('canvas');
@@ -180,8 +182,8 @@ function nsStatic(g, W, H, Hs) {
     nsBed(g, nsXf().x + 14, nsQY());
     NSF.forEach(function (f) {
         var s = nsState(f.id), x = f.x * W, y = nsY(f.y);
-        if (s.prog >= 0) { g.save(); g.globalAlpha = .3 + .7 * s.prog; nsFeature(g, f.id, x, y); g.restore(); }
-        else if (s.on) nsFeature(g, f.id, x, y);
+        if (s.prog >= 0) { g.save(); g.globalAlpha = .3 + .7 * s.prog; nsFeature(g, f.id, x, y, s.lv); g.restore(); }
+        else if (s.on) nsFeature(g, f.id, x, y, s.lv);
         else nsMark(g, x, y);
         nsTag(g, x, y + 18, f.n, s.lv, s.on);
     });
@@ -235,15 +237,21 @@ var NS_MUSH = [[-34, 7], [-26, 11], [-17, 8], [-9, 15], [0, 10], [9, 18], [18, 9
 var NS_COMB = (function () { var c = [], r, k; for (r = 0; r < 5; r++) for (k = 0; k < 4; k++) c.push([-18 + k * 12.25 + (r % 2) * 6.1, -52 + r * 10.5]); return c; })();
 
 // one feature's still drawing, centred on its floor point (x, y)
-function nsFeature(g, id, x, y) {
+// how each building grows with its level (0-5), so an upgrade shows in the nest, not just as a number
+function nsMushN(lv) { return Math.min(NS_MUSH.length, 3 + 2 * lv); }
+function nsCombN(lv) { return Math.min(NS_COMB.length, 6 + Math.round(lv * 2.8)); }
+function nsTowerN(lv) { return Math.min(11, 6 + lv); }
+function nsGuards(lv) { return 2 + Math.floor(lv / 2); }
+function nsFeature(g, id, x, y, lv) {
     var R = nsRand(id.length * 991 + 3), i, k;
+    lv = lv || 0;
     if (id === 'store') {
         nsShadow(g, x, y + 2, 64, 14, .6);
         var bw = g.createLinearGradient(0, y - 10, 0, y + 6); bw.addColorStop(0, '#2a140a'); bw.addColorStop(1, '#5a3420');
         g.fillStyle = bw; g.beginPath(); g.ellipse(x, y, 56, 12, 0, 0, 7); g.fill();
         g.strokeStyle = 'rgba(200,140,90,.35)'; g.lineWidth = 1.5; g.beginPath(); g.ellipse(x, y, 56, 12, 0, .1, Math.PI - .1); g.stroke();
         // the heap grows with how full the food store is
-        var full = Math.max(0, Math.min(1, S.food / foodCap())), hh = 8 + 40 * full, n = Math.round(40 + 260 * full);
+        var full = Math.max(0, Math.min(1, S.food / foodCap())), hh = (8 + 40 * full) * (.85 + .06 * lv), n = Math.round((40 + 260 * full) * (.8 + .1 * lv));
         R = nsRand(5);
         for (k = 0; k < n; k++) { var u = R() * 2 - 1, cap = Math.sqrt(Math.max(0, 1 - u * u)), v = Math.sqrt(R()), sx = x + u * 50, sy = y - 2 - v * hh * cap; nsSeed(g, sx, sy, R); }
         g.fillStyle = 'rgba(255,240,200,.12)'; g.beginPath(); g.ellipse(x - 8, y - hh * .7, 22, 6, 0, 0, 7); g.fill();
@@ -254,7 +262,7 @@ function nsFeature(g, id, x, y) {
         var nb = g.createRadialGradient(x, y - 6, 2, x, y - 2, 58); nb.addColorStop(0, '#9ab868'); nb.addColorStop(.7, '#5a7a34'); nb.addColorStop(1, '#2e4218');
         g.fillStyle = nb; g.beginPath(); g.ellipse(x, y - 3, 56, 13, 0, 0, 7); g.fill();
         g.strokeStyle = 'rgba(255,250,235,.35)'; g.lineWidth = .6; for (i = 0; i < 18; i++) { g.beginPath(); g.moveTo(x - 50 + R() * 100, y - 3 + (R() - .5) * 18); g.quadraticCurveTo(x + (R() - .5) * 60, y - 14, x - 50 + R() * 100, y - 3 + (R() - .5) * 18); g.stroke(); }
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < Math.min(6, Math.max(1, S.eggs.length)); i++) {
             var lx = x - 44 + i * 12 + (i % 2) * 3, ly = y - 9 - (i % 2) * 5;
             g.save(); g.translate(lx, ly); g.rotate((i % 3 - 1) * .2);
             var lg = g.createRadialGradient(-1, -2, .5, 0, 0, 7); lg.addColorStop(0, '#fffdf6'); lg.addColorStop(1, '#d8ccb0');
@@ -263,7 +271,7 @@ function nsFeature(g, id, x, y) {
             g.fillStyle = '#b89a6a'; g.beginPath(); g.arc(5.6, -1, 1.6, 0, 7); g.fill();
             g.restore();
         }
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < Math.min(4, 1 + lv); i++) {
             var cxx = x + 16 + i * 10, cy = y - 12 - (i % 2) * 3, cg = g.createLinearGradient(cxx - 5, 0, cxx + 5, 0);
             cg.addColorStop(0, '#9a7a4a'); cg.addColorStop(.45, '#f0dca8'); cg.addColorStop(1, '#7a5a30');
             g.fillStyle = cg; g.beginPath(); g.ellipse(cxx, cy, 4.6, 8.2, .12, 0, 7); g.fill();
@@ -274,7 +282,7 @@ function nsFeature(g, id, x, y) {
         for (i = 0; i < 14; i++) { var mx = x - 30 + R() * 60; g.beginPath(); g.moveTo(mx, y - 10); g.bezierCurveTo(mx + (R() - .5) * 30, y - 40, mx + (R() - .5) * 40, y - 60, mx + (R() - .5) * 50, y - 80 - R() * 30); g.stroke(); }
         nsMound(g, x, y, 92, 22, [70, 50, 32], 11);
         for (i = 0; i < 40; i++) { g.fillStyle = ['rgba(120,90,50,.8)', 'rgba(90,110,50,.6)', 'rgba(40,25,15,.8)'][i % 3]; g.beginPath(); g.ellipse(x + (R() - .5) * 80, y - R() * 16, 2 + R() * 2, 1, R() * 3, 0, 7); g.fill(); }
-        NS_MUSH.forEach(function (m, k2) { nsMush(g, x + m[0], y - 6 - (k2 % 3) * 3, m[1]); });
+        NS_MUSH.slice(0, nsMushN(lv)).forEach(function (m, k2) { nsMush(g, x + m[0], y - 6 - (k2 % 3) * 3, m[1] * (.8 + .06 * lv)); });
     } else if (id === 'infirmary') {
         [[-30, 0, 30, 13], [4, -3, 34, 15], [36, 1, 26, 11]].forEach(function (c) {
             var cx2 = x + c[0], cy2 = y + c[1];
@@ -291,40 +299,45 @@ function nsFeature(g, id, x, y) {
         g.fillStyle = '#6a4416'; g.beginPath();
         for (k = 0; k < 14; k++) { var a2 = k / 14 * 6.283, r4 = 34 + Math.sin(k * 2.3) * 5; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a2) * r4 * .85, y - 26 + Math.sin(a2) * r4); }
         g.closePath(); g.fill();
-        NS_COMB.forEach(function (c, k3) {
+        var cn = nsCombN(lv), jf = Math.round(cn * Math.min(1, S.jelly / (15 + 15 * lv)));
+        NS_COMB.slice(0, cn).forEach(function (c, k3) {
             var hx = x + c[0], hy = y + c[1], q;
             g.beginPath(); for (q = 0; q < 6; q++) { var a3 = q * Math.PI / 3 + Math.PI / 6; g[q ? 'lineTo' : 'moveTo'](hx + Math.cos(a3) * s, hy + Math.sin(a3) * s); } g.closePath();
             g.fillStyle = '#3a2208'; g.fill();
-            var capped = k3 % 5 === 2 || k3 % 7 === 4;
+            // a cell full of jelly glows; an empty one is a dark hollow
+            var capped = k3 >= jf;
             g.beginPath(); for (q = 0; q < 6; q++) { var a4 = q * Math.PI / 3 + Math.PI / 6; g[q ? 'lineTo' : 'moveTo'](hx + Math.cos(a4) * s * .78, hy + Math.sin(a4) * s * .78); } g.closePath();
             var fg2;
-            if (capped) { fg2 = g.createRadialGradient(hx - 1.5, hy - 1.5, .5, hx, hy, s); fg2.addColorStop(0, '#fff0c0'); fg2.addColorStop(1, '#c89a50'); }
+            if (capped) { fg2 = g.createRadialGradient(hx - 1.5, hy - 1.5, .5, hx, hy, s); fg2.addColorStop(0, '#6a4416'); fg2.addColorStop(1, '#2a1606'); }
             else { fg2 = g.createRadialGradient(hx - 1.5, hy - 2, .4, hx, hy, s * .9); fg2.addColorStop(0, '#fff6c0'); fg2.addColorStop(.4, '#ffbe32'); fg2.addColorStop(1, '#a85a08'); }
             g.fillStyle = fg2; g.fill();
             if (!capped) { g.fillStyle = 'rgba(255,255,240,.7)'; g.beginPath(); g.ellipse(hx - 2, hy - 2.5, 1.6, .8, -.5, 0, 7); g.fill(); }
         });
     } else if (id === 'barracks') {
         nsMound(g, x, y, 120, 12, [96, 56, 32], 21);
-        for (i = 0; i < 11; i++) {
-            var sx2 = x - 52 + i * 10.4, ht = 26 + (i % 3) * 6, lean = (i - 5) * .02;
+        var nst = Math.min(11, 5 + Math.round(lv * 1.4)), so = (11 - nst) / 2;
+        for (i = 0; i < nst; i++) {
+            var sx2 = x - 52 + (i + so) * 10.4, ht = 26 + (i % 3) * 6, lean = (i - 5) * .02;
             var tg = g.createLinearGradient(sx2 - 3, 0, sx2 + 3, 0); tg.addColorStop(0, '#3a1408'); tg.addColorStop(.5, '#9a4a26'); tg.addColorStop(1, '#3a1408');
             g.fillStyle = tg; g.beginPath(); g.moveTo(sx2 - 3, y - 6); g.quadraticCurveTo(sx2 - 2 + lean * 40, y - 6 - ht * .6, sx2 + lean * ht * 2, y - 6 - ht); g.quadraticCurveTo(sx2 + 2 + lean * 40, y - 6 - ht * .6, sx2 + 3, y - 6); g.closePath(); g.fill();
             g.fillStyle = 'rgba(255,200,160,.35)'; g.beginPath(); g.moveTo(sx2 - .5, y - 8); g.lineTo(sx2 + lean * ht * 2, y - 5 - ht); g.lineTo(sx2 + .6, y - 8); g.fill();
         }
         g.strokeStyle = '#5a3a1e'; g.lineWidth = 2.2; g.beginPath(); g.moveTo(x - 56, y - 18); g.quadraticCurveTo(x, y - 14, x + 56, y - 18); g.stroke();
-        [-38, 38].forEach(function (o) { var shx = x + o, shy = y - 12; nsShadow(g, shx, shy + 8, 10, 3, .5); var sg2 = g.createRadialGradient(shx - 3, shy - 4, 1, shx, shy, 10); sg2.addColorStop(0, '#d8d0c4'); sg2.addColorStop(.6, '#7a726a'); sg2.addColorStop(1, '#3a3430'); g.fillStyle = sg2; g.beginPath(); g.ellipse(shx, shy, 9, 10, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = 1; g.stroke(); g.fillStyle = 'rgba(80,70,60,.6)'; for (var q = 0; q < 6; q++) g.fillRect(shx - 5 + R() * 10, shy - 6 + R() * 12, 1.4, 1.4); });
+        (lv >= 4 ? [-38, -20, 20, 38] : lv >= 1 ? [-38, 38] : []).forEach(function (o) { var shx = x + o, shy = y - 12; nsShadow(g, shx, shy + 8, 10, 3, .5); var sg2 = g.createRadialGradient(shx - 3, shy - 4, 1, shx, shy, 10); sg2.addColorStop(0, '#d8d0c4'); sg2.addColorStop(.6, '#7a726a'); sg2.addColorStop(1, '#3a3430'); g.fillStyle = sg2; g.beginPath(); g.ellipse(shx, shy, 9, 10, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = 1; g.stroke(); g.fillStyle = 'rgba(80,70,60,.6)'; for (var q = 0; q < 6; q++) g.fillRect(shx - 5 + R() * 10, shy - 6 + R() * 12, 1.4, 1.4); });
     } else if (id === 'tower') {
+        // the lookout grows taller with each level; yt is where its top sits
+        var tn = nsTowerN(lv), yt = y - (tn - 10) * 6;
         nsMound(g, x, y, 54, 10, [96, 56, 32], 31);
         for (k = 0; k < 3; k++) {
             g.strokeStyle = ['#4a2c16', '#6a4224', '#3a200e'][k]; g.lineWidth = 6 - k;
             g.beginPath(); g.moveTo(x - 8 + k * 6, y - 4);
-            for (i = 1; i <= 10; i++) g.lineTo(x - 4 + k * 3 + Math.sin(i * .9 + k * 2) * 5, y - 4 - i * 6);
+            for (i = 1; i <= tn; i++) g.lineTo(x - 4 + k * 3 + Math.sin(i * .9 + k * 2) * 5, y - 4 - i * 6);
             g.stroke();
         }
-        g.strokeStyle = 'rgba(255,210,170,.25)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x - 6, y - 6); for (i = 1; i <= 10; i++) g.lineTo(x - 3 + Math.sin(i * .9) * 5, y - 6 - i * 6); g.stroke();
-        var pg2 = g.createLinearGradient(0, y - 70, 0, y - 62); pg2.addColorStop(0, '#9a6a3a'); pg2.addColorStop(1, '#4a2c14'); g.fillStyle = pg2; g.beginPath(); g.ellipse(x, y - 66, 18, 5, 0, 0, 7); g.fill();
-        g.strokeStyle = 'rgba(30,15,6,.6)'; g.lineWidth = .7; for (i = 0; i < 4; i++) { g.beginPath(); g.ellipse(x, y - 66, 18 - i * 4, 5 - i * 1.1, 0, 0, 7); g.stroke(); }
-        g.strokeStyle = 'rgba(40,20,10,.8)'; g.lineWidth = .7; g.beginPath(); g.moveTo(x - 14, y - 100); g.lineTo(x - 14, y - 86); g.stroke();
+        g.strokeStyle = 'rgba(255,210,170,.25)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x - 6, y - 6); for (i = 1; i <= tn; i++) g.lineTo(x - 3 + Math.sin(i * .9) * 5, y - 6 - i * 6); g.stroke();
+        var pg2 = g.createLinearGradient(0, yt - 70, 0, yt - 62); pg2.addColorStop(0, '#9a6a3a'); pg2.addColorStop(1, '#4a2c14'); g.fillStyle = pg2; g.beginPath(); g.ellipse(x, yt - 66, 18, 5, 0, 0, 7); g.fill();
+        g.strokeStyle = 'rgba(30,15,6,.6)'; g.lineWidth = .7; for (i = 0; i < 4; i++) { g.beginPath(); g.ellipse(x, yt - 66, 18 - i * 4, 5 - i * 1.1, 0, 0, 7); g.stroke(); }
+        g.strokeStyle = 'rgba(40,20,10,.8)'; g.lineWidth = .7; g.beginPath(); g.moveTo(x - 14, yt - 100); g.lineTo(x - 14, yt - 86); g.stroke();
     }
 }
 
@@ -340,15 +353,16 @@ function nsDynamic(g, W, Hs, t) {
         var s = nsState(f.id), x = f.x * W, y = nsY(f.y);
         if (!s.on || s.prog >= 0) return;
         if (f.id === 'fungus') {
-            NS_MUSH.forEach(function (m, k) { var s2 = m[1]; nsGlow(g, x + m[0], y - 6 - (k % 3) * 3 - s2 * 1.1, s2 * 1.8, '120,255,190', .12 + .05 * Math.sin(t * 2 + k)); });
+            NS_MUSH.slice(0, nsMushN(s.lv)).forEach(function (m, k) { var s2 = m[1] * (.8 + .06 * s.lv); nsGlow(g, x + m[0], y - 6 - (k % 3) * 3 - s2 * 1.1, s2 * 1.8, '120,255,190', .12 + .05 * Math.sin(t * 2 + k)); });
             for (i = 0; i < 12; i++) { var u = (t * .07 + i / 12) % 1; g.fillStyle = 'rgba(200,255,225,' + (.7 * (1 - u)) + ')'; g.beginPath(); g.arc(x - 30 + R() * 60 + Math.sin(t * 1.3 + i) * 5, y - 20 - u * 60, 1.1, 0, 7); g.fill(); }
             nsGlow(g, x, y - 18, 70, '110,255,180', .22 + .05 * Math.sin(t * 1.7));
         } else if (f.id === 'archive') {
+            if (S.jelly < 1) return;
             var du = (t * .3) % 1; g.fillStyle = '#ffb030'; g.beginPath(); g.ellipse(x + 4, y - 4 + du * 14, 1.8, 2.6, 0, 0, 7); g.fill();
             nsGlow(g, x, y - 30, 56, '255,170,50', .3 + .06 * Math.sin(t * 2));
         } else if (f.id === 'tower') {
-            var gw = y - 84 + Math.sin(t * 1.4) * 2; g.fillStyle = '#d8f8ff'; g.beginPath(); g.ellipse(x - 14, gw, 2.4, 3.4, 0, 0, 7); g.fill(); nsGlow(g, x - 14, gw, 30, '180,230,255', .45 + .1 * Math.sin(t * 2));
-            nsAnt(g, x + 2, y - 72, -Math.PI / 2, 3, t * 3);
+            var yt2 = y - (nsTowerN(s.lv) - 10) * 6, gw = yt2 - 84 + Math.sin(t * 1.4) * 2; g.fillStyle = '#d8f8ff'; g.beginPath(); g.ellipse(x - 14, gw, 2.4, 3.4, 0, 0, 7); g.fill(); nsGlow(g, x - 14, gw, 30, '180,230,255', .45 + .1 * Math.sin(t * 2));
+            nsAnt(g, x + 2, yt2 - 72, -Math.PI / 2, 3, t * 3);
         } else if (f.id === 'infirmary') {
             var hurt = Math.min(3, S.injured.reduce(function (a, b) { return a + b; }, 0));
             if (hurt > 0) nsAnt(g, x - 30, y - 15, -.2, 2, 0);
@@ -356,8 +370,8 @@ function nsDynamic(g, W, Hs, t) {
             if (hurt > 2) nsAnt(g, x + 34, y - 12, -.1, 2, 0);
             if (hurt > 0) { var dy = y - 40 + Math.sin(t * 2) * 3; g.fillStyle = '#c8ffc8'; g.beginPath(); g.arc(x - 12, dy, 2.8, 0, 7); g.fill(); nsGlow(g, x - 12, dy, 20, '150,240,150', .4); }
         } else if (f.id === 'barracks') {
-            nsAnt(g, x - 16, y - 9, 0, 2, t * 2);
-            nsAnt(g, x + 18, y - 9, Math.PI, 2, t * 2 + 3);
+            // more guards drill in front of a bigger barracks, pacing to and fro
+            for (i = 0; i < nsGuards(s.lv); i++) { var gx = x - 44 + 88 * (i + .5) / nsGuards(s.lv) + Math.sin(t * .8 + i * 2) * 6; nsAnt(g, gx, y - 9 + (i % 2) * 4, Math.cos(t * .8 + i * 2) > 0 ? 0 : Math.PI, 2, t * 2 + i); }
             nsGlow(g, x, y - 20, 56, '255,140,70', .16);
         } else if (f.id === 'store') nsGlow(g, x, y - 20, 50, '255,210,120', .1);
         else if (f.id === 'nursery') nsGlow(g, x, y - 12, 50, '255,220,180', .1);

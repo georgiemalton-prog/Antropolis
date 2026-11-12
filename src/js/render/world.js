@@ -685,7 +685,7 @@ function featTick(dt) {
             m += 'It holds some old supplies.';
         }
         toast(m);
-        SFX.win();
+        SFX.find();
         burst(fd.fx * W, wy(fd.fy), 18, ['#ffd23f', '#fff', '#9bffc8'], 70);
     });
     if (S.reach)
@@ -714,7 +714,7 @@ function featTick(dt) {
                 m += 'A big haul of food.';
             }
             toast(m);
-            SFX.win();
+            SFX.find();
             var fp = at(ff.pf, BP[k]);
             burst(fp.x, fp.y, 18, ['#ffd23f', '#fff', '#9bffc8'], 70);
         });

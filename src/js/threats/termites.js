@@ -83,7 +83,7 @@ function termRaidTick(dt, quiet) {
             trmT = 90;
             if (!quiet) {
                 toast('Workers found a termite nest in the far east tunnel. Not friendly!');
-                SFX.win();
+                SFX.victory();
             }
         }
         return;

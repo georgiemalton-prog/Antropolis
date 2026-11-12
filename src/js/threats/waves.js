@@ -72,7 +72,7 @@ function loot(p, w) {
     var a = at(p), f = Math.ceil((2 + S.tier * 2) * (w.boss ? 5 : 1 + .5 * w.n));
     S.food = Math.min(foodCap(), S.food + f);
     gainJelly(w.boss ? 5 : 1);
-    SFX.win();
+    SFX.victory();
     fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
     toast((w.boss ? 'Boss defeated! ' : w.ff ? 'The wood lice are beaten! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
@@ -194,7 +194,7 @@ function raidTick(dt) {
         S.raidsWon = (S.raidsWon || 0) + 1;
         burst(r.x, 16, 30, ['#ffd23f', '#fff', '#7fcf8f'], 120);
         toast('Raid defeated! +' + j + ' jelly');
-        SFX.win();
+        SFX.victory();
         RAID = null;
         S.raidTimer = 150 + Math.random() * 60;
     }

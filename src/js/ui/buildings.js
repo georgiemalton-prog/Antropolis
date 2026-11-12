@@ -61,7 +61,7 @@ function projTick(dt, pj) {
         S.proj = null;
         var b = BDEF.filter(function (x) { return x.id === pj.k; })[0];
         toast('Built: ' + b.n + ' (level ' + S.bld[pj.k] + ')!');
-        SFX.win();
+        SFX.build();
         burst(W * .5, WH - 20, 24, ['#ffd23f', '#fff', '#a07a4a'], 90);
         ordKey = '';
     }

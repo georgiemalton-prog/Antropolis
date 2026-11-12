@@ -167,7 +167,7 @@ function mapDraw() {
         } });
         deepList().forEach(function (e2) { line(mapPath(e2.f.q, e2.pr, 0), tw, '#9a8a78'); });
         line(mapPath(MAIN, 1, Math.max(0, 1 - S.dug)), tw * 1.25, '#e0b878');
-        mapQueen(g, X(QX), Y(QY), Math.max(4, 9 * sc));
+        mapQueen(g, X(QX), Y(QY), Math.max(8, 13 * sc));
         g.restore();
         g = gMain;
     }
@@ -399,11 +399,11 @@ function mapFoe(r, d) {
         g.stroke();
     });
 }
+// the queen on the map: a small top-down copy of the new queen (dark-red armour, glowing gem eyes) on a gold-ringed badge
 function mapQueen(g, x, y, r) {
     var gg = g.createRadialGradient(x - r * .3, y - r * .35, r * .1, x, y, r * 1.1);
-    gg.addColorStop(0, '#ff6a50');
-    gg.addColorStop(.6, '#8a1a10');
-    gg.addColorStop(1, '#2a0603');
+    gg.addColorStop(0, '#5a1a12');
+    gg.addColorStop(1, '#14050a');
     g.fillStyle = gg;
     g.beginPath();
     g.arc(x, y, r, 0, 7);
@@ -411,19 +411,40 @@ function mapQueen(g, x, y, r) {
     g.strokeStyle = '#ffd27a';
     g.lineWidth = 1.5;
     g.stroke();
-    // crown
-    var cw = r * 1.1, cy = y - r * .05;
-    g.fillStyle = '#ffd27a';
+    var u = r / 10;
+    g.save();
+    g.translate(x, y);
+    // legs
+    g.strokeStyle = '#0e0506';
+    g.lineWidth = Math.max(.8, u * .9);
+    g.lineCap = 'round';
     g.beginPath();
-    g.moveTo(x - cw * .6, cy + cw * .35);
-    g.lineTo(x - cw * .6, cy - cw * .25);
-    g.lineTo(x - cw * .3, cy + cw * .05);
-    g.lineTo(x, cy - cw * .4);
-    g.lineTo(x + cw * .3, cy + cw * .05);
-    g.lineTo(x + cw * .6, cy - cw * .25);
-    g.lineTo(x + cw * .6, cy + cw * .35);
-    g.closePath();
-    g.fill();
+    [[-1.2, -4], [0, -5.5], [1.2, -4]].forEach(function (l, k) {
+        [1, -1].forEach(function (d) { g.moveTo(d * u * 1.2, u * (l[0] - 1.5)); g.lineTo(d * u * 5.5, u * (l[0] - 1.5 + (k - 1) * 3.2)); });
+    });
+    g.stroke();
+    function blob(cy, rx, ry, lit) {
+        var b = g.createRadialGradient(-rx * .3, cy - ry * .4, ry * .1, 0, cy, Math.max(rx, ry));
+        b.addColorStop(0, lit);
+        b.addColorStop(.6, '#2a0c0a');
+        b.addColorStop(1, '#070203');
+        g.fillStyle = b;
+        g.beginPath();
+        g.ellipse(0, cy, rx, ry, 0, 0, 7);
+        g.fill();
+    }
+    blob(u * 3.6, u * 3.4, u * 4.2, '#7a2418');
+    blob(u * -1.3, u * 1.5, u * 2, '#6a2016');
+    blob(u * -4.6, u * 2.2, u * 1.9, '#7a2418');
+    // glowing seam on the abdomen and the two gem eyes
+    g.strokeStyle = 'rgba(255,90,50,.7)';
+    g.lineWidth = Math.max(.6, u * .5);
+    g.beginPath();
+    g.ellipse(0, u * 3.6, u * 2.6, u * 1.2, 0, Math.PI * 1.1, Math.PI * 1.9);
+    g.stroke();
+    g.fillStyle = '#ff7a30';
+    [1, -1].forEach(function (d) { g.beginPath(); g.arc(d * u * 1.3, u * -5.2, Math.max(.7, u * .7), 0, 7); g.fill(); });
+    g.restore();
 }
 function mapStar(g, x, y, r, col) {
     g.fillStyle = col;

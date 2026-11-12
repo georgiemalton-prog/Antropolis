@@ -156,7 +156,9 @@ function deepListOld() {
 
 function deepGenOk(lv) { return (P.gen || 0) >= lv + 1; }
 function deepGenTxt(lv) { return 'Unlocks in Generation ' + genName(lv + 2) + '. Take a royal flight to reach it.'; }
-function deepCost() { var lv = S.deep || 0; return { f: Math.round(foodCap() * (.5 + .3 * lv)), j: 25 + 20 * lv }; }
+// food cost is a share of the store: .5, .8, then capped at .9 (it was 1.1 and 1.4 for the last two layers, more
+// than a full store can hold, so the Crystal Caves, Bedrock and the Giant Mole could never be reached)
+function deepCost() { var lv = S.deep || 0; return { f: Math.round(foodCap() * Math.min(.9, .5 + .3 * lv)), j: 25 + 20 * lv }; }
 var DEEPT = ['Clay below the cavern. The cool clay makes a perfect Larder: food stores grow by a quarter, and your ants keep working for 10 hours while you are away.', 'Cold stone layer. Your soldiers set up an Armoury down here: they drill between fights, take a quarter fewer injuries, and fight termite raids 20% harder. Watch out for cave crickets creeping up from below to raid the Larder.', 'The deep dark. Your scouts have found the Crystal Caves: every few mapping trips bring back enough crystal for a drop of jelly, and the glow makes golden eggs more likely.', 'Bedrock. At the very bottom of the world your diggers have broken into a huge cavern, and something enormous is sleeping in it: the Giant Mole.'];
 function upDeep() {
     var lv = S.deep || 0, c = deepCost();

@@ -177,6 +177,8 @@ html.full .toast.on{transform:none}
 html.full body.tt .toast{top:calc(8px + env(safe-area-inset-top,0px))}
 /* royal jelly stands out in gold next to the food count, so it is easy to find */
 .hchip .jlc{margin-left:6px;font:700 13px var(--ff);color:#ffd23f;white-space:nowrap}.hchip .jlc::before{content:"\2B22";font-size:10px;margin-right:3px;vertical-align:1px}.hchip small .jlc b{font:800 14px var(--ff);color:#ffd23f}
+/* with the colony map open, messages sit below its buttons instead of over them */
+html.full body:has(#mapov.on) .toast{top:calc(64px + env(safe-area-inset-top,0px))}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
@@ -683,8 +685,66 @@ var SFX = {
     fan: function () { seq([523, 659, 784, 1047, 784, 1047, 1319, 1568], 120, 'square', .07); vib([60, 40, 60, 40, 200]); },
     lose: function () { tn(300, .9, 'sawtooth', .15, .2); vib(300); },
     dig: function () { if (digging)
-        tn(70 + Math.random() * 30, .07, 'square', .04, .6); }
+        tn(70 + Math.random() * 30, .07, 'square', .04, .6); },
+    // build 82 sound pass: each big moment has its own sound, and busy ones are rate-limited
+    hatch: function (c) { if (sfxGap('hatch', 120)) return; tn(620 + c * 90, .05, 'triangle', .06, 1.5); setTimeout(function () { tn(980 + c * 90, .07, 'sine', .05); }, 45); },
+    tap: function () { tn(220, .12, 'sine', .07, 1.35); noiz(.06, 1800, .04); vib(6); },
+    goal: function () { seq([784, 988, 1175, 1568], 85, 'triangle', .09); setTimeout(function () { tn(2093, .5, 'sine', .04); }, 340); vib([20, 30, 20]); },
+    build: function () { noiz(.05, 700, .14); setTimeout(function () { noiz(.05, 600, .12); }, 130); setTimeout(function () { seq([523, 784, 1047], 90, 'triangle', .09); }, 280); vib([25, 60, 25]); },
+    claim: function () { seq([1319, 1760], 70, 'sine', .08); setTimeout(function () { tn(2637, .35, 'sine', .035); }, 150); vib(12); },
+    victory: function () { seq([392, 523, 659, 784, 659, 784, 1047], 95, 'square', .065); vib([30, 40, 30, 40, 80]); },
+    squish: function () { if (sfxGap('squish', 90)) return; noiz(.09, 450, .12); tn(160, .1, 'sine', .07, .45); },
+    jelly: function () { if (sfxGap('jelly', 250)) return; tn(1568, .16, 'sine', .05); setTimeout(function () { tn(2093, .22, 'sine', .035); }, 60); },
+    find: function () { seq([660, 880, 1320], 80, 'sine', .08); setTimeout(function () { tn(1760, .4, 'triangle', .04); }, 260); },
+    rally: function () { seq([196, 262, 330, 392], 70, 'sawtooth', .06); vib([30, 20, 30]); },
+    drip: function () { var f = 900 + dripR() * 900; tn(f, .09, 'sine', .035, 1.8); setTimeout(function () { tn(f * 1.4, .06, 'sine', .015, 1.5); }, 70); }
 };
+// a short burst of filtered noise: soil, knocks and squashes
+var NZ = null;
+function noiz(d, f, v) {
+    if (mut)
+        return;
+    var a = au();
+    if (!a)
+        return;
+    try {
+        if (!NZ) {
+            NZ = a.createBuffer(1, a.sampleRate * .5, a.sampleRate);
+            var ch = NZ.getChannelData(0);
+            // its own random numbers, so making the noise never changes how the game plays out
+            var nr = rng(777);
+            for (var i = 0; i < ch.length; i++)
+                ch[i] = nr() * 2 - 1;
+        }
+        var s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(), t = a.currentTime;
+        s.buffer = NZ;
+        fl.type = 'bandpass';
+        fl.frequency.value = f;
+        fl.Q.value = 1.2;
+        g.gain.setValueAtTime(v, t);
+        g.gain.exponentialRampToValueAtTime(.0001, t + d);
+        s.connect(fl);
+        fl.connect(g);
+        g.connect(a.destination);
+        s.start(t);
+        s.stop(t + d + .02);
+    }
+    catch (e) { }
+}
+// true (skip) if this sound played less than ms ago, so busy moments don't turn into a buzz
+var SFXT = {};
+function sfxGap(k, ms) { var n = performance.now(); if (n - (SFXT[k] || 0) < ms) return true; SFXT[k] = n; return false; }
+// water dripping somewhere in the soil, every few seconds while the Nest or Tunnel is on screen
+var dripT = 6, dripR = rng(4242);   // its own random numbers, so sound never changes how the game plays out
+function ambTick(rdt) {
+    if (mut || document.hidden || (tab !== 'nest' && tab !== 'tun') || !AC)
+        return;
+    dripT -= rdt;
+    if (dripT <= 0) {
+        dripT = 5 + dripR() * 9;
+        SFX.drip();
+    }
+}
 
 // ---- audio and haptics ----
 
@@ -1143,7 +1203,7 @@ function deposit(m) {
     return y;
 }
 
-function gainJelly(n) { var jx = n * (bio().jl || 1); n = Math.floor(jx) + (Math.random() < jx % 1 ? 1 : 0); S.jelly += n; fx.push({ x: QX, y: QY - 48, vx: 0, vy: -18, l: 1.4, t: '+' + n + ' jelly', f: 13, c: '#ffd23f', g: 0 }); }
+function gainJelly(n) { var jx = n * (bio().jl || 1); n = Math.floor(jx) + (Math.random() < jx % 1 ? 1 : 0); S.jelly += n; if (n > 0) SFX.jelly(); fx.push({ x: QX, y: QY - 48, vx: 0, vy: -18, l: 1.4, t: '+' + n + ' jelly', f: 13, c: '#ffd23f', g: 0 }); }
 
 function gj1() { var n = performance.now(); if (n > (gj1.t || 0)) {
     gj1.t = n + 6000;
@@ -1270,7 +1330,7 @@ function hatch(p, e) {
     // the two shell halves spring apart
     for (var sh = -1; sh <= 1; sh += 2)
         fx.push({ x: p.x, y: p.y + sh, vx: sh * (14 + Math.random() * 10), vy: -26 - Math.random() * 10, l: .75, shell: sh, rot: 0, spin: sh * (4 + Math.random() * 4), c: c === 4 ? '#ffd23f' : '#f4efe0', g: 150 });
-    tn(800 + c * 120, .06, 'triangle', .06);
+    SFX.hatch(c);
     if (c === 4) {
         gainJelly(10);
         flash = .8;
@@ -2686,7 +2746,9 @@ function deepListOld() {
 
 function deepGenOk(lv) { return (P.gen || 0) >= lv + 1; }
 function deepGenTxt(lv) { return 'Unlocks in Generation ' + genName(lv + 2) + '. Take a royal flight to reach it.'; }
-function deepCost() { var lv = S.deep || 0; return { f: Math.round(foodCap() * (.5 + .3 * lv)), j: 25 + 20 * lv }; }
+// food cost is a share of the store: .5, .8, then capped at .9 (it was 1.1 and 1.4 for the last two layers, more
+// than a full store can hold, so the Crystal Caves, Bedrock and the Giant Mole could never be reached)
+function deepCost() { var lv = S.deep || 0; return { f: Math.round(foodCap() * Math.min(.9, .5 + .3 * lv)), j: 25 + 20 * lv }; }
 var DEEPT = ['Clay below the cavern. The cool clay makes a perfect Larder: food stores grow by a quarter, and your ants keep working for 10 hours while you are away.', 'Cold stone layer. Your soldiers set up an Armoury down here: they drill between fights, take a quarter fewer injuries, and fight termite raids 20% harder. Watch out for cave crickets creeping up from below to raid the Larder.', 'The deep dark. Your scouts have found the Crystal Caves: every few mapping trips bring back enough crystal for a drop of jelly, and the glow makes golden eggs more likely.', 'Bedrock. At the very bottom of the world your diggers have broken into a huge cavern, and something enormous is sleeping in it: the Giant Mole.'];
 function upDeep() {
     var lv = S.deep || 0, c = deepCost();
@@ -4126,7 +4188,7 @@ function rallyGo() {
     rallyCd = 40;
     pulseRing('255,150,60');
     flash = .35;
-    SFX.win();
+    SFX.rally();
     toast('Rally! Soldiers hit 50% harder for 10 seconds.');
     abilityUi(true);
 }
@@ -4480,7 +4542,7 @@ function loot(p, w) {
     var a = at(p), f = Math.ceil((2 + S.tier * 2) * (w.boss ? 5 : 1 + .5 * w.n));
     S.food = Math.min(foodCap(), S.food + f);
     gainJelly(w.boss ? 5 : 1);
-    SFX.win();
+    SFX.victory();
     fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
     toast((w.boss ? 'Boss defeated! ' : w.ff ? 'The wood lice are beaten! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
@@ -4602,7 +4664,7 @@ function raidTick(dt) {
         S.raidsWon = (S.raidsWon || 0) + 1;
         burst(r.x, 16, 30, ['#ffd23f', '#fff', '#7fcf8f'], 120);
         toast('Raid defeated! +' + j + ' jelly');
-        SFX.win();
+        SFX.victory();
         RAID = null;
         S.raidTimer = 150 + Math.random() * 60;
     }
@@ -4839,7 +4901,7 @@ function termRaidTick(dt, quiet) {
             trmT = 90;
             if (!quiet) {
                 toast('Workers found a termite nest in the far east tunnel. Not friendly!');
-                SFX.win();
+                SFX.victory();
             }
         }
         return;
@@ -5037,7 +5099,7 @@ function cricTick(dt) {
             toast('Your soldiers squashed the cave crickets! +' + fmt(loot) + ' food.');
             if (Math.random() < .2)
                 gainJelly(1);
-            SFX.win();
+            SFX.victory();
         }
     }
     if (!cric.length)
@@ -6644,7 +6706,7 @@ function featTick(dt) {
             m += 'It holds some old supplies.';
         }
         toast(m);
-        SFX.win();
+        SFX.find();
         burst(fd.fx * W, wy(fd.fy), 18, ['#ffd23f', '#fff', '#9bffc8'], 70);
     });
     if (S.reach)
@@ -6673,7 +6735,7 @@ function featTick(dt) {
                 m += 'A big haul of food.';
             }
             toast(m);
-            SFX.win();
+            SFX.find();
             var fp = at(ff.pf, BP[k]);
             burst(fp.x, fp.y, 18, ['#ffd23f', '#fff', '#9bffc8'], 70);
         });
@@ -9778,6 +9840,8 @@ function drawNest(now) {
     // the nest is a close view: draw every ant in full detail
     uz = Math.max(uz, 1.2 / K);
     var key = [W, H, Hs, NS.T, d, S.tier, P.theme || ''].concat(NSF.map(function (f) { var s = nsState(f.id); return (s.on ? 1 : 0) + ':' + s.lv + ':' + (s.prog >= 0 ? Math.floor(s.prog * 10) : -1); })).join('|') + '|' + Math.round(Math.min(1, S.food / foodCap()) * 6);
+    // the jelly comb and the larvae on the nursery bed follow the colony
+    key += '|' + Math.min(20, Math.floor(S.jelly / 3)) + '|' + Math.min(6, S.eggs.length);
     if (key !== NS.key || !NS.c) {
         NS.key = key;
         NS.c = NS.c || document.createElement('canvas');
@@ -9892,8 +9956,8 @@ function nsStatic(g, W, H, Hs) {
     nsBed(g, nsXf().x + 14, nsQY());
     NSF.forEach(function (f) {
         var s = nsState(f.id), x = f.x * W, y = nsY(f.y);
-        if (s.prog >= 0) { g.save(); g.globalAlpha = .3 + .7 * s.prog; nsFeature(g, f.id, x, y); g.restore(); }
-        else if (s.on) nsFeature(g, f.id, x, y);
+        if (s.prog >= 0) { g.save(); g.globalAlpha = .3 + .7 * s.prog; nsFeature(g, f.id, x, y, s.lv); g.restore(); }
+        else if (s.on) nsFeature(g, f.id, x, y, s.lv);
         else nsMark(g, x, y);
         nsTag(g, x, y + 18, f.n, s.lv, s.on);
     });
@@ -9947,15 +10011,21 @@ var NS_MUSH = [[-34, 7], [-26, 11], [-17, 8], [-9, 15], [0, 10], [9, 18], [18, 9
 var NS_COMB = (function () { var c = [], r, k; for (r = 0; r < 5; r++) for (k = 0; k < 4; k++) c.push([-18 + k * 12.25 + (r % 2) * 6.1, -52 + r * 10.5]); return c; })();
 
 // one feature's still drawing, centred on its floor point (x, y)
-function nsFeature(g, id, x, y) {
+// how each building grows with its level (0-5), so an upgrade shows in the nest, not just as a number
+function nsMushN(lv) { return Math.min(NS_MUSH.length, 3 + 2 * lv); }
+function nsCombN(lv) { return Math.min(NS_COMB.length, 6 + Math.round(lv * 2.8)); }
+function nsTowerN(lv) { return Math.min(11, 6 + lv); }
+function nsGuards(lv) { return 2 + Math.floor(lv / 2); }
+function nsFeature(g, id, x, y, lv) {
     var R = nsRand(id.length * 991 + 3), i, k;
+    lv = lv || 0;
     if (id === 'store') {
         nsShadow(g, x, y + 2, 64, 14, .6);
         var bw = g.createLinearGradient(0, y - 10, 0, y + 6); bw.addColorStop(0, '#2a140a'); bw.addColorStop(1, '#5a3420');
         g.fillStyle = bw; g.beginPath(); g.ellipse(x, y, 56, 12, 0, 0, 7); g.fill();
         g.strokeStyle = 'rgba(200,140,90,.35)'; g.lineWidth = 1.5; g.beginPath(); g.ellipse(x, y, 56, 12, 0, .1, Math.PI - .1); g.stroke();
         // the heap grows with how full the food store is
-        var full = Math.max(0, Math.min(1, S.food / foodCap())), hh = 8 + 40 * full, n = Math.round(40 + 260 * full);
+        var full = Math.max(0, Math.min(1, S.food / foodCap())), hh = (8 + 40 * full) * (.85 + .06 * lv), n = Math.round((40 + 260 * full) * (.8 + .1 * lv));
         R = nsRand(5);
         for (k = 0; k < n; k++) { var u = R() * 2 - 1, cap = Math.sqrt(Math.max(0, 1 - u * u)), v = Math.sqrt(R()), sx = x + u * 50, sy = y - 2 - v * hh * cap; nsSeed(g, sx, sy, R); }
         g.fillStyle = 'rgba(255,240,200,.12)'; g.beginPath(); g.ellipse(x - 8, y - hh * .7, 22, 6, 0, 0, 7); g.fill();
@@ -9966,7 +10036,7 @@ function nsFeature(g, id, x, y) {
         var nb = g.createRadialGradient(x, y - 6, 2, x, y - 2, 58); nb.addColorStop(0, '#9ab868'); nb.addColorStop(.7, '#5a7a34'); nb.addColorStop(1, '#2e4218');
         g.fillStyle = nb; g.beginPath(); g.ellipse(x, y - 3, 56, 13, 0, 0, 7); g.fill();
         g.strokeStyle = 'rgba(255,250,235,.35)'; g.lineWidth = .6; for (i = 0; i < 18; i++) { g.beginPath(); g.moveTo(x - 50 + R() * 100, y - 3 + (R() - .5) * 18); g.quadraticCurveTo(x + (R() - .5) * 60, y - 14, x - 50 + R() * 100, y - 3 + (R() - .5) * 18); g.stroke(); }
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < Math.min(6, Math.max(1, S.eggs.length)); i++) {
             var lx = x - 44 + i * 12 + (i % 2) * 3, ly = y - 9 - (i % 2) * 5;
             g.save(); g.translate(lx, ly); g.rotate((i % 3 - 1) * .2);
             var lg = g.createRadialGradient(-1, -2, .5, 0, 0, 7); lg.addColorStop(0, '#fffdf6'); lg.addColorStop(1, '#d8ccb0');
@@ -9975,7 +10045,7 @@ function nsFeature(g, id, x, y) {
             g.fillStyle = '#b89a6a'; g.beginPath(); g.arc(5.6, -1, 1.6, 0, 7); g.fill();
             g.restore();
         }
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < Math.min(4, 1 + lv); i++) {
             var cxx = x + 16 + i * 10, cy = y - 12 - (i % 2) * 3, cg = g.createLinearGradient(cxx - 5, 0, cxx + 5, 0);
             cg.addColorStop(0, '#9a7a4a'); cg.addColorStop(.45, '#f0dca8'); cg.addColorStop(1, '#7a5a30');
             g.fillStyle = cg; g.beginPath(); g.ellipse(cxx, cy, 4.6, 8.2, .12, 0, 7); g.fill();
@@ -9986,7 +10056,7 @@ function nsFeature(g, id, x, y) {
         for (i = 0; i < 14; i++) { var mx = x - 30 + R() * 60; g.beginPath(); g.moveTo(mx, y - 10); g.bezierCurveTo(mx + (R() - .5) * 30, y - 40, mx + (R() - .5) * 40, y - 60, mx + (R() - .5) * 50, y - 80 - R() * 30); g.stroke(); }
         nsMound(g, x, y, 92, 22, [70, 50, 32], 11);
         for (i = 0; i < 40; i++) { g.fillStyle = ['rgba(120,90,50,.8)', 'rgba(90,110,50,.6)', 'rgba(40,25,15,.8)'][i % 3]; g.beginPath(); g.ellipse(x + (R() - .5) * 80, y - R() * 16, 2 + R() * 2, 1, R() * 3, 0, 7); g.fill(); }
-        NS_MUSH.forEach(function (m, k2) { nsMush(g, x + m[0], y - 6 - (k2 % 3) * 3, m[1]); });
+        NS_MUSH.slice(0, nsMushN(lv)).forEach(function (m, k2) { nsMush(g, x + m[0], y - 6 - (k2 % 3) * 3, m[1] * (.8 + .06 * lv)); });
     } else if (id === 'infirmary') {
         [[-30, 0, 30, 13], [4, -3, 34, 15], [36, 1, 26, 11]].forEach(function (c) {
             var cx2 = x + c[0], cy2 = y + c[1];
@@ -10003,40 +10073,45 @@ function nsFeature(g, id, x, y) {
         g.fillStyle = '#6a4416'; g.beginPath();
         for (k = 0; k < 14; k++) { var a2 = k / 14 * 6.283, r4 = 34 + Math.sin(k * 2.3) * 5; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a2) * r4 * .85, y - 26 + Math.sin(a2) * r4); }
         g.closePath(); g.fill();
-        NS_COMB.forEach(function (c, k3) {
+        var cn = nsCombN(lv), jf = Math.round(cn * Math.min(1, S.jelly / (15 + 15 * lv)));
+        NS_COMB.slice(0, cn).forEach(function (c, k3) {
             var hx = x + c[0], hy = y + c[1], q;
             g.beginPath(); for (q = 0; q < 6; q++) { var a3 = q * Math.PI / 3 + Math.PI / 6; g[q ? 'lineTo' : 'moveTo'](hx + Math.cos(a3) * s, hy + Math.sin(a3) * s); } g.closePath();
             g.fillStyle = '#3a2208'; g.fill();
-            var capped = k3 % 5 === 2 || k3 % 7 === 4;
+            // a cell full of jelly glows; an empty one is a dark hollow
+            var capped = k3 >= jf;
             g.beginPath(); for (q = 0; q < 6; q++) { var a4 = q * Math.PI / 3 + Math.PI / 6; g[q ? 'lineTo' : 'moveTo'](hx + Math.cos(a4) * s * .78, hy + Math.sin(a4) * s * .78); } g.closePath();
             var fg2;
-            if (capped) { fg2 = g.createRadialGradient(hx - 1.5, hy - 1.5, .5, hx, hy, s); fg2.addColorStop(0, '#fff0c0'); fg2.addColorStop(1, '#c89a50'); }
+            if (capped) { fg2 = g.createRadialGradient(hx - 1.5, hy - 1.5, .5, hx, hy, s); fg2.addColorStop(0, '#6a4416'); fg2.addColorStop(1, '#2a1606'); }
             else { fg2 = g.createRadialGradient(hx - 1.5, hy - 2, .4, hx, hy, s * .9); fg2.addColorStop(0, '#fff6c0'); fg2.addColorStop(.4, '#ffbe32'); fg2.addColorStop(1, '#a85a08'); }
             g.fillStyle = fg2; g.fill();
             if (!capped) { g.fillStyle = 'rgba(255,255,240,.7)'; g.beginPath(); g.ellipse(hx - 2, hy - 2.5, 1.6, .8, -.5, 0, 7); g.fill(); }
         });
     } else if (id === 'barracks') {
         nsMound(g, x, y, 120, 12, [96, 56, 32], 21);
-        for (i = 0; i < 11; i++) {
-            var sx2 = x - 52 + i * 10.4, ht = 26 + (i % 3) * 6, lean = (i - 5) * .02;
+        var nst = Math.min(11, 5 + Math.round(lv * 1.4)), so = (11 - nst) / 2;
+        for (i = 0; i < nst; i++) {
+            var sx2 = x - 52 + (i + so) * 10.4, ht = 26 + (i % 3) * 6, lean = (i - 5) * .02;
             var tg = g.createLinearGradient(sx2 - 3, 0, sx2 + 3, 0); tg.addColorStop(0, '#3a1408'); tg.addColorStop(.5, '#9a4a26'); tg.addColorStop(1, '#3a1408');
             g.fillStyle = tg; g.beginPath(); g.moveTo(sx2 - 3, y - 6); g.quadraticCurveTo(sx2 - 2 + lean * 40, y - 6 - ht * .6, sx2 + lean * ht * 2, y - 6 - ht); g.quadraticCurveTo(sx2 + 2 + lean * 40, y - 6 - ht * .6, sx2 + 3, y - 6); g.closePath(); g.fill();
             g.fillStyle = 'rgba(255,200,160,.35)'; g.beginPath(); g.moveTo(sx2 - .5, y - 8); g.lineTo(sx2 + lean * ht * 2, y - 5 - ht); g.lineTo(sx2 + .6, y - 8); g.fill();
         }
         g.strokeStyle = '#5a3a1e'; g.lineWidth = 2.2; g.beginPath(); g.moveTo(x - 56, y - 18); g.quadraticCurveTo(x, y - 14, x + 56, y - 18); g.stroke();
-        [-38, 38].forEach(function (o) { var shx = x + o, shy = y - 12; nsShadow(g, shx, shy + 8, 10, 3, .5); var sg2 = g.createRadialGradient(shx - 3, shy - 4, 1, shx, shy, 10); sg2.addColorStop(0, '#d8d0c4'); sg2.addColorStop(.6, '#7a726a'); sg2.addColorStop(1, '#3a3430'); g.fillStyle = sg2; g.beginPath(); g.ellipse(shx, shy, 9, 10, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = 1; g.stroke(); g.fillStyle = 'rgba(80,70,60,.6)'; for (var q = 0; q < 6; q++) g.fillRect(shx - 5 + R() * 10, shy - 6 + R() * 12, 1.4, 1.4); });
+        (lv >= 4 ? [-38, -20, 20, 38] : lv >= 1 ? [-38, 38] : []).forEach(function (o) { var shx = x + o, shy = y - 12; nsShadow(g, shx, shy + 8, 10, 3, .5); var sg2 = g.createRadialGradient(shx - 3, shy - 4, 1, shx, shy, 10); sg2.addColorStop(0, '#d8d0c4'); sg2.addColorStop(.6, '#7a726a'); sg2.addColorStop(1, '#3a3430'); g.fillStyle = sg2; g.beginPath(); g.ellipse(shx, shy, 9, 10, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = 1; g.stroke(); g.fillStyle = 'rgba(80,70,60,.6)'; for (var q = 0; q < 6; q++) g.fillRect(shx - 5 + R() * 10, shy - 6 + R() * 12, 1.4, 1.4); });
     } else if (id === 'tower') {
+        // the lookout grows taller with each level; yt is where its top sits
+        var tn = nsTowerN(lv), yt = y - (tn - 10) * 6;
         nsMound(g, x, y, 54, 10, [96, 56, 32], 31);
         for (k = 0; k < 3; k++) {
             g.strokeStyle = ['#4a2c16', '#6a4224', '#3a200e'][k]; g.lineWidth = 6 - k;
             g.beginPath(); g.moveTo(x - 8 + k * 6, y - 4);
-            for (i = 1; i <= 10; i++) g.lineTo(x - 4 + k * 3 + Math.sin(i * .9 + k * 2) * 5, y - 4 - i * 6);
+            for (i = 1; i <= tn; i++) g.lineTo(x - 4 + k * 3 + Math.sin(i * .9 + k * 2) * 5, y - 4 - i * 6);
             g.stroke();
         }
-        g.strokeStyle = 'rgba(255,210,170,.25)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x - 6, y - 6); for (i = 1; i <= 10; i++) g.lineTo(x - 3 + Math.sin(i * .9) * 5, y - 6 - i * 6); g.stroke();
-        var pg2 = g.createLinearGradient(0, y - 70, 0, y - 62); pg2.addColorStop(0, '#9a6a3a'); pg2.addColorStop(1, '#4a2c14'); g.fillStyle = pg2; g.beginPath(); g.ellipse(x, y - 66, 18, 5, 0, 0, 7); g.fill();
-        g.strokeStyle = 'rgba(30,15,6,.6)'; g.lineWidth = .7; for (i = 0; i < 4; i++) { g.beginPath(); g.ellipse(x, y - 66, 18 - i * 4, 5 - i * 1.1, 0, 0, 7); g.stroke(); }
-        g.strokeStyle = 'rgba(40,20,10,.8)'; g.lineWidth = .7; g.beginPath(); g.moveTo(x - 14, y - 100); g.lineTo(x - 14, y - 86); g.stroke();
+        g.strokeStyle = 'rgba(255,210,170,.25)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x - 6, y - 6); for (i = 1; i <= tn; i++) g.lineTo(x - 3 + Math.sin(i * .9) * 5, y - 6 - i * 6); g.stroke();
+        var pg2 = g.createLinearGradient(0, yt - 70, 0, yt - 62); pg2.addColorStop(0, '#9a6a3a'); pg2.addColorStop(1, '#4a2c14'); g.fillStyle = pg2; g.beginPath(); g.ellipse(x, yt - 66, 18, 5, 0, 0, 7); g.fill();
+        g.strokeStyle = 'rgba(30,15,6,.6)'; g.lineWidth = .7; for (i = 0; i < 4; i++) { g.beginPath(); g.ellipse(x, yt - 66, 18 - i * 4, 5 - i * 1.1, 0, 0, 7); g.stroke(); }
+        g.strokeStyle = 'rgba(40,20,10,.8)'; g.lineWidth = .7; g.beginPath(); g.moveTo(x - 14, yt - 100); g.lineTo(x - 14, yt - 86); g.stroke();
     }
 }
 
@@ -10052,15 +10127,16 @@ function nsDynamic(g, W, Hs, t) {
         var s = nsState(f.id), x = f.x * W, y = nsY(f.y);
         if (!s.on || s.prog >= 0) return;
         if (f.id === 'fungus') {
-            NS_MUSH.forEach(function (m, k) { var s2 = m[1]; nsGlow(g, x + m[0], y - 6 - (k % 3) * 3 - s2 * 1.1, s2 * 1.8, '120,255,190', .12 + .05 * Math.sin(t * 2 + k)); });
+            NS_MUSH.slice(0, nsMushN(s.lv)).forEach(function (m, k) { var s2 = m[1] * (.8 + .06 * s.lv); nsGlow(g, x + m[0], y - 6 - (k % 3) * 3 - s2 * 1.1, s2 * 1.8, '120,255,190', .12 + .05 * Math.sin(t * 2 + k)); });
             for (i = 0; i < 12; i++) { var u = (t * .07 + i / 12) % 1; g.fillStyle = 'rgba(200,255,225,' + (.7 * (1 - u)) + ')'; g.beginPath(); g.arc(x - 30 + R() * 60 + Math.sin(t * 1.3 + i) * 5, y - 20 - u * 60, 1.1, 0, 7); g.fill(); }
             nsGlow(g, x, y - 18, 70, '110,255,180', .22 + .05 * Math.sin(t * 1.7));
         } else if (f.id === 'archive') {
+            if (S.jelly < 1) return;
             var du = (t * .3) % 1; g.fillStyle = '#ffb030'; g.beginPath(); g.ellipse(x + 4, y - 4 + du * 14, 1.8, 2.6, 0, 0, 7); g.fill();
             nsGlow(g, x, y - 30, 56, '255,170,50', .3 + .06 * Math.sin(t * 2));
         } else if (f.id === 'tower') {
-            var gw = y - 84 + Math.sin(t * 1.4) * 2; g.fillStyle = '#d8f8ff'; g.beginPath(); g.ellipse(x - 14, gw, 2.4, 3.4, 0, 0, 7); g.fill(); nsGlow(g, x - 14, gw, 30, '180,230,255', .45 + .1 * Math.sin(t * 2));
-            nsAnt(g, x + 2, y - 72, -Math.PI / 2, 3, t * 3);
+            var yt2 = y - (nsTowerN(s.lv) - 10) * 6, gw = yt2 - 84 + Math.sin(t * 1.4) * 2; g.fillStyle = '#d8f8ff'; g.beginPath(); g.ellipse(x - 14, gw, 2.4, 3.4, 0, 0, 7); g.fill(); nsGlow(g, x - 14, gw, 30, '180,230,255', .45 + .1 * Math.sin(t * 2));
+            nsAnt(g, x + 2, yt2 - 72, -Math.PI / 2, 3, t * 3);
         } else if (f.id === 'infirmary') {
             var hurt = Math.min(3, S.injured.reduce(function (a, b) { return a + b; }, 0));
             if (hurt > 0) nsAnt(g, x - 30, y - 15, -.2, 2, 0);
@@ -10068,8 +10144,8 @@ function nsDynamic(g, W, Hs, t) {
             if (hurt > 2) nsAnt(g, x + 34, y - 12, -.1, 2, 0);
             if (hurt > 0) { var dy = y - 40 + Math.sin(t * 2) * 3; g.fillStyle = '#c8ffc8'; g.beginPath(); g.arc(x - 12, dy, 2.8, 0, 7); g.fill(); nsGlow(g, x - 12, dy, 20, '150,240,150', .4); }
         } else if (f.id === 'barracks') {
-            nsAnt(g, x - 16, y - 9, 0, 2, t * 2);
-            nsAnt(g, x + 18, y - 9, Math.PI, 2, t * 2 + 3);
+            // more guards drill in front of a bigger barracks, pacing to and fro
+            for (i = 0; i < nsGuards(s.lv); i++) { var gx = x - 44 + 88 * (i + .5) / nsGuards(s.lv) + Math.sin(t * .8 + i * 2) * 6; nsAnt(g, gx, y - 9 + (i % 2) * 4, Math.cos(t * .8 + i * 2) > 0 ? 0 : Math.PI, 2, t * 2 + i); }
             nsGlow(g, x, y - 20, 56, '255,140,70', .16);
         } else if (f.id === 'store') nsGlow(g, x, y - 20, 50, '255,210,120', .1);
         else if (f.id === 'nursery') nsGlow(g, x, y - 12, 50, '255,220,180', .1);
@@ -10464,7 +10540,7 @@ function goalsTick() {
         if (G.jl)
             gainJelly(G.jl);
         toast('Goal complete: ' + G.t + '  (' + G.r + ')');
-        SFX.win();
+        SFX.goal();
         pulseRing('255,233,168');
         burst(QX, QY - 20, 24, ['#ffe27a', '#fff', '#9be07a'], 110);
         S.goalIndex++;
@@ -10761,7 +10837,7 @@ function giftClaim() {
     if (r.egg)
         S.eggs.push({ t: 12, d: 12, b: performance.now(), c: 4 });
     P.gift = { last: dayKey(), streak: st.streak };
-    SFX.win();
+    SFX.claim();
     burst(QX, QY - 20, 30, ['#ffe27a', '#fff', '#9be07a'], 120);
     toast('Queen\u2019s Gift claimed: +' + fmt(r.food) + ' food, +' + r.jelly + ' jelly' + (r.egg ? ', golden egg!' : '.'));
     save();
@@ -10824,7 +10900,7 @@ function dailyTick() {
             any = true;
             gainJelly(dReward());
             toast('Daily task done: ' + t.t() + '. +' + dReward() + ' jelly.');
-            SFX.win();
+            SFX.claim();
         }
     });
     if (!D.all && D.ids.every(function (id) { return D.done[id]; })) {
@@ -10884,7 +10960,7 @@ function questCollect() {
     S.quest = null;
     S.questN = (S.questN || 0) + 1;
     burst(QX, QY, 22, ['#ffd23f', '#fff3b0', '#e8b04a'], 90);
-    SFX.win();
+    SFX.claim();
     toast(QSTORY[Math.floor(Math.random() * QSTORY.length)] + ' +' + fmt(f) + ' food' + (j ? ', +' + j + ' jelly' : '') + '.');
     save();
     questsUi(true);
@@ -11288,7 +11364,7 @@ function mapDraw() {
         } });
         deepList().forEach(function (e2) { line(mapPath(e2.f.q, e2.pr, 0), tw, '#9a8a78'); });
         line(mapPath(MAIN, 1, Math.max(0, 1 - S.dug)), tw * 1.25, '#e0b878');
-        mapQueen(g, X(QX), Y(QY), Math.max(4, 9 * sc));
+        mapQueen(g, X(QX), Y(QY), Math.max(8, 13 * sc));
         g.restore();
         g = gMain;
     }
@@ -11520,11 +11596,11 @@ function mapFoe(r, d) {
         g.stroke();
     });
 }
+// the queen on the map: a small top-down copy of the new queen (dark-red armour, glowing gem eyes) on a gold-ringed badge
 function mapQueen(g, x, y, r) {
     var gg = g.createRadialGradient(x - r * .3, y - r * .35, r * .1, x, y, r * 1.1);
-    gg.addColorStop(0, '#ff6a50');
-    gg.addColorStop(.6, '#8a1a10');
-    gg.addColorStop(1, '#2a0603');
+    gg.addColorStop(0, '#5a1a12');
+    gg.addColorStop(1, '#14050a');
     g.fillStyle = gg;
     g.beginPath();
     g.arc(x, y, r, 0, 7);
@@ -11532,19 +11608,40 @@ function mapQueen(g, x, y, r) {
     g.strokeStyle = '#ffd27a';
     g.lineWidth = 1.5;
     g.stroke();
-    // crown
-    var cw = r * 1.1, cy = y - r * .05;
-    g.fillStyle = '#ffd27a';
+    var u = r / 10;
+    g.save();
+    g.translate(x, y);
+    // legs
+    g.strokeStyle = '#0e0506';
+    g.lineWidth = Math.max(.8, u * .9);
+    g.lineCap = 'round';
     g.beginPath();
-    g.moveTo(x - cw * .6, cy + cw * .35);
-    g.lineTo(x - cw * .6, cy - cw * .25);
-    g.lineTo(x - cw * .3, cy + cw * .05);
-    g.lineTo(x, cy - cw * .4);
-    g.lineTo(x + cw * .3, cy + cw * .05);
-    g.lineTo(x + cw * .6, cy - cw * .25);
-    g.lineTo(x + cw * .6, cy + cw * .35);
-    g.closePath();
-    g.fill();
+    [[-1.2, -4], [0, -5.5], [1.2, -4]].forEach(function (l, k) {
+        [1, -1].forEach(function (d) { g.moveTo(d * u * 1.2, u * (l[0] - 1.5)); g.lineTo(d * u * 5.5, u * (l[0] - 1.5 + (k - 1) * 3.2)); });
+    });
+    g.stroke();
+    function blob(cy, rx, ry, lit) {
+        var b = g.createRadialGradient(-rx * .3, cy - ry * .4, ry * .1, 0, cy, Math.max(rx, ry));
+        b.addColorStop(0, lit);
+        b.addColorStop(.6, '#2a0c0a');
+        b.addColorStop(1, '#070203');
+        g.fillStyle = b;
+        g.beginPath();
+        g.ellipse(0, cy, rx, ry, 0, 0, 7);
+        g.fill();
+    }
+    blob(u * 3.6, u * 3.4, u * 4.2, '#7a2418');
+    blob(u * -1.3, u * 1.5, u * 2, '#6a2016');
+    blob(u * -4.6, u * 2.2, u * 1.9, '#7a2418');
+    // glowing seam on the abdomen and the two gem eyes
+    g.strokeStyle = 'rgba(255,90,50,.7)';
+    g.lineWidth = Math.max(.6, u * .5);
+    g.beginPath();
+    g.ellipse(0, u * 3.6, u * 2.6, u * 1.2, 0, Math.PI * 1.1, Math.PI * 1.9);
+    g.stroke();
+    g.fillStyle = '#ff7a30';
+    [1, -1].forEach(function (d) { g.beginPath(); g.arc(d * u * 1.3, u * -5.2, Math.max(.7, u * .7), 0, 7); g.fill(); });
+    g.restore();
 }
 function mapStar(g, x, y, r, col) {
     g.fillStyle = col;
@@ -11872,7 +11969,7 @@ function projTick(dt, pj) {
         S.proj = null;
         var b = BDEF.filter(function (x) { return x.id === pj.k; })[0];
         toast('Built: ' + b.n + ' (level ' + S.bld[pj.k] + ')!');
-        SFX.win();
+        SFX.build();
         burst(W * .5, WH - 20, 24, ['#ffd23f', '#fff', '#a07a4a'], 90);
         ordKey = '';
     }
@@ -12494,7 +12591,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 81, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 82, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -13395,7 +13492,7 @@ function initNestTaps() {
         S.queenTaps = (S.queenTaps || 0) + 1;
         pulseRing('255,233,168');
         pulse = 1;
-        SFX.lay();
+        SFX.tap();
         fx.push({ x: QX + Q.ox + Math.random() * 50 - 25, y: QY + Q.oy - 31, vx: 0, vy: -40, l: .9, t: '-' + cut.toFixed(1) + 's', f: 13, c: '#ffe9a8', g: 0 });
     });
 }
@@ -13522,6 +13619,7 @@ function frame(n) {
     var dt = Math.min((n - lt) / 1000, .1);
     lt = n;
     statsTick(dt);
+    ambTick(dt);
     if (tab !== 'col' && !battery)
         rqTick(dt, fpsCap);
     if (!dead) {
@@ -13590,6 +13688,8 @@ function frame(n) {
                     shake = .7;
                     SFX.boom();
                 }
+                else
+                    SFX.squish();
                 lastP = f.p;
                 // flips over, twitches and sinks; the carcass is left once it has settled
                 dyingF.push({ p: f.p, o: f.o, tp: f.tp, sz: foeSz(f), boss: f.boss, t: 0, c: { x: a.x, y: a.y, t: 10, tp: f.tp, v: Math.ceil((4 + S.tier * 5) * (f.boss ? 4 : 1)) } });

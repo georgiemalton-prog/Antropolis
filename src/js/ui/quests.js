@@ -34,7 +34,7 @@ function questCollect() {
     S.quest = null;
     S.questN = (S.questN || 0) + 1;
     burst(QX, QY, 22, ['#ffd23f', '#fff3b0', '#e8b04a'], 90);
-    SFX.win();
+    SFX.claim();
     toast(QSTORY[Math.floor(Math.random() * QSTORY.length)] + ' +' + fmt(f) + ' food' + (j ? ', +' + j + ' jelly' : '') + '.');
     save();
     questsUi(true);

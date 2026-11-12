@@ -126,7 +126,7 @@ function deposit(m) {
     return y;
 }
 
-function gainJelly(n) { var jx = n * (bio().jl || 1); n = Math.floor(jx) + (Math.random() < jx % 1 ? 1 : 0); S.jelly += n; fx.push({ x: QX, y: QY - 48, vx: 0, vy: -18, l: 1.4, t: '+' + n + ' jelly', f: 13, c: '#ffd23f', g: 0 }); }
+function gainJelly(n) { var jx = n * (bio().jl || 1); n = Math.floor(jx) + (Math.random() < jx % 1 ? 1 : 0); S.jelly += n; if (n > 0) SFX.jelly(); fx.push({ x: QX, y: QY - 48, vx: 0, vy: -18, l: 1.4, t: '+' + n + ' jelly', f: 13, c: '#ffd23f', g: 0 }); }
 
 function gj1() { var n = performance.now(); if (n > (gj1.t || 0)) {
     gj1.t = n + 6000;
@@ -253,7 +253,7 @@ function hatch(p, e) {
     // the two shell halves spring apart
     for (var sh = -1; sh <= 1; sh += 2)
         fx.push({ x: p.x, y: p.y + sh, vx: sh * (14 + Math.random() * 10), vy: -26 - Math.random() * 10, l: .75, shell: sh, rot: 0, spin: sh * (4 + Math.random() * 4), c: c === 4 ? '#ffd23f' : '#f4efe0', g: 150 });
-    tn(800 + c * 120, .06, 'triangle', .06);
+    SFX.hatch(c);
     if (c === 4) {
         gainJelly(10);
         flash = .8;

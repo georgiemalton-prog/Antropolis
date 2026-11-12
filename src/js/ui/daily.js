@@ -35,7 +35,7 @@ function dailyTick() {
             any = true;
             gainJelly(dReward());
             toast('Daily task done: ' + t.t() + '. +' + dReward() + ' jelly.');
-            SFX.win();
+            SFX.claim();
         }
     });
     if (!D.all && D.ids.every(function (id) { return D.done[id]; })) {

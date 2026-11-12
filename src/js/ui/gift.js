@@ -41,7 +41,7 @@ function giftClaim() {
     if (r.egg)
         S.eggs.push({ t: 12, d: 12, b: performance.now(), c: 4 });
     P.gift = { last: dayKey(), streak: st.streak };
-    SFX.win();
+    SFX.claim();
     burst(QX, QY - 20, 30, ['#ffe27a', '#fff', '#9be07a'], 120);
     toast('Queen\u2019s Gift claimed: +' + fmt(r.food) + ' food, +' + r.jelly + ' jelly' + (r.egg ? ', golden egg!' : '.'));
     save();

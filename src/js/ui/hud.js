@@ -288,7 +288,7 @@ function goalsTick() {
         if (G.jl)
             gainJelly(G.jl);
         toast('Goal complete: ' + G.t + '  (' + G.r + ')');
-        SFX.win();
+        SFX.goal();
         pulseRing('255,233,168');
         burst(QX, QY - 20, 24, ['#ffe27a', '#fff', '#9be07a'], 110);
         S.goalIndex++;
