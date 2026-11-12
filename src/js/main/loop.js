@@ -39,7 +39,12 @@ function frame(n) {
         }
         var team = dps() * (.8 + .5 * S.orders.gd / 100) / (foes.length || 1), softShare = Math.max(0, 1 - majorDps() / Math.max(1, dps())), armBlock = .4 * softShare * Math.max(.1, 1 - .2 * S.bld.rax);
         foes = foes.filter(function (f) {
-            f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt);
+            if (f.rv) {
+                if (!rivalStep(f, dt))
+                    return false;
+            }
+            else
+                f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt);
             var a = at(f.p);
             if (f.p > .05) {
                 var d = team * dt * (f.tp === 0 ? 1 - armBlock : 1);
@@ -56,7 +61,7 @@ function frame(n) {
                         fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -26, l: .9, t: '-1 ant', f: 11, c: '#ff8a7a', g: 0 });
                     }
                 }
-                if (f.p >= 1)
+                if (f.p >= 1 && !f.rv)
                     S.queenHp -= (1 + S.wave * .15) * (f.boss ? 2.5 : 1) * dt;
                 if (f.tm <= 0) {
                     f.tm = .45;
@@ -91,6 +96,8 @@ function frame(n) {
                 }
                 else
                     SFX.squish();
+                if (f.rv)
+                    rivalDrop(f);
                 lastP = f.p;
                 // flips over, twitches and sinks; the carcass is left once it has settled
                 dyingF.push({ p: f.p, o: f.o, tp: f.tp, sz: foeSz(f), boss: f.boss, t: 0, c: { x: a.x, y: a.y, t: 10, tp: f.tp, v: Math.ceil((4 + S.tier * 5) * (f.boss ? 4 : 1)) } });
@@ -221,5 +228,5 @@ function drawDeadQueen() {
     cx.restore();
 }
 
-function drawT(now) { drawWorld(now); drawTrails(now); drawAlarm(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); }
+function drawT(now) { drawWorld(now); drawTrails(now); drawAlarm(now); drawRivalScout(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); }
 var lastTouchEnd = 0;

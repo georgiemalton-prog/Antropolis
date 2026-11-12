@@ -472,7 +472,7 @@ function soldierGuard(m, dt, t, C) {
 
 // ---- combat: waves, invaders and loot ----
 
-function foeSz(f) { return (8 + S.tier * 1.5) * (f.boss ? 1.9 : 1); }
+function foeSz(f) { return f.rv ? rivalSz() : (8 + S.tier * 1.5) * (f.boss ? 1.9 : 1); }
 
 function dps() { return heroB(2) * (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax) * (1 + TUNING.hall.bonus * (S.hall || 0)); }
 

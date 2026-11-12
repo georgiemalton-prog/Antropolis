@@ -57,6 +57,7 @@ function devPanel() {
             ['All 4 deep layers', function () { S.tier = Math.max(S.tier, 4); S.deep = 4; S.deepAt = [0, 0, 0, 0]; layoutV++; genDeep(); genPebs(); go('tun'); camT = camClamp(deepTop() - H * .3); }],
             ['Go to deep layers', function () { go('tun'); camT = camClamp(deepTop() - H * .3); }],
             ['Finish all tunnel digging', function () { farInit(); for (var r = 0; r < 60; r++) { farmList(); deepList(); var q = DQ.concat(FQ); if (!q.length) break; q.forEach(function (e) { (e.deep ? S.ddg : S.fdg)[e.i] = 1; }); FDV++; } toast('All unlocked tunnels dug.'); }],
+            ['Rival raid now', function () { if (!rivalsOn()) { toast('Needs the Colony stage, the tunnel open and a finished side tunnel.'); return; } foes.length = 0; wvi.w = 0; RV = null; rvT = 0; go('tun'); }],
             ['Cave crickets now', function () { if (!armouryOn()) { toast('Unlock the Stone layer first.'); return; } cricT = 0; cric.length = 0; foes.length = 0; trm.length = 0; go('tun'); }],
             ['Termite raid now', function () { devStage(4); S.reach = 2; S.sideTunnels = 19; for (var k = 0; k < 19; k++) S.sideDug[k] = 1; S.rare.nbf = 1; trmT = 0; genPebs(); go('tun'); }],
             ['Events', null],

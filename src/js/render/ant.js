@@ -177,14 +177,16 @@ var ANTC = {
     5: { a: [88, 140, 46], g: '170,240,110', name: 'Forager' },
     6: { a: [44, 120, 190], g: '120,200,255', name: 'Scout' },
     7: { a: [120, 28, 18], g: '255,80,50', name: 'Super major' },
-    8: { a: [214, 150, 46], g: '255,210,110', name: 'Worker' }
+    8: { a: [214, 150, 46], g: '255,210,110', name: 'Worker' },
+    // rival colony raiders (threats/rivals.js)
+    9: { a: [96, 60, 150], g: '200,160,255', name: 'Rival' }
 };
 function antRgb(c, m) { return 'rgb(' + Math.round(Math.min(255, c[0] * m)) + ',' + Math.round(Math.min(255, c[1] * m)) + ',' + Math.round(Math.min(255, c[2] * m)) + ')'; }
 
 function antBody(u, ph, kd) {
     var g = cx, bite = BITE;
     u *= 1.18;
-    var C = ANTC[kd] || ANTC[8], sol = kd === 1 || kd === 7, big = kd === 7, sc = kd === 6, nur = kd === 4;
+    var C = ANTC[kd] || ANTC[8], sol = kd === 1 || kd === 7 || kd === 9, big = kd === 7, sc = kd === 6, nur = kd === 4;
     var hw = big ? 1.25 : sol ? 1.0 : kd === 8 ? .85 : .74, hl = big ? 1.15 : sol ? .95 : .76;   // head width / length
     var gl = sc ? 1.05 : nur ? 1.18 : 1.08, gw = sc ? .7 : nur ? .95 : .88;                     // abdomen
     var L = sc ? 1.3 : 1.05, sk = skinCol(), chit = antShade(sk, .85), chit2 = antShade(sk, 1.7), lite = antShade(sk, 2.8);

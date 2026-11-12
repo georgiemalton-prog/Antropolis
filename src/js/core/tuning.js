@@ -52,6 +52,19 @@ var TUNING = {
         stealShare: .025,     // food each cricket steals, as a share of the food store
         lootShare: .03        // food won per cricket beaten
     },
+    // Rival ant raids on the brood (threats/rivals.js)
+    rivals: {
+        firstAt: 480,         // seconds of play (Colony stage, tunnel open) before the first raid
+        gapMin: 600,          // seconds between raids: gapMin + random x gapRand
+        gapRand: 420,
+        scoutLead: 25,        // seconds of warning: the scout is seen this long before the raid
+        count: 2,             // raiders: count + nest stage + 1 per 12 waves
+        hpMul: 1.1,           // toughness against the colony's soldiers (1 = like an invader wave)
+        speed: .045,          // share of the main tunnel per second (invaders move .02)
+        foodShare: .03,       // food a raider takes when there are no eggs to steal
+        lootShare: .05,       // food won when no egg is lost
+        winJelly: 2
+    },
     // Deep layers (layers/*.js)
     larder: { carriers: 6, nursesPer: 8, storeBonus: 1.25, awayHours: 10, awayHoursOff: 8, reserve: 1, refill: .02 },
     armoury: { drillers: 6, soldiersPer: 10, injuryMul: .75 },

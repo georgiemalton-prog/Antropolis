@@ -85,6 +85,7 @@ function drawNest(now) {
     nsDynamic(g, W, Hs, t);
     // the colony's ants roaming the cavern
     nsRoam(g, W, Hs, t);
+    nsRaiders(g, t);
     // the real queen, her eggs, rings and effects, through the world transform
     var xf = nsXf(), qh = { x: QX + 7, y: QY - 3 };
     g.save();
@@ -416,7 +417,9 @@ function nsRoam(g, W, Hs, t) {
                 var sol = a.k === 2 || a.k === 4;
                 // soldiers in the nest: a fight in the tunnel sends them running out of the way in at the top;
                 // otherwise they keep near the Barracks and the way in, and stand watch there a while (build 83)
-                if (sol && foes.length) { a.tx = W * (.44 + Math.random() * .12); a.ty = nsY(0) - 10; a.w = 0; }
+                var rin = foes.filter(function (f) { return f.rv && f.p >= .9; });
+                if (sol && rin.length) { var rp = nsRaiderAt(rin[Math.floor(Math.random() * rin.length)]); a.tx = rp.x + (Math.random() - .5) * 16; a.ty = rp.y + (Math.random() - .5) * 10; a.w = 0; }
+                else if (sol && foes.length) { a.tx = W * (.44 + Math.random() * .12); a.ty = nsY(0) - 10; a.w = 0; }
                 else if (sol && Math.random() < .7) { var bf = NSF[0]; a.tx = bf.x * W + (Math.random() - .5) * 120; a.ty = nsY(bf.y) + 6 + Math.random() * 40; a.w = 2 + Math.random() * 5; }
                 else if (Math.random() < .35) { var f = NSF[Math.floor(Math.random() * NSF.length)]; a.tx = f.x * W + (Math.random() - .5) * 40; a.ty = nsY(f.y) - 4; }
                 else { a.tx = W * (.12 + Math.random() * .76); a.ty = nsY(.06 + Math.random() * .9); }

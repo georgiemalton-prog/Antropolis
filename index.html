@@ -446,6 +446,19 @@ var TUNING = {
         stealShare: .025,     // food each cricket steals, as a share of the food store
         lootShare: .03        // food won per cricket beaten
     },
+    // Rival ant raids on the brood (threats/rivals.js)
+    rivals: {
+        firstAt: 480,         // seconds of play (Colony stage, tunnel open) before the first raid
+        gapMin: 600,          // seconds between raids: gapMin + random x gapRand
+        gapRand: 420,
+        scoutLead: 25,        // seconds of warning: the scout is seen this long before the raid
+        count: 2,             // raiders: count + nest stage + 1 per 12 waves
+        hpMul: 1.1,           // toughness against the colony's soldiers (1 = like an invader wave)
+        speed: .045,          // share of the main tunnel per second (invaders move .02)
+        foodShare: .03,       // food a raider takes when there are no eggs to steal
+        lootShare: .05,       // food won when no egg is lost
+        winJelly: 2
+    },
     // Deep layers (layers/*.js)
     larder: { carriers: 6, nursesPer: 8, storeBonus: 1.25, awayHours: 10, awayHoursOff: 8, reserve: 1, refill: .02 },
     armoury: { drillers: 6, soldiersPer: 10, injuryMul: .75 },
@@ -1052,6 +1065,8 @@ function gain() { return S.tier >= 3 ? Math.floor(Math.sqrt(S.totalHatched / 40)
 
 // leftovers from the old colony (raids, crickets, dig crews) walk tunnels the new colony hasn't dug, so they go
 function clearOldRun() {
+    RV = null;
+    rvT = TUNING.rivals.firstAt;
     ffT = TUNING.start.firstFoesDelay;
     trm.length = 0;
     trm.res = 0;
@@ -1560,7 +1575,7 @@ function colony(dt) {
         lose();
 }
 
-function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); }
+function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); }
 
 /* economy/away.js
    Offline progress, the welcome-back screen and the rested-colony boost.
@@ -4208,7 +4223,7 @@ function soldierGuard(m, dt, t, C) {
 
 // ---- combat: waves, invaders and loot ----
 
-function foeSz(f) { return (8 + S.tier * 1.5) * (f.boss ? 1.9 : 1); }
+function foeSz(f) { return f.rv ? rivalSz() : (8 + S.tier * 1.5) * (f.boss ? 1.9 : 1); }
 
 function dps() { return heroB(2) * (rallyT > 0 ? 1.5 : 1) * (healthy(2) * 3 * (1 + .25 * S.classLevel[2]) * (S.classLevel[2] >= 4 ? 1.15 : 1) * (S.classLevel[2] >= 8 ? 1.25 : 1) + healthy(4) * 30 * (1 + .25 * S.classLevel[4]) * (S.classLevel[4] >= 4 ? 1.25 : 1) * (S.classLevel[4] >= 8 ? 1.25 : 1) + (healthy(0) + healthy(1) + healthy(3)) * .3) * (1 + .15 * pk('hardy')) * (S.tier >= 3 ? 1 + .15 * (1 + .2 * rl(2)) : 1) * (1 + .12 * S.bld.rax) * (1 + TUNING.hall.bonus * (S.hall || 0)); }
 
@@ -4858,6 +4873,176 @@ function threatTick(dt) {
     }
     if (T2.t <= 0)
         THR = null;
+}
+
+/* threats/rivals.js
+   Rival ant colonies raid the nest for its brood (build 85), like slave-making ants in the wild: a scout is seen
+   first in one of the side tunnels, then a column of raiders comes out of that tunnel into the main tunnel and
+   heads for the queen's eggs. Each raider that reaches them grabs an egg and runs back the way it came; one that
+   gets away takes the egg with it. Kill a carrier and the egg is saved. The raiders are invaders (in foes, with
+   f.rv set), so soldiers charge them and damage works as in any wave; only where they go and what they do differ.
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+// RV: the current raid (null between raids): k = side tunnel they use, ph 'scout' | 'raid', t = time in phase,
+// u = the scout's place along the side tunnel, lost / saved = eggs taken / rescued
+var RV = null, rvT = TUNING.rivals.firstAt;
+
+function rivalsOn() { return S.tier >= 2 && S.dug >= 1 && tunOK() && rivalTunnels().length > 0; }
+// finished side tunnels the raiders can come from
+function rivalTunnels() { var o = [], k; for (k = 0; k < S.sideTunnels && k < BP.length; k++) if (S.sideDug[k] >= 1) o.push(k); return o; }
+
+function rivalTick(dt) {
+    if (dead)
+        return;
+    if (!RV) {
+        if (!rivalsOn() || foes.length || wvi.w || (MF && !MF.end) || trm.length)
+            return;
+        rvT -= dt;
+        if (rvT > 0)
+            return;
+        var ks = rivalTunnels();
+        RV = { k: ks[Math.floor(Math.random() * ks.length)], ph: 'scout', t: 0, u: 1, lost: 0, saved: 0 };
+        toast('A rival ant scout is sniffing round one of your side tunnels! A raid on your eggs is coming.');
+        SFX.alarm();
+        return;
+    }
+    RV.t += dt;
+    if (RV.ph === 'scout') {
+        // the scout creeps down the side tunnel towards the main tunnel, then turns and runs home to fetch the raiders
+        var lead = TUNING.rivals.scoutLead, h = RV.t / lead;
+        RV.u = h < .6 ? 1 - h / .6 * .85 : .15 + (h - .6) / .4 * .85;
+        if (RV.t >= lead) {
+            if (!rivalTunnels().length || S.sideDug[RV.k] < 1) { RV = null; rvT = 120; return; }
+            rivalRaid();
+        }
+        return;
+    }
+    // the raid ends when no raider is left in the tunnels
+    if (!foes.some(function (f) { return f.rv; })) {
+        rivalEnd();
+    }
+}
+
+function rivalRaid() {
+    var R = TUNING.rivals, cnt = R.count + S.tier + Math.floor(S.wave / 12), jp = juncP(RV.k);
+    // toughness follows the colony's soldiers like a wave, but varies raid to raid, and a colony that keeps more
+    // soldiers on guard (Orders) meets the raiders sooner, so they arrive weaker
+    var unit = dps() * .85 * (8 + Math.min(S.tier, 4) * 1.2) / cnt * R.hpMul * (.75 + Math.random() * .75) * (1.25 - .5 * S.orders.gd / 100);
+    RV.ph = 'raid';
+    RV.t = 0;
+    RV.n = cnt;
+    for (var i = 0; i < cnt; i++)
+        foes.push({ p: jp - .015 * i, rv: 1, ex: jp, dir: 1, tp: 4, boss: false, hp: unit, max: unit, kl: 0, kt: 9, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i % 3 - 1) * 2 });
+    var a = at(jp);
+    burst(a.x, a.y, 16, ['#5a3a8a', '#2a1a40', '#c9a6ff'], 70);
+    fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#c9a6ff', g: 0, pop: 1 });
+    toast('Raid! ' + cnt + ' rival ants are coming for your eggs. Your soldiers are on their way.');
+    SFX.alarm();
+    alarmT = 5;
+}
+
+// called from the main loop for each raider: moves it, takes an egg at the nest, and says when it got away
+function rivalStep(f, dt) {
+    var sp = TUNING.rivals.speed;
+    if (f.dir > 0) {
+        f.p = Math.min(1, f.p + sp * dt);
+        if (f.p >= 1) {
+            // at the brood: grab an egg (or, with none, a mouthful of food) and turn for home
+            if (S.eggs.length) {
+                f.egg = S.eggs.splice(Math.floor(Math.random() * S.eggs.length), 1)[0];
+                fx.push({ x: QX, y: QY - 14, vx: 0, vy: -20, l: 1, t: '-1 egg', f: 12, c: '#c9a6ff', g: 0 });
+            }
+            else {
+                var fd = Math.round(S.food * TUNING.rivals.foodShare);
+                S.food -= fd;
+                f.fd = fd;
+                fx.push({ x: QX, y: QY - 14, vx: 0, vy: -20, l: 1, t: '-' + fmt(fd) + ' food', f: 12, c: '#c9a6ff', g: 0 });
+            }
+            f.dir = -1;
+        }
+        return true;
+    }
+    f.p -= sp * 1.15 * dt;
+    if (f.p <= f.ex) {
+        // got away
+        if (f.egg)
+            RV.lost++;
+        return false;
+    }
+    return true;
+}
+
+// a raider died: an egg it was carrying is dropped and saved
+function rivalDrop(f) {
+    if (f.egg) {
+        S.eggs.push(f.egg);
+        RV && RV.saved++;
+        var a = at(f.p);
+        fx.push({ x: a.x, y: a.y - 12, vx: 0, vy: -22, l: 1.2, t: 'egg saved!', f: 12, c: '#fff3c4', g: 0 });
+    }
+    else if (f.fd)
+        S.food = Math.min(foodCap(), S.food + f.fd);
+}
+
+function rivalEnd() {
+    var R = TUNING.rivals, lost = RV.lost;
+    if (lost) {
+        toast('The raiders got away with ' + lost + ' egg' + (lost > 1 ? 's' : '') + '. More soldiers on patrol would stop them sooner.');
+        SFX.lose && tn(220, .4, 'sawtooth', .08, .5);
+    }
+    else {
+        var f = Math.round(foodCap() * R.lootShare);
+        S.food = Math.min(foodCap(), S.food + f);
+        gainJelly(R.winJelly);
+        S.rvWins = (S.rvWins || 0) + 1;
+        toast('Raid beaten! Not one egg lost. +' + fmt(f) + ' food from the raiders.' + (RV.saved ? ' ' + RV.saved + ' egg' + (RV.saved > 1 ? 's' : '') + ' rescued.' : ''));
+        SFX.victory();
+    }
+    RV = null;
+    rvT = R.gapMin + Math.random() * R.gapRand;
+}
+
+// the scout, drawn in its side tunnel during the warning
+function drawRivalScout(now) {
+    if (!RV || RV.ph !== 'scout' || !BP[RV.k])
+        return;
+    var q = BP[RV.k], a = at(RV.u, q), back = RV.t / TUNING.rivals.scoutLead >= .6;
+    cx.save();
+    cx.translate(0, -cam);
+    drawFoe(a.x, a.y, a.ang + (back ? 0 : Math.PI), rivalSz(), 4, now * .02);
+    cx.restore();
+}
+function rivalSz() { return 4.6 + S.tier * .5; }
+// a rival ant: dark violet armour with a pale glow, so it never looks like one of yours
+function foeRival(sz, ph, carry) {
+    antBody(sz * .42, ph, 9);
+    if (carry) {
+        cx.fillStyle = '#fff7e2';
+        cx.beginPath();
+        cx.ellipse(sz * 1.25, 0, sz * .32, sz * .24, 0, 0, 7);
+        cx.fill();
+    }
+}
+
+function nsRaiderAt(f) {
+    var u = Math.max(0, (f.p - .9) / .1), x0 = NS.W * .5 + f.o * 6, y0 = nsY(0) - 6, x1 = nsXf().x + 58 + f.o * 4, y1 = nsQY() + 10;
+    return { x: x0 + (x1 - x0) * u, y: y0 + (y1 - y0) * u, ang: Math.atan2(y1 - y0, x1 - x0) };
+}
+// the raid seen in the Nest tab: raiders come in at the top and run for the egg pile and back out
+function nsRaiders(g, t) {
+    foes.forEach(function (f) {
+        if (!f.rv || f.p < .9)
+            return;
+        var r = nsRaiderAt(f);
+        g.save();
+        g.translate(r.x, r.y);
+        g.rotate(r.ang + (f.dir < 0 ? Math.PI : 0));
+        var c0 = cx;
+        cx = g;
+        foeRival(rivalSz() * 1.8, t * 12 + f.o, !!f.egg);
+        cx = c0;
+        g.restore();
+    });
 }
 
 /* threats/termites.js
@@ -8703,14 +8888,16 @@ var ANTC = {
     5: { a: [88, 140, 46], g: '170,240,110', name: 'Forager' },
     6: { a: [44, 120, 190], g: '120,200,255', name: 'Scout' },
     7: { a: [120, 28, 18], g: '255,80,50', name: 'Super major' },
-    8: { a: [214, 150, 46], g: '255,210,110', name: 'Worker' }
+    8: { a: [214, 150, 46], g: '255,210,110', name: 'Worker' },
+    // rival colony raiders (threats/rivals.js)
+    9: { a: [96, 60, 150], g: '200,160,255', name: 'Rival' }
 };
 function antRgb(c, m) { return 'rgb(' + Math.round(Math.min(255, c[0] * m)) + ',' + Math.round(Math.min(255, c[1] * m)) + ',' + Math.round(Math.min(255, c[2] * m)) + ')'; }
 
 function antBody(u, ph, kd) {
     var g = cx, bite = BITE;
     u *= 1.18;
-    var C = ANTC[kd] || ANTC[8], sol = kd === 1 || kd === 7, big = kd === 7, sc = kd === 6, nur = kd === 4;
+    var C = ANTC[kd] || ANTC[8], sol = kd === 1 || kd === 7 || kd === 9, big = kd === 7, sc = kd === 6, nur = kd === 4;
     var hw = big ? 1.25 : sol ? 1.0 : kd === 8 ? .85 : .74, hl = big ? 1.15 : sol ? .95 : .76;   // head width / length
     var gl = sc ? 1.05 : nur ? 1.18 : 1.08, gw = sc ? .7 : nur ? .95 : .88;                     // abdomen
     var L = sc ? 1.3 : 1.05, sk = skinCol(), chit = antShade(sk, .85), chit2 = antShade(sk, 1.7), lite = antShade(sk, 2.8);
@@ -9570,8 +9757,8 @@ function drawFoesFx(now) {
         f.o = Math.max(-lim, Math.min(lim, f.o));
         // knocked back by hits, lunges forward when it bites
         var ak = f.atk > 0 ? Math.sin((1 - f.atk / .32) * Math.PI) : 0, push = ak * sz * .7 - (f.kb || 0), fx0 = a.x + a.nx * (f.o + fl) + Math.cos(a.ang) * push, fy0 = a.y + a.ny * (f.o + fl) + Math.sin(a.ang) * push;
-        FOEST = { hf: f.hf || 0, atk: ak };
-        drawFoe(fx0, fy0, a.ang + (f.kb || 0) * .03 * (f.o > 0 ? 1 : -1), sz, f.tp, now * .012 + f.o);
+        FOEST = { hf: f.hf || 0, atk: ak, egg: !!f.egg };
+        drawFoe(fx0, fy0, a.ang + (f.dir < 0 ? Math.PI : 0) + (f.kb || 0) * .03 * (f.o > 0 ? 1 : -1), sz, f.tp, now * .012 + f.o);
         FOEST = null;
         var bw = f.boss ? 50 : 28, hx = a.x + a.nx * f.o - bw / 2, hy = a.y + a.ny * f.o - sz * 2.2, pr = Math.max(0, f.hp / f.max), pd = Math.max(pr, (f.hd == null ? f.hp : f.hd) / f.max);
         cx.fillStyle = 'rgba(0,0,0,.6)';
@@ -9701,7 +9888,8 @@ function drawFoe0(x, y, ang, sz, tp, ph) {
     cx.ellipse(-sz * .1, sz * .4, sz * 1.9, sz * .85, 0, 0, 7);
     cx.fill();
     var atk = FOEST ? FOEST.atk || 0 : 0, dead = FOEST && FOEST.dead;
-    if (tp === 3) foeLouse(sz, ph);
+    if (tp === 4) foeRival(sz, ph, FOEST && FOEST.egg);
+    else if (tp === 3) foeLouse(sz, ph);
     else if (tp === 2) foeWasp(sz, ph);
     else if (tp === 1) foeSpider(sz, ph, atk, dead);
     else foeBeetle(sz, ph, atk, dead);
@@ -9940,6 +10128,7 @@ function drawNest(now) {
     nsDynamic(g, W, Hs, t);
     // the colony's ants roaming the cavern
     nsRoam(g, W, Hs, t);
+    nsRaiders(g, t);
     // the real queen, her eggs, rings and effects, through the world transform
     var xf = nsXf(), qh = { x: QX + 7, y: QY - 3 };
     g.save();
@@ -10271,7 +10460,9 @@ function nsRoam(g, W, Hs, t) {
                 var sol = a.k === 2 || a.k === 4;
                 // soldiers in the nest: a fight in the tunnel sends them running out of the way in at the top;
                 // otherwise they keep near the Barracks and the way in, and stand watch there a while (build 83)
-                if (sol && foes.length) { a.tx = W * (.44 + Math.random() * .12); a.ty = nsY(0) - 10; a.w = 0; }
+                var rin = foes.filter(function (f) { return f.rv && f.p >= .9; });
+                if (sol && rin.length) { var rp = nsRaiderAt(rin[Math.floor(Math.random() * rin.length)]); a.tx = rp.x + (Math.random() - .5) * 16; a.ty = rp.y + (Math.random() - .5) * 10; a.w = 0; }
+                else if (sol && foes.length) { a.tx = W * (.44 + Math.random() * .12); a.ty = nsY(0) - 10; a.w = 0; }
                 else if (sol && Math.random() < .7) { var bf = NSF[0]; a.tx = bf.x * W + (Math.random() - .5) * 120; a.ty = nsY(bf.y) + 6 + Math.random() * 40; a.w = 2 + Math.random() * 5; }
                 else if (Math.random() < .35) { var f = NSF[Math.floor(Math.random() * NSF.length)]; a.tx = f.x * W + (Math.random() - .5) * 40; a.ty = nsY(f.y) - 4; }
                 else { a.tx = W * (.12 + Math.random() * .76); a.ty = nsY(.06 + Math.random() * .9); }
@@ -12678,7 +12869,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 84, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 85, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -13498,6 +13689,7 @@ function devPanel() {
             ['All 4 deep layers', function () { S.tier = Math.max(S.tier, 4); S.deep = 4; S.deepAt = [0, 0, 0, 0]; layoutV++; genDeep(); genPebs(); go('tun'); camT = camClamp(deepTop() - H * .3); }],
             ['Go to deep layers', function () { go('tun'); camT = camClamp(deepTop() - H * .3); }],
             ['Finish all tunnel digging', function () { farInit(); for (var r = 0; r < 60; r++) { farmList(); deepList(); var q = DQ.concat(FQ); if (!q.length) break; q.forEach(function (e) { (e.deep ? S.ddg : S.fdg)[e.i] = 1; }); FDV++; } toast('All unlocked tunnels dug.'); }],
+            ['Rival raid now', function () { if (!rivalsOn()) { toast('Needs the Colony stage, the tunnel open and a finished side tunnel.'); return; } foes.length = 0; wvi.w = 0; RV = null; rvT = 0; go('tun'); }],
             ['Cave crickets now', function () { if (!armouryOn()) { toast('Unlock the Stone layer first.'); return; } cricT = 0; cric.length = 0; foes.length = 0; trm.length = 0; go('tun'); }],
             ['Termite raid now', function () { devStage(4); S.reach = 2; S.sideTunnels = 19; for (var k = 0; k < 19; k++) S.sideDug[k] = 1; S.rare.nbf = 1; trmT = 0; genPebs(); go('tun'); }],
             ['Events', null],
@@ -13725,7 +13917,12 @@ function frame(n) {
         }
         var team = dps() * (.8 + .5 * S.orders.gd / 100) / (foes.length || 1), softShare = Math.max(0, 1 - majorDps() / Math.max(1, dps())), armBlock = .4 * softShare * Math.max(.1, 1 - .2 * S.bld.rax);
         foes = foes.filter(function (f) {
-            f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt);
+            if (f.rv) {
+                if (!rivalStep(f, dt))
+                    return false;
+            }
+            else
+                f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt);
             var a = at(f.p);
             if (f.p > .05) {
                 var d = team * dt * (f.tp === 0 ? 1 - armBlock : 1);
@@ -13742,7 +13939,7 @@ function frame(n) {
                         fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -26, l: .9, t: '-1 ant', f: 11, c: '#ff8a7a', g: 0 });
                     }
                 }
-                if (f.p >= 1)
+                if (f.p >= 1 && !f.rv)
                     S.queenHp -= (1 + S.wave * .15) * (f.boss ? 2.5 : 1) * dt;
                 if (f.tm <= 0) {
                     f.tm = .45;
@@ -13777,6 +13974,8 @@ function frame(n) {
                 }
                 else
                     SFX.squish();
+                if (f.rv)
+                    rivalDrop(f);
                 lastP = f.p;
                 // flips over, twitches and sinks; the carcass is left once it has settled
                 dyingF.push({ p: f.p, o: f.o, tp: f.tp, sz: foeSz(f), boss: f.boss, t: 0, c: { x: a.x, y: a.y, t: 10, tp: f.tp, v: Math.ceil((4 + S.tier * 5) * (f.boss ? 4 : 1)) } });
@@ -13907,7 +14106,7 @@ function drawDeadQueen() {
     cx.restore();
 }
 
-function drawT(now) { drawWorld(now); drawTrails(now); drawAlarm(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); }
+function drawT(now) { drawWorld(now); drawTrails(now); drawAlarm(now); drawRivalScout(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); }
 var lastTouchEnd = 0;
 
 /* main/boot.js

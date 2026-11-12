@@ -19,6 +19,7 @@ ants/nurses.js
 ants/army.js
 ants/heroes.js
 threats/waves.js
+threats/rivals.js
 threats/termites.js
 threats/crickets.js
 threats/mole.js

@@ -11,8 +11,8 @@ function drawFoesFx(now) {
         f.o = Math.max(-lim, Math.min(lim, f.o));
         // knocked back by hits, lunges forward when it bites
         var ak = f.atk > 0 ? Math.sin((1 - f.atk / .32) * Math.PI) : 0, push = ak * sz * .7 - (f.kb || 0), fx0 = a.x + a.nx * (f.o + fl) + Math.cos(a.ang) * push, fy0 = a.y + a.ny * (f.o + fl) + Math.sin(a.ang) * push;
-        FOEST = { hf: f.hf || 0, atk: ak };
-        drawFoe(fx0, fy0, a.ang + (f.kb || 0) * .03 * (f.o > 0 ? 1 : -1), sz, f.tp, now * .012 + f.o);
+        FOEST = { hf: f.hf || 0, atk: ak, egg: !!f.egg };
+        drawFoe(fx0, fy0, a.ang + (f.dir < 0 ? Math.PI : 0) + (f.kb || 0) * .03 * (f.o > 0 ? 1 : -1), sz, f.tp, now * .012 + f.o);
         FOEST = null;
         var bw = f.boss ? 50 : 28, hx = a.x + a.nx * f.o - bw / 2, hy = a.y + a.ny * f.o - sz * 2.2, pr = Math.max(0, f.hp / f.max), pd = Math.max(pr, (f.hd == null ? f.hp : f.hd) / f.max);
         cx.fillStyle = 'rgba(0,0,0,.6)';
@@ -142,7 +142,8 @@ function drawFoe0(x, y, ang, sz, tp, ph) {
     cx.ellipse(-sz * .1, sz * .4, sz * 1.9, sz * .85, 0, 0, 7);
     cx.fill();
     var atk = FOEST ? FOEST.atk || 0 : 0, dead = FOEST && FOEST.dead;
-    if (tp === 3) foeLouse(sz, ph);
+    if (tp === 4) foeRival(sz, ph, FOEST && FOEST.egg);
+    else if (tp === 3) foeLouse(sz, ph);
     else if (tp === 2) foeWasp(sz, ph);
     else if (tp === 1) foeSpider(sz, ph, atk, dead);
     else foeBeetle(sz, ph, atk, dead);

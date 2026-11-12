@@ -92,6 +92,8 @@ function gain() { return S.tier >= 3 ? Math.floor(Math.sqrt(S.totalHatched / 40)
 
 // leftovers from the old colony (raids, crickets, dig crews) walk tunnels the new colony hasn't dug, so they go
 function clearOldRun() {
+    RV = null;
+    rvT = TUNING.rivals.firstAt;
     ffT = TUNING.start.firstFoesDelay;
     trm.length = 0;
     trm.res = 0;
