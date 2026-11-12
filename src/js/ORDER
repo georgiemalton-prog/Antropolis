@@ -46,6 +46,7 @@ ui/daily.js
 ui/quests.js
 ui/shop.js
 ui/map.js
+ui/observe.js
 ui/events.js
 ui/buildings.js
 ui/settings.js

@@ -169,3 +169,13 @@ html.full body.tt .toast{top:calc(8px + env(safe-area-inset-top,0px))}
 .hchip .jlc{margin-left:6px;font:700 13px var(--ff);color:#ffd23f;white-space:nowrap}.hchip .jlc::before{content:"\2B22";font-size:10px;margin-right:3px;vertical-align:1px}.hchip small .jlc b{font:800 14px var(--ff);color:#ffd23f}
 /* with the colony map open, messages sit below its buttons instead of over them */
 html.full body:has(#mapov.on) .toast{top:calc(64px + env(safe-area-inset-top,0px))}
+/* Observe mode (ui/observe.js): the buttons fade away, a caption says what the camera is watching */
+#obsov{display:none}
+body.obs #obsov{display:block}
+body.obs #tov,body.obs .hud,body.obs .nav,body.obs .toast,body.obs #ninfo{opacity:0;pointer-events:none;transition:opacity .6s}
+body.obs .scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.45))}
+#obscap{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(92vw,460px);margin:0;text-align:center;z-index:8;font:600 15px/1.35 var(--ff);color:#fff4df;text-shadow:0 1px 3px #000,0 0 12px rgba(0,0,0,.8);background:rgba(16,9,4,.55);padding:10px 14px;border-radius:16px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);pointer-events:none}
+#obscap.in{animation:obsin .7s ease both}
+@keyframes obsin{from{opacity:0;transform:translate(-50%,8px)}}
+#obsx{position:fixed;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:9;border:1px solid rgba(255,190,140,.45);background:rgba(30,20,10,.6);color:#fff4df;font:700 13px var(--ff);padding:8px 16px;border-radius:99px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer}
+

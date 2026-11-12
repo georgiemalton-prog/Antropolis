@@ -21,6 +21,7 @@ function frame(n) {
     lt = n;
     statsTick(dt);
     ambTick(dt);
+    obsTick(dt);
     if (tab !== 'col' && !battery)
         rqTick(dt, fpsCap);
     if (!dead) {

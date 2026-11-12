@@ -100,6 +100,10 @@ cv.addEventListener('pointercancel', pend);
 cv.addEventListener('wheel', function (e) { if (tab !== 'tun')
     return; e.preventDefault(); setZoom(uz * (e.deltaY < 0 ? 1.15 : 1 / 1.15)); }, { passive: false });
 $('zin').onclick = function () { setZoom(uz * 1.5); };
+$('tobs').onclick = obsStart;
+$('nobs').onclick = obsStart;
+$('obsx').onclick = obsStop;
+cv.addEventListener('pointerdown', obsTouch);
 $('zout').onclick = function () { setZoom(uz / 1.5); };
 $('zfit').onclick = function () { setZoom(1); camX = camXc(0); };
 $('hillbtn').onclick = buildHill;

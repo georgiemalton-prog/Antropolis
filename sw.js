@@ -1,6 +1,6 @@
 /* The Colony: lets the game open offline and from the home screen.
    The game page is fetched fresh when online (so updates arrive), and the saved copy is used when offline. */
-var CACHE = 'colony-v86';
+var CACHE = 'colony-v87';
 var CORE = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png', './logo.jpg'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(CORE); }).then(function () { return self.skipWaiting(); })); });
 self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); })); }).then(function () { return self.clients.claim(); })); });

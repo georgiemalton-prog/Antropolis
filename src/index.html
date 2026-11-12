@@ -12,11 +12,11 @@
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
-<div class="top"><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
+<div class="top"><button class="link" id="nobs">&#9673; Watch</button><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
 <div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
 <div id="goals"></div><p id="goal" class="gline"></p>
 <div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food <span class="jlc"><b id="jel">0</b> jelly</span></small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><button id="ninfo" aria-label="Queen and eggs: health, next egg, egg chances">i</button><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
- <div id="tzoom"><button class="card" id="tmap">Map</button><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
+ <div id="tzoom"><button class="card" id="tobs">Watch</button><button class="card" id="tmap">Map</button><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
  <div id="tbot"><div id="abil" style="display:none;gap:6px"><button class="card" id="abR">Rally</button><button class="card" id="abA">Sound the alarm</button></div>
  <div id="wrow" style="display:none;gap:6px"><button class="card" id="jw">&#9664; West</button><button class="card" id="jh">Home</button><button class="card" id="je">East &#9654;</button></div>
  <div style="display:flex;gap:6px"><button class="card" id="j0">Surface</button><button class="card" id="j1">Front line</button><button class="card" id="j2">Nest</button></div></div></div></div>
@@ -56,6 +56,7 @@
 <div class="intro" id="gift" role="dialog" aria-modal="true"><div class="icard"><div id="giftt"></div><div class="irow"><button class="card dig" id="giftok">Claim</button></div></div></div>
 <div class="gold" id="gold" aria-live="polite">✦ GOLDEN EGG ✦<small>A Super Major has hatched!</small></div>
 <div class="toast" id="toast"></div>
+<div id="obsov"><p id="obscap"></p><button id="obsx">Exit</button></div>
 
 <script>
 <!-- @js: the files listed in src/js/ORDER go here -->
