@@ -361,6 +361,21 @@ function drawWorld(now) {
     }
     cx.setTransform(zs, 0, 0, zs, -camX * zs, 0);
     setVR();
+    // zoomed out past the edges of the world (build 84): sky above the grass, plain deep earth below, so the
+    // colony sits in a landscape instead of a blank page
+    var vx0 = camX - 4, vw = W / uz + 8, vy0 = cam - 4, vh = H / uz + 8;
+    if (vx0 < wideL() || vx0 + vw > wideR() || vy0 < -SK) {
+        var skg = cx.createLinearGradient(0, -SK - 400, 0, 24);
+        skg.addColorStop(0, '#5f8fb8');
+        skg.addColorStop(1, '#bcd9ea');
+        cx.fillStyle = skg;
+        cx.fillRect(vx0, vy0 - cam, vw, Math.max(0, 24 - vy0));
+        var eg2 = cx.createLinearGradient(0, 24 - cam, 0, WHX() - cam);
+        eg2.addColorStop(0, '#3a2414');
+        eg2.addColorStop(1, '#140b06');
+        cx.fillStyle = eg2;
+        cx.fillRect(vx0, Math.max(vy0, 24) - cam, vw, vh);
+    }
     if (now - WZ.zt < 250 || !wBlit(bp, zs)) {
         cx.save();
         cx.translate(0, -cam);

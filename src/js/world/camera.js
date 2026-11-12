@@ -62,16 +62,20 @@ function dayState() {
 
 function wideL() { return -(S.reach || 0) * W; }
 function wideR() { return W + (S.reach || 0) * W; }
-function camXc(v) { return Math.max(wideL(), Math.min(wideR() - W / uz, v)); }
+// zoomed out wider than the world: keep it in the middle of the screen
+function camXc(v) { var vw = W / uz; if (vw >= wideR() - wideL()) return (wideL() + wideR() - vw) / 2; return Math.max(wideL(), Math.min(wideR() - vw, v)); }
 
 // the view can scroll far enough for the bottom of the world to clear the tab bar
-function camClamp(v) { return Math.max(-SK, Math.min(WHX() - H / uz + navPad() / (K * uz), v)); }
+function camClamp(v) { return Math.max(-SK, Math.min(Math.max(-SK, WHX() - H / uz + navPad() / (K * uz)), v)); }
 
 // closest zoom: as the colony grows the world gets wider and is shrunk to fit the screen, so the cap
 // grows with it and the closest view stays the same size as in a new colony (4x at the start)
 function uzMax() { return Math.max(4, 4.4 / K); }
 
-function setZoom(z) { var o = uz; z = Math.max(1, Math.min(uzMax(), z)); if (z === o)
+// furthest zoom (build 84): out until the whole colony fits top to bottom, but no further than .3 (so ants stay
+// visible as dots and phones aren't asked to draw too much at once)
+function uzMin() { return Math.min(1, Math.max(.3, H / (WHX() + SK + 60))); }
+function setZoom(z) { var o = uz; z = Math.max(uzMin(), Math.min(uzMax(), z)); if (z === o)
     return; var cwx = camX + W / (2 * o), cwy = camT + H / (2 * o); uz = z; camX = camXc(cwx - W / (2 * z)); camT = camClamp(cwy - H / (2 * z)); follow = performance.now() + 5000; }
 
 function pdist() { var k = Object.keys(ptrs), a = ptrs[k[0]], b = ptrs[k[1]]; return Math.hypot(a.x - b.x, a.y - b.y); }
