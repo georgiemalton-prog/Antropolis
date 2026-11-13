@@ -82,7 +82,23 @@ GitHub runs the build check and lint on every push and pull request (`.github/wo
 2. Bump `BUILD`, run `tools/build.py`, `tools/lint.py` and `tools/test/check.py`.
 3. Merge into `main`. GitHub Pages publishes it within a minute or two; players get it on their
    next visit (the service worker cache name changes with `BUILD`).
-4. For the Android app: Actions → "Build Android app" → Run workflow.
+4. For the Android app: Actions → "Build Android app" → Run workflow. It always makes a test app
+   (`antropolis-test-app`, an APK to install on your own phone). With the signing secrets set it also
+   makes the signed store file (`antropolis-store-file`, an AAB) to upload in Google Play Console.
+
+### Android details
+
+- The app is built with Capacitor 8, which targets Android 16 (API 36). Google Play refuses new apps
+  and updates that target anything lower, and raises this every August: move to the next Capacitor
+  major when it does.
+- Google Play needs a version number that goes up with every upload. The workflow uses `BUILD` for
+  that and `APP_VER` for the version players see, so bump `BUILD` before each store upload.
+- Signing secrets (repo Settings → Secrets and variables → Actions): `ANDROID_KEYSTORE_BASE64`
+  (the upload keystore file, base64), `ANDROID_KEYSTORE_PASSWORD`, and optionally `ANDROID_KEY_ALIAS`
+  (defaults to `upload`). Keep a copy of the keystore and its password somewhere safe outside GitHub.
+  It is the *upload* key: with Play App Signing on, Google can reset it if it is ever lost.
+- `privacy.html` is the privacy policy. Its address (https://georgiemalton-prog.github.io/Antropolis/privacy.html
+  once merged into `main`) goes in the store listing. Update it before adding adverts or purchases.
 
 ## Play stats
 
@@ -93,4 +109,6 @@ player turns it off in the Menu. The numbers are at https://STATS_CODE.goatcount
 
 ## To do
 
-- `FEEDBACK_EMAIL` in `src/js/ui/settings.js` is still a placeholder.
+- Link `privacy.html` from the Menu (needs a game build).
+- Real rewarded adverts and the ad-free purchase are not wired in: inside the Android app the
+  advert buttons still show the preview placeholder (`src/js/ui/ads.js`).
