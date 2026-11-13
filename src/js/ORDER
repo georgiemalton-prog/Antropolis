@@ -17,10 +17,12 @@ ants/forage.js
 ants/crew.js
 ants/nurses.js
 ants/army.js
+ants/persona.js
 ants/heroes.js
 threats/waves.js
 threats/rivals.js
 threats/counter.js
+threats/queenguard.js
 threats/termites.js
 threats/crickets.js
 threats/mole.js

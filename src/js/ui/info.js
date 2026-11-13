@@ -91,7 +91,7 @@ function antInfo0(s) {
     if (o.k === 1 && o.pk > 0)
         return [t, 'Picking food from the wall'];
     if (o.gt > 0)
-        return [t, 'Touching antennae with a friend'];
+        return [t, o.gtx || 'Touching antennae with a friend'];
     if (o.k === 0)
         a = o.act || 'Tidying the nest';
     else if (o.k === 1)
@@ -106,6 +106,7 @@ function antInfo0(s) {
 function greetTick(dt) {
     marchers.forEach(function (m) { if (m.gt > 0)
         m.gt -= dt; });
+    personaTick(dt);
     gAcc -= dt;
     if (gAcc > 0)
         return;
@@ -113,8 +114,11 @@ function greetTick(dt) {
     var l = marchers.filter(function (m) { return m.k === 1 && !m.inj && !(m.wait > 0) && !(m.gt > 0); }).sort(function (a, b) { return a.p - b.p; }), i;
     for (i = 0; i < l.length - 1; i++) {
         var a = l[i], b = l[i + 1];
-        if (a.d !== b.d && Math.abs(a.p - b.p) * LEN < 9 && Math.random() < .5) {
+        if (a.d !== b.d && Math.abs(a.p - b.p) * LEN < 9 && Math.random() < (pers(a) === 2 || pers(b) === 2 ? .9 : .35)) {
             a.gt = b.gt = .9;
+            a.gtx = b.gtx = null;
+            mem(a).g++;
+            mem(b).g++;
             var q = at((a.p + b.p) / 2);
             fx.push({ x: q.x, y: q.y - 6, vx: 0, vy: -10, l: .6, t: '\u00b7', f: 14, c: '#fff3c4', g: 0 });
             i++;

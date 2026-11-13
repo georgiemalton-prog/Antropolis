@@ -204,10 +204,20 @@ function drawArmy(now) {
         cx.restore();
     }
     var vx0 = camX - 26, vx1 = camX + W / uz + 26, vy0 = cam - 26, vy1 = cam + H / uz + 26, fast = marchers.length > 350, hv5 = [0, 0, 0, 0, 0];
+    if (QG.on) {
+        var rq = qPos();
+        qgRing(cx, rq.x, rq.y - 2, qSize() * 2.5, qSize() * 1.35, now);
+    }
     marchers.forEach(function (m) {
         var k = m.k, a, x, y, ang, leaf = false, ph = m.ph;
         hv5[k]++;
-        if (m.inj) {
+        if (m.rg && m.rg.in > 0) {
+            var gp = guardPos(m);
+            x = gp.x;
+            y = gp.y;
+            ang = gp.ang;
+        }
+        else if (m.inj) {
             if (m.st === 0) {
                 a = at(m.p);
                 var lm = Math.sin(now * .009 + mSeed(m)) * .9;
@@ -356,6 +366,8 @@ function drawArmy(now) {
         cx.globalAlpha = 1;
         if (m.hero != null)
             heroMark(x, y, m, now, ang);
+        else
+            vetMark(x, y, m);
         if (m.carry && k === 0 && !m.inj) {
             var ex = x + Math.cos(ang) * SZ[0] * .95, ey = y + Math.sin(ang) * SZ[0] * .95;
             cx.fillStyle = m.carry === 2 ? '#b07a3c' : '#f3ead2';
@@ -413,7 +425,8 @@ function updateSel() {
         '<div class="arow"><i>Status</i><span>' + st + '</span></div>' +
         '<div class="arow"><i>Location</i><span>' + antWhere(o2) + '</span></div>' +
         '<div class="arow"><i>Energy</i><span><span class="ebar"><u style="width:' + en + '%;background:' + ec + '"></u></span>' + en + '%</span></div>' +
-        '<div class="arow"><i>Assigned role</i><span>' + ROLES[s.t === 'a' ? 5 : o2.k] + '</span></div>';
+        '<div class="arow"><i>Assigned role</i><span>' + ROLES[s.t === 'a' ? 5 : o2.k] + '</span></div>' + personaRows(s);
+    el.style.top = Math.max(r.top + 8, r.bottom - el.offsetHeight - navPad() - 12) + 'px';
 }
 
 function drawSel(now) {

@@ -71,7 +71,7 @@ function armyCounts() {
     // door guards (build 83): like real soldier ants plugging the nest holes, a couple of the biggest stand in the
     // tunnel mouth and a couple at the queen's door, heads facing out; super majors first, then soldiers
     var cand = [];
-    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !m.xr && !(m.nap > 0)) cand.push(m); });
+    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !m.xr && !m.rg && !(m.nap > 0)) cand.push(m); });
     cand.sort(function (a, b) { return (b.k - a.k) || (a.u - b.u); });
     C.doorTop = S.dug >= 1 && tunOK() ? cand.slice(0, 2) : [];
     C.doorNest = cand.slice(C.doorTop.length, C.doorTop.length + 2);
@@ -364,6 +364,10 @@ function soldierStep(m, dt, t, C) {
         if (xrStep(m, dt))
             return;
     }
+    if (m.rg) {
+        if (guardStep(m, dt))
+            return;
+    }
     if (m.mo || (MF && !MF.end && C.moTot < C.moCap && m.hero == null && trait(m, 12) < .55)) {
         if (!m.mo) {
             if (m.dr) {
@@ -424,9 +428,12 @@ function wallHolds(W, p) {
 function soldierCharge(m, dt) {
     var fo = foes[m.fi % foes.length];
     var dpf = fo.p - m.p;
-    m.p += Math.sign(dpf) * Math.min(Math.abs(dpf), dt * (m.k === 4 ? 60 : 95) * (m.v || 1) * (alarmT > 0 ? 1.6 : 1) / Math.max(1, LEN));
+    var bold = pers(m) === 0;
+    if (Math.abs(dpf) < .05)
+        m.fw = 1;
+    m.p += Math.sign(dpf) * Math.min(Math.abs(dpf), dt * (m.k === 4 ? 60 : 95) * (m.v || 1) * (alarmT > 0 ? 1.6 : 1) * (bold ? 1.2 : 1) / Math.max(1, LEN));
     m.d = dpf > 0 ? 1 : -1;
-    m.act = m.k === 4 && Math.abs(dpf) < TUNING.fights.wallReach ? 'Holding the line' : 'Charging the invaders';
+    m.act = m.k === 4 && Math.abs(dpf) < TUNING.fights.wallReach ? 'Holding the line' : bold ? 'Leading the charge' : 'Charging the invaders';
 }
 
 // no invaders. Build 83, after how real colonies defend: a few door guards plug the entrances (heads out), the rest

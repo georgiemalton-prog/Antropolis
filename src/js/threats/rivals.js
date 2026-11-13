@@ -129,6 +129,7 @@ function rivalEnd() {
         gainJelly(R.winJelly);
         S.rvWins = (S.rvWins || 0) + 1;
         feed('Raid beaten! Not one egg lost.', 'good', null);
+        fightMemory();
         toast('Raid beaten! Not one egg lost. +' + fmt(f) + ' food from the raiders.' + (RV.saved ? ' ' + RV.saved + ' egg' + (RV.saved > 1 ? 's' : '') + ' rescued.' : ''));
         SFX.victory();
     }

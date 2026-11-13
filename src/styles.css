@@ -226,3 +226,6 @@ body.glw .brand img{filter:drop-shadow(0 0 14px rgba(100,255,170,.25))}
 #feed i{flex:0 0 auto;width:8px;height:8px;border-radius:50%;box-shadow:0 0 8px currentColor}
 #feed span{flex:1}#feed b{flex:0 0 auto;font-size:18px;line-height:1;color:var(--gl-hi)}
 body.obs #feed{display:none}
+/* ant info card in the glow style (build 93) */
+#antlbl{background:rgba(8,20,12,.94);border-color:rgba(140,255,190,.38);color:var(--gl-ink);box-shadow:0 12px 26px -8px rgba(0,0,0,.8),0 0 16px -6px var(--gl-glow)}
+#antlbl b{color:var(--gl-hi)}#antlbl .asub{color:#9cc7ad}#antlbl .arow{border-top-color:rgba(140,255,190,.12)}#antlbl .arow i{color:#93bfa4}

@@ -75,6 +75,16 @@ var TUNING = {
         wallSlow: .25,        // invaders pressing on a super major move at this share of their speed
         wallReach: .02        // how far ahead of an invader (share of the main tunnel) a super major blocks it
     },
+    // Protecting the queen (threats/queenguard.js)
+    queen: {
+        near: .8,             // invaders past this share of the main tunnel count as close to the queen
+        guardMax: 6,          // royal guard: 2 + 1 per 20 soldiers and super majors, up to this
+        perGuard: .12,        // each guard in the ring takes this share off the harm reaching her
+        minHarm: .3,
+        stayAfter: 4,         // seconds the ring holds after the last invader has gone
+        hurtAt: .6,           // below this share of her health she lays more slowly...
+        hurtLay: .6           // ...at this share of her usual speed
+    },
     // Counter-raid on the rival nest after a raid (threats/counter.js)
     counter: {
         window: 240,          // seconds the Raid token stays up after a rival raid ends

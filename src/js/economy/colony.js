@@ -122,6 +122,8 @@ function deposit(m) {
     S.food = Math.min(foodCap(), S.food + y);
     earnAcc += y;
     S.deliveries = (S.deliveries || 0) + 1;
+    if (m)
+        mem(m).l++;
     ph1 = Math.min(1, ph1 + .06);
     return y;
 }
@@ -365,6 +367,7 @@ function sync() {
             for (i = 0; i < marchers.length; i++)
                 if (marchers[i].k === k && !marchers[i].inj) {
                     var m = marchers[i];
+                    sisterHurt(m);
                     m.inj = 1;
                     m.st = 0;
                     m.q = null;
@@ -424,7 +427,7 @@ function colony(dt) {
     }
     else
         S.starveTimer = 0;
-    S.layTimer -= dt;
+    S.layTimer -= dt * layMul();
     if (S.layTimer <= 0) {
         var room = cap - pop - S.eggs.length, n = Math.min(clutch(), room, Math.floor(S.food / eggCost()));
         if (n > 0) {
@@ -483,4 +486,4 @@ function colony(dt) {
         lose();
 }
 
-function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); signalsTick(dt); }
+function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); qgTick(dt); signalsTick(dt); }

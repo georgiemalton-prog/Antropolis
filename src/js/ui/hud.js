@@ -37,7 +37,7 @@ function hudColony() {
     $('hpt').textContent = Math.ceil(S.queenHp) + ' / ' + hpMax();
     $('hpb').style.width = Math.max(0, S.queenHp / hpMax() * 100) + '%';
     $('stb').style.width = (Math.max(0, 1 - S.layTimer / gap) * 100) + '%';
-    $('stt').textContent = pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : Math.ceil(S.layTimer) + 's';
+    $('stt').textContent = layWhy() || (pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : Math.ceil(S.layTimer) + 's' + (queenHurt() ? ' (hurt)' : ''));
     $('hint').textContent = restTxt() + 'Ants ' + pop + ' of ' + cap + '. Eggs ' + S.eggs.length + '. ' + (S.dug < 1 ? (S.workers < 1 ? 'You need a worker to dig. Keep hatching eggs. ' : 'Your workers are digging out. ') : 'Foragers bring food, soldiers guard the nest. ') + 'Tap the queen to hurry the next egg.';
     $('tst').innerHTML = S.dug < 1 ? (S.workers < 1 ? 'No workers left to dig. Hatch a <b>worker</b> to continue.' : (S.dug >= .8 && digCap() < 1 ? 'The tunnel is held just below the surface. Reach the ' + T[2].n + ' with 40 ants to break through. Until then your ants gather food underground.' : 'Your workers are digging up to the surface: <b>' + Math.floor(S.dug * 100) + '%</b>')) : foes.length ? '<b>Invaders in the tunnel: ' + foes.length + '</b>' : 'The tunnel is open. Foragers are out gathering food.';
     $('tdf').textContent = 'Digging through ' + SOILN[soilAt(frontY())].toLowerCase() + (S.tier < 2 ? '' : SOILM[soilAt(frontY())] < 1 ? ' (slow)' : SOILM[soilAt(frontY())] > 1 ? ' (fast)' : '') + '. Soldiers ' + S.soldiers + ', foragers ' + S.foragers + '. Defense ' + fmt(dps()) + ' damage/s. Wave ' + (S.wave + 1) + ' is next.';

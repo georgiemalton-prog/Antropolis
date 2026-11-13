@@ -97,6 +97,7 @@ function clearOldRun() {
     SCENT.length = 0;
     RV = null;
     XR = null;
+    QG = { on: 0, t: 0, warned: 0, n: 0 };
     rvT = TUNING.rivals.firstAt;
     ffT = TUNING.start.firstFoesDelay;
     trm.length = 0;

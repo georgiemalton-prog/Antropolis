@@ -80,6 +80,7 @@ function loot(p, w) {
     SFX.victory();
     fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
     feed(w.boss ? 'The boss is beaten!' : 'The tunnel is clear again.', 'good', null);
+    fightMemory();
     toast((w.boss ? 'Boss defeated! ' : w.ff ? 'The wood lice are beaten! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
 

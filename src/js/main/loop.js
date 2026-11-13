@@ -68,7 +68,7 @@ function frame(n) {
                     }
                 }
                 if (f.p >= 1 && !f.rv)
-                    S.queenHp -= (1 + S.wave * .15) * (f.boss ? 2.5 : 1) * dt;
+                    S.queenHp -= (1 + S.wave * .15) * (f.boss ? 2.5 : 1) * qgShield() * dt;
                 if (f.tm <= 0) {
                     f.tm = .45;
                     var big = f.acc > f.max * .08;

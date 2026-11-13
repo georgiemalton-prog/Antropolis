@@ -86,6 +86,7 @@ function drawNest(now) {
     // the colony's ants roaming the cavern
     nsRoam(g, W, Hs, t);
     nsRaiders(g, t);
+    nsRoyalGuard(g, t, now);
     // the real queen, her eggs, rings and effects, through the world transform
     var xf = nsXf(), qh = { x: QX + 7, y: QY - 3 };
     g.save();
@@ -478,7 +479,7 @@ function nsQueenInfo(g, W, Hs, t, xf) {
         var tx = Math.ceil(S.queenHp) + ' / ' + hpMax(); g.strokeText(tx, qx, by - 4); g.fillStyle = '#ffd8c8'; g.fillText(tx, qx, by - 4);
     }
     // next egg: a ring that fills as the next egg comes, with the seconds (or why no egg is coming)
-    var cap = capN(), pop = popn(), gap = layGap(), x = W * .5, y = Hs - 22, r = 13, why = pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : '';
+    var cap = capN(), pop = popn(), gap = layGap(), x = W * .5, y = Hs - 22, r = 13, why = layWhy() || (pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : queenHurt() ? 'Queen hurt: eggs slower' : '');
     var f = why ? 0 : Math.max(0, Math.min(1, 1 - S.layTimer / gap));
     g.fillStyle = 'rgba(20,10,6,.72)'; g.beginPath(); g.arc(x, y, r + 4, 0, 7); g.fill();
     g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 3; g.beginPath(); g.arc(x, y, r, 0, 7); g.stroke();

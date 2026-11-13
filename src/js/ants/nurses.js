@@ -130,7 +130,7 @@ function energyStep(m, dt) {
             fx.push({ x: m.wx + 3, y: m.wy - 7, vx: 3, vy: -8, l: 1, t: 'z', f: 9, c: '#cfe4ff', g: 0 });
         return;
     }
-    m.en = Math.max(0, m.en - dt * 100 / 520);
+    m.en = Math.max(0, m.en - dt * 100 / 520 * (pers(m) === 3 ? .6 : 1));
     if (m.en < 22 && !m.tired && !(m.k === 1 && m.sf))
         m.tired = 1;
     if (!m.tired)

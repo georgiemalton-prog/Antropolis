@@ -236,6 +236,9 @@ body.glw .brand img{filter:drop-shadow(0 0 14px rgba(100,255,170,.25))}
 #feed i{flex:0 0 auto;width:8px;height:8px;border-radius:50%;box-shadow:0 0 8px currentColor}
 #feed span{flex:1}#feed b{flex:0 0 auto;font-size:18px;line-height:1;color:var(--gl-hi)}
 body.obs #feed{display:none}
+/* ant info card in the glow style (build 93) */
+#antlbl{background:rgba(8,20,12,.94);border-color:rgba(140,255,190,.38);color:var(--gl-ink);box-shadow:0 12px 26px -8px rgba(0,0,0,.8),0 0 16px -6px var(--gl-glow)}
+#antlbl b{color:var(--gl-hi)}#antlbl .asub{color:#9cc7ad}#antlbl .arow{border-top-color:rgba(140,255,190,.12)}#antlbl .arow i{color:#93bfa4}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
@@ -526,6 +529,16 @@ var TUNING = {
     fights: {
         wallSlow: .25,        // invaders pressing on a super major move at this share of their speed
         wallReach: .02        // how far ahead of an invader (share of the main tunnel) a super major blocks it
+    },
+    // Protecting the queen (threats/queenguard.js)
+    queen: {
+        near: .8,             // invaders past this share of the main tunnel count as close to the queen
+        guardMax: 6,          // royal guard: 2 + 1 per 20 soldiers and super majors, up to this
+        perGuard: .12,        // each guard in the ring takes this share off the harm reaching her
+        minHarm: .3,
+        stayAfter: 4,         // seconds the ring holds after the last invader has gone
+        hurtAt: .6,           // below this share of her health she lays more slowly...
+        hurtLay: .6           // ...at this share of her usual speed
     },
     // Counter-raid on the rival nest after a raid (threats/counter.js)
     counter: {
@@ -1150,6 +1163,7 @@ function clearOldRun() {
     SCENT.length = 0;
     RV = null;
     XR = null;
+    QG = { on: 0, t: 0, warned: 0, n: 0 };
     rvT = TUNING.rivals.firstAt;
     ffT = TUNING.start.firstFoesDelay;
     trm.length = 0;
@@ -1298,6 +1312,8 @@ function deposit(m) {
     S.food = Math.min(foodCap(), S.food + y);
     earnAcc += y;
     S.deliveries = (S.deliveries || 0) + 1;
+    if (m)
+        mem(m).l++;
     ph1 = Math.min(1, ph1 + .06);
     return y;
 }
@@ -1541,6 +1557,7 @@ function sync() {
             for (i = 0; i < marchers.length; i++)
                 if (marchers[i].k === k && !marchers[i].inj) {
                     var m = marchers[i];
+                    sisterHurt(m);
                     m.inj = 1;
                     m.st = 0;
                     m.q = null;
@@ -1600,7 +1617,7 @@ function colony(dt) {
     }
     else
         S.starveTimer = 0;
-    S.layTimer -= dt;
+    S.layTimer -= dt * layMul();
     if (S.layTimer <= 0) {
         var room = cap - pop - S.eggs.length, n = Math.min(clutch(), room, Math.floor(S.food / eggCost()));
         if (n > 0) {
@@ -1659,7 +1676,7 @@ function colony(dt) {
         lose();
 }
 
-function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); signalsTick(dt); }
+function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); qgTick(dt); signalsTick(dt); }
 
 /* economy/away.js
    Offline progress, the welcome-back screen and the rested-colony boost.
@@ -3819,7 +3836,7 @@ function energyStep(m, dt) {
             fx.push({ x: m.wx + 3, y: m.wy - 7, vx: 3, vy: -8, l: 1, t: 'z', f: 9, c: '#cfe4ff', g: 0 });
         return;
     }
-    m.en = Math.max(0, m.en - dt * 100 / 520);
+    m.en = Math.max(0, m.en - dt * 100 / 520 * (pers(m) === 3 ? .6 : 1));
     if (m.en < 22 && !m.tired && !(m.k === 1 && m.sf))
         m.tired = 1;
     if (!m.tired)
@@ -3912,7 +3929,7 @@ function armyCounts() {
     // door guards (build 83): like real soldier ants plugging the nest holes, a couple of the biggest stand in the
     // tunnel mouth and a couple at the queen's door, heads facing out; super majors first, then soldiers
     var cand = [];
-    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !m.xr && !(m.nap > 0)) cand.push(m); });
+    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !m.xr && !m.rg && !(m.nap > 0)) cand.push(m); });
     cand.sort(function (a, b) { return (b.k - a.k) || (a.u - b.u); });
     C.doorTop = S.dug >= 1 && tunOK() ? cand.slice(0, 2) : [];
     C.doorNest = cand.slice(C.doorTop.length, C.doorTop.length + 2);
@@ -4205,6 +4222,10 @@ function soldierStep(m, dt, t, C) {
         if (xrStep(m, dt))
             return;
     }
+    if (m.rg) {
+        if (guardStep(m, dt))
+            return;
+    }
     if (m.mo || (MF && !MF.end && C.moTot < C.moCap && m.hero == null && trait(m, 12) < .55)) {
         if (!m.mo) {
             if (m.dr) {
@@ -4265,9 +4286,12 @@ function wallHolds(W, p) {
 function soldierCharge(m, dt) {
     var fo = foes[m.fi % foes.length];
     var dpf = fo.p - m.p;
-    m.p += Math.sign(dpf) * Math.min(Math.abs(dpf), dt * (m.k === 4 ? 60 : 95) * (m.v || 1) * (alarmT > 0 ? 1.6 : 1) / Math.max(1, LEN));
+    var bold = pers(m) === 0;
+    if (Math.abs(dpf) < .05)
+        m.fw = 1;
+    m.p += Math.sign(dpf) * Math.min(Math.abs(dpf), dt * (m.k === 4 ? 60 : 95) * (m.v || 1) * (alarmT > 0 ? 1.6 : 1) * (bold ? 1.2 : 1) / Math.max(1, LEN));
     m.d = dpf > 0 ? 1 : -1;
-    m.act = m.k === 4 && Math.abs(dpf) < TUNING.fights.wallReach ? 'Holding the line' : 'Charging the invaders';
+    m.act = m.k === 4 && Math.abs(dpf) < TUNING.fights.wallReach ? 'Holding the line' : bold ? 'Leading the charge' : 'Charging the invaders';
 }
 
 // no invaders. Build 83, after how real colonies defend: a few door guards plug the entrances (heads out), the rest
@@ -4437,6 +4461,112 @@ function abilityUi(force) {
     a.style.opacity = alarmCd > 0 ? .55 : 1;
     r.classList.toggle('hot', fighting() && rallyCd <= 0);
     a.classList.toggle('hot', injN() > 0 && alarmCd <= 0);
+}
+
+/* ants/persona.js
+   Every ant is somebody (build 93). Each drawn ant has a personality fixed from its seed, and it changes what
+   she visibly does: Bold ants lead the charge, Curious ones stop to sniff, Friendly ones greet every sister,
+   Tireless ones work on when others rest, Gentle ones stop to check on the hurt. Ants also remember what they
+   have done this session (waves fought, loads carried, sisters met) and become Veterans, marked with a gold
+   chevron and shown on the info card. Memories live on the drawn ants only (not saved).
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+var PERS = [
+    { n: 'Bold', d: 'First into every fight' },
+    { n: 'Curious', d: 'Stops to sniff at everything' },
+    { n: 'Friendly', d: 'Greets every sister she passes' },
+    { n: 'Tireless', d: 'Works on long after the others rest' },
+    { n: 'Gentle', d: 'Always stops to check on the hurt' }
+];
+// fighters can be Bold, the rest Curious instead; Friendly, Tireless and Gentle can be anyone
+function pers(m) { if (!m || m.u == null) return -1; var i = Math.floor(trait(m, 6) * 4) % 4; return i ? i + 1 : m.k === 2 || m.k === 4 ? 0 : 1; }
+function mem(m) { return m.mem || (m.mem = { w: 0, l: 0, g: 0, h: 0, s: 0 }); }
+function isVet(m) { var o = m.mem; return !!o && (o.w >= 3 || o.l >= 30); }
+
+// small idle behaviours that read as thought: curious foragers stop to sniff
+function personaTick(dt) {
+    for (var i = 0; i < marchers.length; i++) {
+        var m = marchers[i];
+        if (m.k === 1 && pers(m) === 1 && !m.inj && !(m.gt > 0) && !(m.wait > 0) && !m.sf && !(m.pk > 0) && m.p < .97 && Math.random() < dt * .02) {
+            m.gt = 1.5;
+            m.gtx = 'Sniffing at something interesting';
+            mem(m).s++;
+            var a = at(m.p);
+            fx.push({ x: a.x, y: a.y - 9, vx: 0, vy: -9, l: .9, t: '?', f: 11, c: '#cfe9d8', g: 0 });
+        }
+    }
+}
+
+// a sister was just hurt: those close by stop to check on her (Gentle ants from further off)
+function sisterHurt(h) {
+    if (h.wx == null)
+        return;
+    for (var i = 0; i < marchers.length; i++) {
+        var m = marchers[i];
+        if (m === h || m.inj || m.gt > 0 || m.wx == null || ((m.k === 2 || m.k === 4) && foes.length))
+            continue;
+        var r = pers(m) === 4 ? 46 : 16;
+        if (Math.abs(m.wx - h.wx) < r && Math.abs(m.wy - h.wy) < r) {
+            m.gt = 1.6;
+            m.gtx = 'Checking on a hurt sister';
+            mem(m).h++;
+            fx.push({ x: m.wx, y: m.wy - 9, vx: 0, vy: -10, l: 1, t: '♥', f: 11, c: '#ff9db0', g: 0 });
+        }
+    }
+}
+
+// called when a wave or raid is beaten: everyone who stood in the fight remembers it
+function fightMemory() {
+    var told = 0;
+    marchers.forEach(function (m) { if (!m.fw)
+        return;
+    m.fw = 0;
+    if ((m.k === 2 || m.k === 4) && !m.inj) {
+        var o = mem(m), was = isVet(m);
+        o.w++;
+        if (!was && isVet(m) && m.wx != null) {
+            if (!told++)
+                feed(antIdent({ t: 'm', o: m }).name + ' the ' + CN[m.k].toLowerCase() + ' is now a veteran of ' + o.w + ' fights.', 'good', function () { return m.wx != null ? { x: m.wx, y: m.wy } : null; });
+            fx.push({ x: m.wx, y: m.wy - 14, vx: 0, vy: -16, l: 1.6, t: 'Veteran!', f: 12, c: '#ffd35a', g: 0 });
+        }
+    } });
+}
+
+// gold chevron over a veteran, only when zoomed in enough to read it
+function vetMark(x, y, m) {
+    if (uz < 1.3 || !isVet(m))
+        return;
+    var by = y - (m.k === 4 ? 15 : 9);
+    cx.strokeStyle = '#ffd35a';
+    cx.lineWidth = 1.3;
+    cx.beginPath();
+    cx.moveTo(x - 2.6, by - 1.2);
+    cx.lineTo(x, by + 1);
+    cx.lineTo(x + 2.6, by - 1.2);
+    cx.stroke();
+}
+
+// extra info-card rows: personality and the ant's story so far
+function personaRows(s) {
+    if (s.t !== 'm')
+        return '';
+    var o = s.o, p = pers(o), m = o.mem, st = [];
+    if (p < 0)
+        return '';
+    if (m) {
+        if (m.w)
+            st.push(m.w + (m.w === 1 ? ' fight' : ' fights'));
+        if (m.l)
+            st.push(m.l + (m.l === 1 ? ' load carried' : ' loads carried'));
+        if (m.g)
+            st.push(m.g + (m.g === 1 ? ' sister met' : ' sisters met'));
+        if (m.h)
+            st.push('checked on ' + m.h + ' hurt');
+        if (m.s)
+            st.push('sniffed out ' + m.s + ' things');
+    }
+    return '<div class="arow"><i>Personality</i><span>' + PERS[p].n + ': ' + PERS[p].d.toLowerCase() + '</span></div>' +
+        (st.length ? '<div class="arow"><i>' + (isVet(o) ? 'Veteran' : 'Story') + '</i><span>' + st.join(' · ') + '</span></div>' : '');
 }
 
 /* ants/heroes.js
@@ -4748,6 +4878,7 @@ function loot(p, w) {
     SFX.victory();
     fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
     feed(w.boss ? 'The boss is beaten!' : 'The tunnel is clear again.', 'good', null);
+    fightMemory();
     toast((w.boss ? 'Boss defeated! ' : w.ff ? 'The wood lice are beaten! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
 
@@ -5151,6 +5282,7 @@ function rivalEnd() {
         gainJelly(R.winJelly);
         S.rvWins = (S.rvWins || 0) + 1;
         feed('Raid beaten! Not one egg lost.', 'good', null);
+        fightMemory();
         toast('Raid beaten! Not one egg lost. +' + fmt(f) + ' food from the raiders.' + (RV.saved ? ' ' + RV.saved + ' egg' + (RV.saved > 1 ? 's' : '') + ' rescued.' : ''));
         SFX.victory();
     }
@@ -5331,6 +5463,125 @@ function xrStep(m, dt) {
         m.d = -1;
     }
     return true;
+}
+
+/* threats/queenguard.js
+   Protecting the queen (build 94). When invaders get close to the queen her royal guard (super majors first,
+   then soldiers) runs home and forms a ring around her; she stops laying and hides until the danger has passed.
+   Invaders that reach her do less harm for every guard in the ring. A hurt queen lays more slowly until the
+   nurses have healed her, so letting invaders through costs the colony growth, not just a health bar.
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+var QG = { on: 0, t: 0, warned: 0, n: 0 };
+
+function queenThreat() {
+    for (var i = 0; i < foes.length; i++)
+        if (foes[i].p > TUNING.queen.near && !(foes[i].rv && foes[i].dir < 0))
+            return true;
+    return false;
+}
+function guardsIn() {
+    var n = 0;
+    for (var i = 0; i < marchers.length; i++)
+        if (marchers[i].rg && marchers[i].rg.in >= 1)
+            n++;
+    return n;
+}
+// share of an invader's damage that still reaches the queen
+function qgShield() { return Math.max(TUNING.queen.minHarm, 1 - TUNING.queen.perGuard * guardsIn()); }
+function queenHurt() { return S.queenHp < hpMax() * TUNING.queen.hurtAt; }
+// egg timer speed: 0 while she hides, slower while she is hurt
+function layMul() { return QG.on ? 0 : queenHurt() ? TUNING.queen.hurtLay : 1; }
+function layWhy() { return QG.on ? 'Queen hiding' : ''; }
+
+function qgTick(dt) {
+    var Tq = TUNING.queen, th = queenThreat();
+    if (th && !QG.on) {
+        QG.on = 1;
+        QG.t = 0;
+        var want = Math.min(Tq.guardMax, 2 + Math.floor((S.soldiers + S.superMajors) / 20)), c = [];
+        marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.mo && !m.tr && !m.dr && !m.xr && m.hero == null) c.push(m); });
+        c.sort(function (a, b) { return (b.k === 4) - (a.k === 4) || b.p - a.p; });
+        QG.n = Math.min(want, c.length);
+        for (var i = 0; i < QG.n; i++)
+            c[i].rg = { slot: i, in: 0 };
+        feed('Invaders are near the queen! Her royal guard closes ranks around her.', 'bad', function () { var q = qPos(); return { x: q.x, y: q.y }; });
+        SFX.rally && SFX.rally();
+    }
+    else if (!th && QG.on) {
+        QG.t += dt;
+        if (QG.t > Tq.stayAfter) {
+            QG.on = 0;
+            marchers.forEach(function (m) { m.rg = null; });
+            feed('The danger has passed. The queen is laying again.', 'good', null);
+        }
+    }
+    else
+        QG.t = 0;
+    if (!QG.warned && foes.some(function (f) { return f.p >= 1 && !f.rv; })) {
+        QG.warned = 1;
+        toast('The queen is under attack! Every guard by her side softens the blows.');
+        feed('The queen is under attack!', 'bad', function () { var q = qPos(); return { x: q.x, y: q.y }; });
+    }
+    if (!foes.length)
+        QG.warned = 0;
+}
+
+// one step for a royal guard; true while she is on guard duty
+function guardStep(m, dt) {
+    if (!QG.on) {
+        m.rg = null;
+        return false;
+    }
+    var d = 1 - m.p;
+    if (d > .002) {
+        m.p += Math.min(d, dt * (m.k === 4 ? 70 : 105) * (m.v || 1) / Math.max(1, LEN));
+        m.d = 1;
+        m.act = 'Running home to guard the queen';
+    }
+    else {
+        m.rg.in = Math.min(1, m.rg.in + dt * 1.6);
+        m.act = 'Guarding the queen';
+    }
+    return true;
+}
+
+// where a royal guard stands: a ring round the queen, facing out
+function guardPos(m) {
+    var q = qPos(), n = Math.max(1, QG.n), an = -Math.PI / 2 + (m.rg.slot + .5) / n * Math.PI * 2, rx = qSize() * 2.5, ry = qSize() * 1.35, a = at(1), t = m.rg.in;
+    return { x: a.x + (q.x + Math.cos(an) * rx - a.x) * t, y: a.y + (q.y - 2 + Math.sin(an) * ry - a.y) * t, ang: an };
+}
+
+// faint shield ring on the floor round the queen while the guard is up; brighter for every guard in place
+function qgRing(g, x, y, rx, ry, now) {
+    if (!QG.on)
+        return;
+    var gi = guardsIn(), a = .18 + .1 * gi / Math.max(1, QG.n) + .06 * Math.sin(now * .006);
+    g.save();
+    g.strokeStyle = 'rgba(255,200,90,' + a + ')';
+    g.lineWidth = 2;
+    g.setLineDash([5, 4]);
+    g.lineDashOffset = -now * .01;
+    g.beginPath();
+    g.ellipse(x, y, rx, ry, 0, 0, 7);
+    g.stroke();
+    g.restore();
+}
+
+// Nest tab: the same guards drawn in a ring round the queen on her bed
+function nsRoyalGuard(g, t, now) {
+    if (!QG.on)
+        return;
+    var xf = nsXf(), qp = qPos(), qx = xf.x + xf.s * (qp.x - QX - 7), qy = xf.y + xf.s * (qp.y - QY + 3), s = qSize() * xf.s, rx = s * 3, ry = s * 1.55;
+    qgRing(g, qx, qy, rx, ry, now);
+    marchers.forEach(function (m) {
+        if (!m.rg || !(m.rg.in > 0))
+            return;
+        var an = -Math.PI / 2 + (m.rg.slot + .5) / Math.max(1, QG.n) * Math.PI * 2, e = m.rg.in;
+        g.globalAlpha = e;
+        nsAnt(g, qx + Math.cos(an) * rx, qy + Math.sin(an) * ry - (1 - e) * 30, an + Math.sin(t * 6 + m.rg.slot) * .12, m.k, t * 4, false);
+        g.globalAlpha = 1;
+    });
 }
 
 /* threats/termites.js
@@ -9604,10 +9855,20 @@ function drawArmy(now) {
         cx.restore();
     }
     var vx0 = camX - 26, vx1 = camX + W / uz + 26, vy0 = cam - 26, vy1 = cam + H / uz + 26, fast = marchers.length > 350, hv5 = [0, 0, 0, 0, 0];
+    if (QG.on) {
+        var rq = qPos();
+        qgRing(cx, rq.x, rq.y - 2, qSize() * 2.5, qSize() * 1.35, now);
+    }
     marchers.forEach(function (m) {
         var k = m.k, a, x, y, ang, leaf = false, ph = m.ph;
         hv5[k]++;
-        if (m.inj) {
+        if (m.rg && m.rg.in > 0) {
+            var gp = guardPos(m);
+            x = gp.x;
+            y = gp.y;
+            ang = gp.ang;
+        }
+        else if (m.inj) {
             if (m.st === 0) {
                 a = at(m.p);
                 var lm = Math.sin(now * .009 + mSeed(m)) * .9;
@@ -9756,6 +10017,8 @@ function drawArmy(now) {
         cx.globalAlpha = 1;
         if (m.hero != null)
             heroMark(x, y, m, now, ang);
+        else
+            vetMark(x, y, m);
         if (m.carry && k === 0 && !m.inj) {
             var ex = x + Math.cos(ang) * SZ[0] * .95, ey = y + Math.sin(ang) * SZ[0] * .95;
             cx.fillStyle = m.carry === 2 ? '#b07a3c' : '#f3ead2';
@@ -9813,7 +10076,8 @@ function updateSel() {
         '<div class="arow"><i>Status</i><span>' + st + '</span></div>' +
         '<div class="arow"><i>Location</i><span>' + antWhere(o2) + '</span></div>' +
         '<div class="arow"><i>Energy</i><span><span class="ebar"><u style="width:' + en + '%;background:' + ec + '"></u></span>' + en + '%</span></div>' +
-        '<div class="arow"><i>Assigned role</i><span>' + ROLES[s.t === 'a' ? 5 : o2.k] + '</span></div>';
+        '<div class="arow"><i>Assigned role</i><span>' + ROLES[s.t === 'a' ? 5 : o2.k] + '</span></div>' + personaRows(s);
+    el.style.top = Math.max(r.top + 8, r.bottom - el.offsetHeight - navPad() - 12) + 'px';
 }
 
 function drawSel(now) {
@@ -10571,6 +10835,7 @@ function drawNest(now) {
     // the colony's ants roaming the cavern
     nsRoam(g, W, Hs, t);
     nsRaiders(g, t);
+    nsRoyalGuard(g, t, now);
     // the real queen, her eggs, rings and effects, through the world transform
     var xf = nsXf(), qh = { x: QX + 7, y: QY - 3 };
     g.save();
@@ -10963,7 +11228,7 @@ function nsQueenInfo(g, W, Hs, t, xf) {
         var tx = Math.ceil(S.queenHp) + ' / ' + hpMax(); g.strokeText(tx, qx, by - 4); g.fillStyle = '#ffd8c8'; g.fillText(tx, qx, by - 4);
     }
     // next egg: a ring that fills as the next egg comes, with the seconds (or why no egg is coming)
-    var cap = capN(), pop = popn(), gap = layGap(), x = W * .5, y = Hs - 22, r = 13, why = pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : '';
+    var cap = capN(), pop = popn(), gap = layGap(), x = W * .5, y = Hs - 22, r = 13, why = layWhy() || (pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : queenHurt() ? 'Queen hurt: eggs slower' : '');
     var f = why ? 0 : Math.max(0, Math.min(1, 1 - S.layTimer / gap));
     g.fillStyle = 'rgba(20,10,6,.72)'; g.beginPath(); g.arc(x, y, r + 4, 0, 7); g.fill();
     g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 3; g.beginPath(); g.arc(x, y, r, 0, 7); g.stroke();
@@ -11016,7 +11281,7 @@ function hudColony() {
     $('hpt').textContent = Math.ceil(S.queenHp) + ' / ' + hpMax();
     $('hpb').style.width = Math.max(0, S.queenHp / hpMax() * 100) + '%';
     $('stb').style.width = (Math.max(0, 1 - S.layTimer / gap) * 100) + '%';
-    $('stt').textContent = pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : Math.ceil(S.layTimer) + 's';
+    $('stt').textContent = layWhy() || (pop + S.eggs.length >= cap ? 'Nest full' : S.food < eggCost() ? 'Need food' : Math.ceil(S.layTimer) + 's' + (queenHurt() ? ' (hurt)' : ''));
     $('hint').textContent = restTxt() + 'Ants ' + pop + ' of ' + cap + '. Eggs ' + S.eggs.length + '. ' + (S.dug < 1 ? (S.workers < 1 ? 'You need a worker to dig. Keep hatching eggs. ' : 'Your workers are digging out. ') : 'Foragers bring food, soldiers guard the nest. ') + 'Tap the queen to hurry the next egg.';
     $('tst').innerHTML = S.dug < 1 ? (S.workers < 1 ? 'No workers left to dig. Hatch a <b>worker</b> to continue.' : (S.dug >= .8 && digCap() < 1 ? 'The tunnel is held just below the surface. Reach the ' + T[2].n + ' with 40 ants to break through. Until then your ants gather food underground.' : 'Your workers are digging up to the surface: <b>' + Math.floor(S.dug * 100) + '%</b>')) : foes.length ? '<b>Invaders in the tunnel: ' + foes.length + '</b>' : 'The tunnel is open. Foragers are out gathering food.';
     $('tdf').textContent = 'Digging through ' + SOILN[soilAt(frontY())].toLowerCase() + (S.tier < 2 ? '' : SOILM[soilAt(frontY())] < 1 ? ' (slow)' : SOILM[soilAt(frontY())] > 1 ? ' (fast)' : '') + '. Soldiers ' + S.soldiers + ', foragers ' + S.foragers + '. Defense ' + fmt(dps()) + ' damage/s. Wave ' + (S.wave + 1) + ' is next.';
@@ -11501,7 +11766,7 @@ function antInfo0(s) {
     if (o.k === 1 && o.pk > 0)
         return [t, 'Picking food from the wall'];
     if (o.gt > 0)
-        return [t, 'Touching antennae with a friend'];
+        return [t, o.gtx || 'Touching antennae with a friend'];
     if (o.k === 0)
         a = o.act || 'Tidying the nest';
     else if (o.k === 1)
@@ -11516,6 +11781,7 @@ function antInfo0(s) {
 function greetTick(dt) {
     marchers.forEach(function (m) { if (m.gt > 0)
         m.gt -= dt; });
+    personaTick(dt);
     gAcc -= dt;
     if (gAcc > 0)
         return;
@@ -11523,8 +11789,11 @@ function greetTick(dt) {
     var l = marchers.filter(function (m) { return m.k === 1 && !m.inj && !(m.wait > 0) && !(m.gt > 0); }).sort(function (a, b) { return a.p - b.p; }), i;
     for (i = 0; i < l.length - 1; i++) {
         var a = l[i], b = l[i + 1];
-        if (a.d !== b.d && Math.abs(a.p - b.p) * LEN < 9 && Math.random() < .5) {
+        if (a.d !== b.d && Math.abs(a.p - b.p) * LEN < 9 && Math.random() < (pers(a) === 2 || pers(b) === 2 ? .9 : .35)) {
             a.gt = b.gt = .9;
+            a.gtx = b.gtx = null;
+            mem(a).g++;
+            mem(b).g++;
             var q = at((a.p + b.p) / 2);
             fx.push({ x: q.x, y: q.y - 6, vx: 0, vy: -10, l: .6, t: '\u00b7', f: 14, c: '#fff3c4', g: 0 });
             i++;
@@ -13500,7 +13769,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 92, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 94, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -14577,7 +14846,7 @@ function frame(n) {
                     }
                 }
                 if (f.p >= 1 && !f.rv)
-                    S.queenHp -= (1 + S.wave * .15) * (f.boss ? 2.5 : 1) * dt;
+                    S.queenHp -= (1 + S.wave * .15) * (f.boss ? 2.5 : 1) * qgShield() * dt;
                 if (f.tm <= 0) {
                     f.tm = .45;
                     var big = f.acc > f.max * .08;
