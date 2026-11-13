@@ -3,7 +3,7 @@
 #
 # It always produces a test app (APK) you can install on your own phone.
 # If the signing secrets are set (see "Releasing" in README.md) it also produces the
-# signed store file (AAB) that you upload to Google Play.
+# signed store file (AAB) that you upload to Google Play Console.
 name: Build Android app
 
 on:
