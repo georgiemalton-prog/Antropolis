@@ -189,6 +189,37 @@ body.obs .scene::after{content:"";position:absolute;inset:0;pointer-events:none;
 @keyframes obsin{from{opacity:0;transform:translate(-50%,8px)}}
 #obsx{position:fixed;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:9;border:1px solid rgba(255,190,140,.45);background:rgba(30,20,10,.6);color:#fff4df;font:700 13px var(--ff);padding:8px 16px;border-radius:99px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer}
 
+/* Living glow UI (build 89): slim glass pods with a soft fungus-green glow, so the colony shows through */
+:root{--gl-bg:rgba(8,18,11,.46);--gl-bd:rgba(140,255,190,.22);--gl-ink:#eaffef;--gl-hi:#b6ffd6;--gl-glow:rgba(100,255,170,.55)}
+.nav{background:rgba(8,16,10,.58);border-color:var(--gl-bd);border-radius:26px;padding:4px 6px;box-shadow:0 10px 26px -10px rgba(0,0,0,.7)}
+.nav button{padding:6px 0 5px;font-size:11px;color:rgba(234,255,239,.62);border-radius:20px}
+.nav button span svg{width:24px;height:24px}
+.nav button.on{background:radial-gradient(ellipse at 50% 45%,rgba(100,255,170,.2),transparent 70%);color:var(--gl-hi);box-shadow:none;text-shadow:0 0 8px var(--gl-glow)}
+.nav button.on span svg{filter:drop-shadow(0 0 6px var(--gl-glow))}
+.nav button.nudge{box-shadow:inset 0 0 0 1.5px var(--gl-hi)}
+#tov .card{background:var(--gl-bg);border:1px solid var(--gl-bd);color:var(--gl-ink);box-shadow:0 4px 12px -6px rgba(0,0,0,.7)}
+#tov .pod{width:38px!important;height:38px;padding:0!important;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;color:var(--gl-hi);background:radial-gradient(circle at 50% 40%,rgba(120,255,180,.32),rgba(30,90,60,.3) 55%,rgba(6,16,10,.5) 75%);box-shadow:0 0 12px rgba(100,255,170,.22)}
+#tov .pod svg{width:18px;height:18px;filter:drop-shadow(0 0 3px var(--gl-glow))}
+#tov .pod:active{transform:scale(.9)}
+#tzoom{width:38px;gap:7px}#tzoom .card{width:38px}
+#tstw{background:var(--gl-bg);border:1px solid var(--gl-bd);border-radius:16px;color:var(--gl-ink)}#tstw b{color:var(--gl-hi)}
+#tbot{flex-direction:row;align-items:flex-end;right:56px}#tbot .card{flex:0 0 auto}
+#abil{display:flex;gap:10px}
+#tov .tok{width:56px;height:56px;padding:0;border-radius:50%;flex-direction:column;gap:1px;color:var(--gl-ink);font:800 9.5px/1 var(--ff);letter-spacing:.02em;background:var(--gl-bg);transition:opacity .3s,box-shadow .3s}
+#tov .tok svg{width:22px;height:22px;color:var(--gl-hi);filter:drop-shadow(0 0 5px var(--gl-glow))}
+#tov .tok .tl{white-space:nowrap;max-width:52px;overflow:hidden;text-overflow:ellipsis}
+#tov .tok.hot{border-color:var(--gl-hi);animation:tokp 1.2s ease-in-out infinite}
+#abR.hot{border-color:#ffd23f}#abR.hot svg{color:#ffe28a;filter:drop-shadow(0 0 6px rgba(255,210,63,.9))}
+@keyframes tokp{50%{box-shadow:0 0 18px 2px var(--gl-glow)}}#abR.hot{animation-name:tokr}@keyframes tokr{50%{box-shadow:0 0 18px 2px rgba(255,210,63,.6)}}
+#wrow{display:flex;gap:6px;margin:0 auto 9px}#wrow .pod{width:34px!important;height:34px}
+#tjump{right:8px;display:flex;flex-direction:column;gap:7px;bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+body.nt .hchip,body.tt .hchip{background:var(--gl-bg);border:1px solid var(--gl-bd)}
+body.nt .hchip b,body.tt .hchip b{color:var(--gl-ink)}
+body.nt .top .link{background:var(--gl-bg);border:1px solid var(--gl-bd);color:var(--gl-ink)}
+#ninfo{border-color:var(--gl-bd);background:radial-gradient(circle at 50% 40%,rgba(120,255,180,.3),rgba(6,16,10,.55) 75%);color:var(--gl-hi)}
+@media (prefers-reduced-motion:reduce){#tov .tok.hot{animation:none;box-shadow:0 0 14px var(--gl-glow)}}
+.toast{background:rgba(8,20,12,.9);border-color:rgba(140,255,190,.4);color:var(--gl-ink);box-shadow:0 10px 26px -8px rgba(0,0,0,.7),0 0 14px -4px var(--gl-glow)}
+body.nt .hchip{padding:4px 11px}body.nt .hchip b{font-size:24px}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
@@ -196,10 +227,10 @@ body.obs .scene::after{content:"";position:absolute;inset:0;pointer-events:none;
 <div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
 <div id="goals"></div><p id="goal" class="gline"></p>
 <div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food <span class="jlc"><b id="jel">0</b> jelly</span></small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><button id="ninfo" aria-label="Queen and eggs: health, next egg, egg chances">i</button><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
- <div id="tzoom"><button class="card" id="tobs">Watch</button><button class="card" id="tmap">Map</button><button class="card" id="zin" aria-label="Zoom in">+</button><button class="card" id="zout" aria-label="Zoom out">&minus;</button><button class="card" id="zfit">Reset</button><button class="card" id="zfol">Follow</button></div>
- <div id="tbot"><div id="abil" style="display:none;gap:6px"><button class="card" id="abR">Rally</button><button class="card" id="abA">Sound the alarm</button></div>
- <div id="wrow" style="display:none;gap:6px"><button class="card" id="jw">&#9664; West</button><button class="card" id="jh">Home</button><button class="card" id="je">East &#9654;</button></div>
- <div style="display:flex;gap:6px"><button class="card" id="j0">Surface</button><button class="card" id="j1">Front line</button><button class="card" id="j2">Nest</button></div></div></div></div>
+ <div id="tzoom"><button class="card pod" id="tobs" aria-label="Watch the colony" title="Watch the colony"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg></button><button class="card pod" id="tmap" aria-label="Colony map" title="Colony map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/></svg></button><button class="card pod" id="zin" aria-label="Zoom in" title="Zoom in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button><button class="card pod" id="zout" aria-label="Zoom out" title="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button><button class="card pod" id="zfit" aria-label="Reset zoom" title="Reset zoom"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 1 0 2-5M5 4v4h4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="card pod" id="zfol" aria-label="Follow a busy ant" title="Follow a busy ant"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2"/></svg></button></div>
+ <div id="tbot"><div id="abil" style="display:none"><button class="card tok" id="abR">Rally</button><button class="card tok" id="abA">Sound the alarm</button></div>
+ <div id="wrow" style="display:none"><button class="card pod" id="jw" aria-label="Pan west" title="Pan west"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="card pod" id="jh" aria-label="Back home" title="Back home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20c0-7 2.7-11 6-11s6 4 6 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button><button class="card pod" id="je" aria-label="Pan east" title="Pan east"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+ <div id="tjump"><button class="card pod" id="j0" aria-label="Jump to the surface" title="Jump to the surface"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="card pod" id="j1" aria-label="Jump to the front line" title="Jump to the front line"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l9-9M14 4h6v6l-9 9-3-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></button><button class="card pod" id="j2" aria-label="Jump to the nest" title="Jump to the nest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div></div>
 
 <div class="pn on" id="p-nest">
  <div class="row"><b>Queen’s health</b><span id="hpt"></span></div><div class="bar"><i id="hpb" style="background:#c0452d"></i></div>
@@ -4301,6 +4332,19 @@ function abilityTick(dt) {
         abilityUi(false);
     }
 }
+var ICO_HORN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l8 5V5L6 10z" fill="currentColor"/><path d="M17 8c2 2 2 6 0 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+var ICO_GONG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="11" r="2.4" fill="currentColor"/><path d="M5 21l3-4M19 21l-3-4" stroke="currentColor" stroke-width="2"/></svg>';
+// round ability token: icon built once, then only the short label and the spoken label change
+function tokSet(b, ico, short, full) {
+    if (!b.tk) {
+        b.innerHTML = ico + '<span class="tl"></span>';
+        b.tk = b.lastChild;
+    }
+    if (b.tk.textContent !== short)
+        b.tk.textContent = short;
+    if (b.getAttribute('aria-label') !== full)
+        b.setAttribute('aria-label', full);
+}
 function abilityUi(force) {
     var r = $('abR'), a = $('abA'), box = $('abil');
     if (!r || !box)
@@ -4310,12 +4354,13 @@ function abilityUi(force) {
     if (!show)
         return;
     var rt = rallyT > 0 ? 'Rallying ' + Math.ceil(rallyT) + 's' : rallyCd > 0 ? 'Ready in ' + Math.ceil(rallyCd) + 's' : fighting() ? 'Tap to rally!' : 'Ready for a fight', at = alarmCd > 0 ? 'Ready in ' + Math.ceil(alarmCd) + 's' : injN() > 0 ? injN() + ' hurt. Tap to heal!' : 'Ready';
-    r.innerHTML = '<span><b>Rally</b><span class="mute">' + rt + '</span></span>';
-    a.innerHTML = '<span><b>Sound the alarm</b><span class="mute">' + at + '</span></span>';
+    var rs = rallyT > 0 ? Math.ceil(rallyT) + 's' : rallyCd > 0 ? Math.ceil(rallyCd) + 's' : 'Rally', as = alarmCd > 0 ? Math.ceil(alarmCd) + 's' : injN() > 0 ? injN() + ' hurt' : 'Alarm';
+    tokSet(r, ICO_HORN, rs, 'Rally: ' + rt);
+    tokSet(a, ICO_GONG, as, 'Sound the alarm: ' + at);
     r.style.opacity = rallyCd > 0 || rallyT > 0 ? .55 : 1;
     a.style.opacity = alarmCd > 0 ? .55 : 1;
-    r.style.outline = fighting() && rallyCd <= 0 ? '2px solid #ffd23f' : 'none';
-    a.style.outline = injN() > 0 && alarmCd <= 0 ? '2px solid #7ee08a' : 'none';
+    r.classList.toggle('hot', fighting() && rallyCd <= 0);
+    a.classList.toggle('hot', injN() > 0 && alarmCd <= 0);
 }
 
 /* ants/heroes.js
@@ -13163,7 +13208,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 88, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 89, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }

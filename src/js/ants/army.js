@@ -533,6 +533,19 @@ function abilityTick(dt) {
         abilityUi(false);
     }
 }
+var ICO_HORN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l8 5V5L6 10z" fill="currentColor"/><path d="M17 8c2 2 2 6 0 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+var ICO_GONG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="11" r="2.4" fill="currentColor"/><path d="M5 21l3-4M19 21l-3-4" stroke="currentColor" stroke-width="2"/></svg>';
+// round ability token: icon built once, then only the short label and the spoken label change
+function tokSet(b, ico, short, full) {
+    if (!b.tk) {
+        b.innerHTML = ico + '<span class="tl"></span>';
+        b.tk = b.lastChild;
+    }
+    if (b.tk.textContent !== short)
+        b.tk.textContent = short;
+    if (b.getAttribute('aria-label') !== full)
+        b.setAttribute('aria-label', full);
+}
 function abilityUi(force) {
     var r = $('abR'), a = $('abA'), box = $('abil');
     if (!r || !box)
@@ -542,10 +555,11 @@ function abilityUi(force) {
     if (!show)
         return;
     var rt = rallyT > 0 ? 'Rallying ' + Math.ceil(rallyT) + 's' : rallyCd > 0 ? 'Ready in ' + Math.ceil(rallyCd) + 's' : fighting() ? 'Tap to rally!' : 'Ready for a fight', at = alarmCd > 0 ? 'Ready in ' + Math.ceil(alarmCd) + 's' : injN() > 0 ? injN() + ' hurt. Tap to heal!' : 'Ready';
-    r.innerHTML = '<span><b>Rally</b><span class="mute">' + rt + '</span></span>';
-    a.innerHTML = '<span><b>Sound the alarm</b><span class="mute">' + at + '</span></span>';
+    var rs = rallyT > 0 ? Math.ceil(rallyT) + 's' : rallyCd > 0 ? Math.ceil(rallyCd) + 's' : 'Rally', as = alarmCd > 0 ? Math.ceil(alarmCd) + 's' : injN() > 0 ? injN() + ' hurt' : 'Alarm';
+    tokSet(r, ICO_HORN, rs, 'Rally: ' + rt);
+    tokSet(a, ICO_GONG, as, 'Sound the alarm: ' + at);
     r.style.opacity = rallyCd > 0 || rallyT > 0 ? .55 : 1;
     a.style.opacity = alarmCd > 0 ? .55 : 1;
-    r.style.outline = fighting() && rallyCd <= 0 ? '2px solid #ffd23f' : 'none';
-    a.style.outline = injN() > 0 && alarmCd <= 0 ? '2px solid #7ee08a' : 'none';
+    r.classList.toggle('hot', fighting() && rallyCd <= 0);
+    a.classList.toggle('hot', injN() > 0 && alarmCd <= 0);
 }

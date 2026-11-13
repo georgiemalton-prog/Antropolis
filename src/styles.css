@@ -179,3 +179,34 @@ body.obs .scene::after{content:"";position:absolute;inset:0;pointer-events:none;
 @keyframes obsin{from{opacity:0;transform:translate(-50%,8px)}}
 #obsx{position:fixed;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:9;border:1px solid rgba(255,190,140,.45);background:rgba(30,20,10,.6);color:#fff4df;font:700 13px var(--ff);padding:8px 16px;border-radius:99px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer}
 
+/* Living glow UI (build 89): slim glass pods with a soft fungus-green glow, so the colony shows through */
+:root{--gl-bg:rgba(8,18,11,.46);--gl-bd:rgba(140,255,190,.22);--gl-ink:#eaffef;--gl-hi:#b6ffd6;--gl-glow:rgba(100,255,170,.55)}
+.nav{background:rgba(8,16,10,.58);border-color:var(--gl-bd);border-radius:26px;padding:4px 6px;box-shadow:0 10px 26px -10px rgba(0,0,0,.7)}
+.nav button{padding:6px 0 5px;font-size:11px;color:rgba(234,255,239,.62);border-radius:20px}
+.nav button span svg{width:24px;height:24px}
+.nav button.on{background:radial-gradient(ellipse at 50% 45%,rgba(100,255,170,.2),transparent 70%);color:var(--gl-hi);box-shadow:none;text-shadow:0 0 8px var(--gl-glow)}
+.nav button.on span svg{filter:drop-shadow(0 0 6px var(--gl-glow))}
+.nav button.nudge{box-shadow:inset 0 0 0 1.5px var(--gl-hi)}
+#tov .card{background:var(--gl-bg);border:1px solid var(--gl-bd);color:var(--gl-ink);box-shadow:0 4px 12px -6px rgba(0,0,0,.7)}
+#tov .pod{width:38px!important;height:38px;padding:0!important;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;color:var(--gl-hi);background:radial-gradient(circle at 50% 40%,rgba(120,255,180,.32),rgba(30,90,60,.3) 55%,rgba(6,16,10,.5) 75%);box-shadow:0 0 12px rgba(100,255,170,.22)}
+#tov .pod svg{width:18px;height:18px;filter:drop-shadow(0 0 3px var(--gl-glow))}
+#tov .pod:active{transform:scale(.9)}
+#tzoom{width:38px;gap:7px}#tzoom .card{width:38px}
+#tstw{background:var(--gl-bg);border:1px solid var(--gl-bd);border-radius:16px;color:var(--gl-ink)}#tstw b{color:var(--gl-hi)}
+#tbot{flex-direction:row;align-items:flex-end;right:56px}#tbot .card{flex:0 0 auto}
+#abil{display:flex;gap:10px}
+#tov .tok{width:56px;height:56px;padding:0;border-radius:50%;flex-direction:column;gap:1px;color:var(--gl-ink);font:800 9.5px/1 var(--ff);letter-spacing:.02em;background:var(--gl-bg);transition:opacity .3s,box-shadow .3s}
+#tov .tok svg{width:22px;height:22px;color:var(--gl-hi);filter:drop-shadow(0 0 5px var(--gl-glow))}
+#tov .tok .tl{white-space:nowrap;max-width:52px;overflow:hidden;text-overflow:ellipsis}
+#tov .tok.hot{border-color:var(--gl-hi);animation:tokp 1.2s ease-in-out infinite}
+#abR.hot{border-color:#ffd23f}#abR.hot svg{color:#ffe28a;filter:drop-shadow(0 0 6px rgba(255,210,63,.9))}
+@keyframes tokp{50%{box-shadow:0 0 18px 2px var(--gl-glow)}}#abR.hot{animation-name:tokr}@keyframes tokr{50%{box-shadow:0 0 18px 2px rgba(255,210,63,.6)}}
+#wrow{display:flex;gap:6px;margin:0 auto 9px}#wrow .pod{width:34px!important;height:34px}
+#tjump{right:8px;display:flex;flex-direction:column;gap:7px;bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+body.nt .hchip,body.tt .hchip{background:var(--gl-bg);border:1px solid var(--gl-bd)}
+body.nt .hchip b,body.tt .hchip b{color:var(--gl-ink)}
+body.nt .top .link{background:var(--gl-bg);border:1px solid var(--gl-bd);color:var(--gl-ink)}
+#ninfo{border-color:var(--gl-bd);background:radial-gradient(circle at 50% 40%,rgba(120,255,180,.3),rgba(6,16,10,.55) 75%);color:var(--gl-hi)}
+@media (prefers-reduced-motion:reduce){#tov .tok.hot{animation:none;box-shadow:0 0 14px var(--gl-glow)}}
+.toast{background:rgba(8,20,12,.9);border-color:rgba(140,255,190,.4);color:var(--gl-ink);box-shadow:0 10px 26px -8px rgba(0,0,0,.7),0 0 14px -4px var(--gl-glow)}
+body.nt .hchip{padding:4px 11px}body.nt .hchip b{font-size:24px}
