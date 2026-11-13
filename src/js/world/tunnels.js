@@ -124,6 +124,7 @@ function farDigTick(dt) {
     for (var j = 0; j < F; j++) {
         var e = q[j], st = e.deep ? S.ddg : S.fdg, b = st[e.i] || 0;
         st[e.i] = Math.min(1, b + rate / F * dt / Math.max(20, e.q.LEN));
+        S.soil = (S.soil || 0) + (st[e.i] - b) * e.q.LEN;
         DIGF.push(e);
         if (st[e.i] >= 1 && e.deep && e.t && dt < 5)
             toast('Your workers dug the shaft down into the ' + ['clay', 'stone layer', 'deep dark', 'bedrock'][e.L] + '.');

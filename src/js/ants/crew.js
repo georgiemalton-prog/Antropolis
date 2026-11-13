@@ -94,6 +94,7 @@ function addSpoil(s, a, i) {
             spoil.shift();
     }
     p.n = Math.min(p.n + a.carry, 18);
+    S.soil = (S.soil || 0) + a.carry * 2;
     for (j = 0; j < 4; j++)
         fx.push({ x: x, y: y - 2, vx: (Math.random() - .5) * 28, vy: -8 - Math.random() * 12, l: .45, c: '#a67c52', s: 2, g: 50 });
 }

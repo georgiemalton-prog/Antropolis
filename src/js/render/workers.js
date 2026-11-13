@@ -2,7 +2,29 @@
    Drawing workers at work: spoil heaps, dirt kicks, tunnel diggers, the crew, and the egg pile.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
 
+function drawSurfHeap() {
+    var sv = S.soil || 0;
+    if (S.dug < 1 || sv < 40)
+        return;
+    var e0 = PT[0][0], gy = 24, sz = Math.min(1, Math.sqrt(sv) / 160), n = Math.min(70, Math.floor(6 + sz * 64));
+    [-1, 1].forEach(function (d) {
+        var cx0 = e0 + d * (13 + sz * 12), w = 7 + sz * 24, h = 3 + sz * 13;
+        cx.fillStyle = '#6a4426';
+        cx.beginPath();
+        cx.ellipse(cx0, gy + 1, w, h, 0, Math.PI, 0);
+        cx.fill();
+        // loose pellets on top, the newest a little paler
+        for (var i = 0; i < n / 2; i++) {
+            var a = (i * 2.399) % Math.PI, r = (i % 7) / 7, px = cx0 + Math.cos(a) * w * r * .95, py = gy + 1 - Math.sin(a) * h * r * .9;
+            cx.fillStyle = i % 3 === 0 ? '#9a6e44' : i % 3 === 1 ? '#b58a5c' : '#82593a';
+            cx.beginPath();
+            cx.ellipse(px, py, 1.7, 1.3, i, 0, 7);
+            cx.fill();
+        }
+    });
+}
 function drawSpoil() {
+    drawSurfHeap();
     if (cavHeap > .5 && S.dug < 1) {
         var Hh = tendHome(), hw = 5 + Math.sqrt(cavHeap) * 2.4, hh2 = 2 + Math.sqrt(cavHeap) * 1.3;
         cx.fillStyle = '#7d5232';
@@ -60,6 +82,17 @@ function drawFarDig(now) {
             if (dw > .95 && !(o.dft > now - 300))
                 dirtKick(o, x, y, an, now);
             drawAnt(x, y, an, SZ[6], false, now * .01 + k * 3, KD[6]);
+        }
+        // build 88: a little stream of workers carries the soil out of the new tunnel, pellets in their jaws, and
+        // comes back for more (how many and how far grows with the tunnel)
+        var L = pr * e.q.LEN, nh = Math.min(4, Math.floor(L / 28));
+        for (var h = 0; h < nh; h++) {
+            var per = Math.max(2.5, L / 26), u = ((now / 1000 + h * per / nh + n * .37) % per) / per, out = u < .5, f = out ? u * 2 : 2 - u * 2;
+            var pp = Math.max(0, pr - (f * L + 8) / e.q.LEN);
+            if (pp <= 0)
+                continue;
+            var b = at(pp, e.q), lane = (out ? 1 : -1) * 1.4;
+            drawAnt(b.x + b.nx * lane, b.y + b.ny * lane, b.ang + (out ? Math.PI : 0), SZ[6], out ? 6 : false, now * .02 + h * 2, KD[6]);
         }
     });
     cx.restore();
