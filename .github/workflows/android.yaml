@@ -1,25 +1,43 @@
 # Builds the Android app from the game files in this repo.
 # Run it by hand: Actions tab -> "Build Android app" -> Run workflow.
-# It produces a test app (APK) you can download and install on your own phone.
+#
+# It always produces a test app (APK) you can install on your own phone.
+# If the signing secrets are set (see "Releasing" in README.md) it also produces the
+# signed store file (AAB) that you upload to Google Play.
 name: Build Android app
 
 on:
   workflow_dispatch:
+  push:
+    branches: [release-build]
+    paths: ['.github/workflows/android.yaml']
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
 
+      # Capacitor 8 targets Android 16 (API 36), which Google Play requires. It needs Node 22 and Java 21.
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
+
+      - name: Read the version from the game
+        run: |
+          BUILD=$(grep -oP 'BUILD = \K[0-9]+' src/js/ui/settings.js | head -1)
+          APP_VER=$(grep -oP "APP_VER = '\K[^']+" src/js/ui/settings.js | head -1)
+          test -n "$BUILD" && test -n "$APP_VER"
+          echo "BUILD=$BUILD" >> "$GITHUB_ENV"
+          echo "APP_VER=$APP_VER" >> "$GITHUB_ENV"
+          echo "Antropolis $APP_VER (build $BUILD)"
 
       - name: Put the game files into the app
         run: |
@@ -29,7 +47,7 @@ jobs:
       - name: Install Capacitor (the tool that wraps the game as an app)
         run: |
           npm init -y
-          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+          npm install @capacitor/core@8 @capacitor/cli@8 @capacitor/android@8
 
       - name: Create the Android project
         run: |
@@ -37,7 +55,7 @@ jobs:
           npx cap add android
           npx cap sync android
 
-      - name: Icons and screen orientation
+      - name: Icons, screen orientation and version number
         run: |
           mkdir -p android-config/assets
           cp android-icon-only.png android-config/assets/icon-only.png
@@ -46,6 +64,10 @@ jobs:
           npx --yes @capacitor/assets@3 generate --android --assetPath android-config/assets
           sed -i 's/<activity /<activity android:screenOrientation="portrait" /' android/app/src/main/AndroidManifest.xml
           grep -q hardwareAccelerated android/app/src/main/AndroidManifest.xml || sed -i 's/<application /<application android:hardwareAccelerated="true" /' android/app/src/main/AndroidManifest.xml
+          # Google Play needs a number that goes up with every upload: use the game's build number
+          sed -i -E "s/versionCode [0-9]+/versionCode $BUILD/; s/versionName \"[^\"]*\"/versionName \"$APP_VER\"/" android/app/build.gradle
+          grep -E "versionCode|versionName" android/app/build.gradle
+          grep -E "SdkVersion" android/variables.gradle
 
       - name: Build the test app
         working-directory: android
@@ -58,3 +80,31 @@ jobs:
         with:
           name: antropolis-test-app
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Build the signed store file
+        if: env.HAS_KEY == 'true'
+        working-directory: android
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file="$RUNNER_TEMP/upload.jks" \
+            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="${KEY_ALIAS:-upload}" \
+            -Pandroid.injected.signing.key.password="$KEYSTORE_PASSWORD"
+          rm -f "$RUNNER_TEMP/upload.jks"
+          cp app/build/outputs/bundle/release/app-release.aab "$RUNNER_TEMP/antropolis-$APP_VER-build$BUILD.aab"
+
+      - name: Save the store file so you can download it
+        if: env.HAS_KEY == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: antropolis-store-file
+          path: ${{ runner.temp }}/antropolis-*.aab
+
+      - name: No signing key yet
+        if: env.HAS_KEY != 'true'
+        run: echo "::notice::Only the test app was built. Add the signing secrets (see README, Releasing) to also get the Google Play store file."
