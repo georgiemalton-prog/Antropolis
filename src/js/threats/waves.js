@@ -89,7 +89,7 @@ function loseGame() {
     SFX.lose();
     var h = Math.floor(gain() / 2);
     $('overp').textContent = 'Invaders broke through to the queen. You hatched ' + fmt(S.totalHatched) + ' ants this colony. ' + (h ? 'You keep ' + h + ' legacy.' : 'Hatch more next time to earn legacy.');
-    $('adrev').style.display = S.revived ? 'none' : '';
+    $('adrev').style.display = S.revived || Ads.none() ? 'none' : '';
     $('over').classList.add('on');
 }
 

@@ -192,7 +192,7 @@ function hudClasses() {
         rt += '<button class="card dig" ' + (dl2 >= 4 || lockedD || genLk || S.food < dcc.f || S.jelly < dcc.j ? 'disabled ' : '') + 'onclick="upDeep()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Dig deeper ' + Math.min(4, dl2 + 1) + ' of 4' + (dl2 < 4 ? ': ' + DLAY[dl2].n : '') + '</b><span class="mute">' + (dl2 >= 4 ? 'You have reached bedrock' : genLk ? deepGenTxt(dl2) : lockedD ? 'Needs ' + T[4].n : (dl2 === 0 ? 'The Larder: food store +25% and ants work 10 hours while you are away' : dl2 === 1 ? 'The Armoury: a quarter fewer soldier injuries, and termite raids are fought 20% harder' : dl2 === 2 ? 'The Crystal Caves: scouts bring back crystal for up to 4 jelly a day, and golden eggs are 50% more likely' : dl2 === 3 ? 'Bedrock: the bottom of the world, and the Giant Mole\'s cavern' : 'A new soil layer below the queen, with 8% more food storage')) + '</span></span><span class="r">' + (dl2 >= 4 ? 'Maxed' : fmt(dcc.f) + ' food, ' + dcc.j + ' jelly') + '</span></button>';
         rt += moleCard();
     }
-    if (S.tier >= 1) {
+    if (S.tier >= 1 && !Ads.none()) {
         var abr = Ads.ready('boost', 15);
         rt += '<button class="card dig" ' + (abr ? '' : 'disabled ') + 'onclick="adBoost()" style="margin:0 0 6px"><span><b>Colony boost</b><span class="mute">' + (P.adfree ? 'Food and jelly for your colony.' : 'Watch a short ad for food and jelly.') + (abr ? '' : ' Ready in ' + Ads.left('boost', 15) + ' min.') + '</span></span><span class="r">' + (P.adfree ? 'Free' : 'Ad') + '</span></button>';
     }

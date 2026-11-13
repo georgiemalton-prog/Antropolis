@@ -97,6 +97,8 @@ GitHub runs the build check and lint on every push and pull request (`.github/wo
   (the upload keystore file, base64), `ANDROID_KEYSTORE_PASSWORD`, and optionally `ANDROID_KEY_ALIAS`
   (defaults to `upload`). Keep a copy of the keystore and its password somewhere safe outside GitHub.
   It is the *upload* key: with Play App Signing on, Google can reset it if it is ever lost.
+- The two fonts are in `fonts/` (Latin-only subsets, SIL Open Font License) and load from there, so
+  the game looks right offline and fetches nothing from Google. The Android workflow copies them in.
 - `privacy.html` is the privacy policy. Its address (https://georgiemalton-prog.github.io/Antropolis/privacy.html
   once merged into `main`) goes in the store listing. Update it before adding adverts or purchases.
 
@@ -109,6 +111,6 @@ player turns it off in the Menu. The numbers are at https://STATS_CODE.goatcount
 
 ## To do
 
-- Link `privacy.html` from the Menu (needs a game build).
-- Real rewarded adverts and the ad-free purchase are not wired in: inside the Android app the
-  advert buttons still show the preview placeholder (`src/js/ui/ads.js`).
+- Real rewarded adverts and the ad-free purchase are not wired in. Until they are, the advert
+  buttons (colony boost, double the away food, save the queen) are hidden inside the Android app
+  (`Ads.none()` in `src/js/ui/ads.js`); the web page keeps its preview. Update `privacy.html` first.

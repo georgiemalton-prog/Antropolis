@@ -174,7 +174,7 @@ function showAway(r) {
     }
     $('awayt').innerHTML = awayText(r);
     var db = $('awaydbl'), extraF = Math.min(Math.round(r.got || 0), Math.max(0, foodCap() - Math.round(S.food)));
-    db.style.display = extraF >= 10 ? '' : 'none';
+    db.style.display = extraF >= 10 && !Ads.none() ? '' : 'none';
     db.disabled = false;
     db.textContent = P.adfree ? 'Double the food (+' + fmt(extraF) + ')' : 'Watch an ad to double the food (+' + fmt(extraF) + ')';
     db.onclick = function () {

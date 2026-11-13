@@ -6,6 +6,8 @@ var Ads = {
     pending: null,
     timer: null,
     native: function () { return !!(window.AndroidAds && typeof window.AndroidAds.showRewarded === 'function'); },
+    // inside the app with no advert system wired in yet: the advert buttons are hidden (the web page keeps its preview)
+    none: function () { return !!window.Capacitor && !Ads.native() && !P.adfree; },
     ready: function (key, mins) { return (Date.now() - ((P.adT && P.adT[key]) || 0)) > mins * 60000; },
     left: function (key, mins) { return Math.max(0, Math.ceil((mins * 60000 - (Date.now() - ((P.adT && P.adT[key]) || 0))) / 60000)); },
     mark: function (key) { P.adT = P.adT || {}; P.adT[key] = Date.now(); },

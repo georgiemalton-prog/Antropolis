@@ -5,10 +5,12 @@
 <meta name="theme-color" content="#0b0603">
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Antropolis"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/nunito.ttf" as="font" type="font/ttf" crossorigin><link rel="preload" href="fonts/bebas-neue.ttf" as="font" type="font/ttf" crossorigin>
 <style>
 /* ===== The Colony UI: warm earth palette, rounded type, soft depth ===== */
+/* the two fonts ship with the game (fonts/), so it looks right offline and nothing is fetched from Google */
+@font-face{font-family:"Nunito";src:url(fonts/nunito.ttf) format("truetype");font-weight:400 800;font-style:normal;font-display:swap}
+@font-face{font-family:"Bebas Neue";src:url(fonts/bebas-neue.ttf) format("truetype");font-weight:400;font-style:normal;font-display:swap}
 :root{--bg:#0b0603;--bg2:#1b0d05;--panel:#1a110a;--ink:#f6e6cc;--mute:#b58d62;--line:#3d2411;--accent:#e8602b;--accent2:#f5b23c;--aink:#1a0b02;--glass:rgba(16,9,4,.86);
  --sh:0 1px 2px rgba(0,0,0,.6),0 10px 26px -12px rgba(0,0,0,.85);
  --ff:"Nunito",ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Bebas Neue","Oswald","Arial Narrow",Impact,sans-serif;
@@ -1837,7 +1839,7 @@ function showAway(r) {
     }
     $('awayt').innerHTML = awayText(r);
     var db = $('awaydbl'), extraF = Math.min(Math.round(r.got || 0), Math.max(0, foodCap() - Math.round(S.food)));
-    db.style.display = extraF >= 10 ? '' : 'none';
+    db.style.display = extraF >= 10 && !Ads.none() ? '' : 'none';
     db.disabled = false;
     db.textContent = P.adfree ? 'Double the food (+' + fmt(extraF) + ')' : 'Watch an ad to double the food (+' + fmt(extraF) + ')';
     db.onclick = function () {
@@ -4757,7 +4759,7 @@ function loseGame() {
     SFX.lose();
     var h = Math.floor(gain() / 2);
     $('overp').textContent = 'Invaders broke through to the queen. You hatched ' + fmt(S.totalHatched) + ' ants this colony. ' + (h ? 'You keep ' + h + ' legacy.' : 'Hatch more next time to earn legacy.');
-    $('adrev').style.display = S.revived ? 'none' : '';
+    $('adrev').style.display = S.revived || Ads.none() ? 'none' : '';
     $('over').classList.add('on');
 }
 
@@ -11171,7 +11173,7 @@ function hudClasses() {
         rt += '<button class="card dig" ' + (dl2 >= 4 || lockedD || genLk || S.food < dcc.f || S.jelly < dcc.j ? 'disabled ' : '') + 'onclick="upDeep()" style="margin:0 0 6px"><span><b>' + ico('deep') + 'Dig deeper ' + Math.min(4, dl2 + 1) + ' of 4' + (dl2 < 4 ? ': ' + DLAY[dl2].n : '') + '</b><span class="mute">' + (dl2 >= 4 ? 'You have reached bedrock' : genLk ? deepGenTxt(dl2) : lockedD ? 'Needs ' + T[4].n : (dl2 === 0 ? 'The Larder: food store +25% and ants work 10 hours while you are away' : dl2 === 1 ? 'The Armoury: a quarter fewer soldier injuries, and termite raids are fought 20% harder' : dl2 === 2 ? 'The Crystal Caves: scouts bring back crystal for up to 4 jelly a day, and golden eggs are 50% more likely' : dl2 === 3 ? 'Bedrock: the bottom of the world, and the Giant Mole\'s cavern' : 'A new soil layer below the queen, with 8% more food storage')) + '</span></span><span class="r">' + (dl2 >= 4 ? 'Maxed' : fmt(dcc.f) + ' food, ' + dcc.j + ' jelly') + '</span></button>';
         rt += moleCard();
     }
-    if (S.tier >= 1) {
+    if (S.tier >= 1 && !Ads.none()) {
         var abr = Ads.ready('boost', 15);
         rt += '<button class="card dig" ' + (abr ? '' : 'disabled ') + 'onclick="adBoost()" style="margin:0 0 6px"><span><b>Colony boost</b><span class="mute">' + (P.adfree ? 'Food and jelly for your colony.' : 'Watch a short ad for food and jelly.') + (abr ? '' : ' Ready in ' + Ads.left('boost', 15) + ' min.') + '</span></span><span class="r">' + (P.adfree ? 'Free' : 'Ad') + '</span></button>';
     }
@@ -13500,7 +13502,8 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 92, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 93, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var PRIVACY_URL = 'https://georgiemalton-prog.github.io/Antropolis/privacy.html';
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -13535,7 +13538,7 @@ function openSettings() {
             '<textarea id="fbtext" rows="3" placeholder="What happened, or what would you like to see?" style="width:100%;font:13px sans-serif;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px"></textarea>' +
             '<button class="card" id="fbsend" style="margin-top:6px">Send feedback</button>')) +
             '<p id="setnote" class="mute" style="min-height:1.4em;margin:10px 0" aria-live="polite"></p>' +
-            '<p class="mute" style="font-size:12px;text-align:center;margin:4px 0 0">Antropolis version ' + APP_VER + ' \u00b7 build ' + BUILD + '</p>' +
+            '<p class="mute" style="font-size:12px;text-align:center;margin:4px 0 0">Antropolis version ' + APP_VER + ' \u00b7 build ' + BUILD + ' \u00b7 <a href="' + PRIVACY_URL + '" target="_blank" rel="noopener" style="color:inherit">Privacy policy</a></p>' +
             '<div class="irow"><button class="card dig" id="setok">Done</button></div></div>';
         document.body.appendChild(el);
         ['snd', 'mus', 'help'].forEach(function (id) { var b = $(id); b.className = 'card'; b.style.cssText = 'margin:0;justify-content:center;flex:1;min-width:90px'; $('setquick').appendChild(b); });
@@ -13944,6 +13947,8 @@ var Ads = {
     pending: null,
     timer: null,
     native: function () { return !!(window.AndroidAds && typeof window.AndroidAds.showRewarded === 'function'); },
+    // inside the app with no advert system wired in yet: the advert buttons are hidden (the web page keeps its preview)
+    none: function () { return !!window.Capacitor && !Ads.native() && !P.adfree; },
     ready: function (key, mins) { return (Date.now() - ((P.adT && P.adT[key]) || 0)) > mins * 60000; },
     left: function (key, mins) { return Math.max(0, Math.ceil((mins * 60000 - (Date.now() - ((P.adT && P.adT[key]) || 0))) / 60000)); },
     mark: function (key) { P.adT = P.adT || {}; P.adT[key] = Date.now(); },

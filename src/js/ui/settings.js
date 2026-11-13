@@ -54,7 +54,8 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 92, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 93, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var PRIVACY_URL = 'https://georgiemalton-prog.github.io/Antropolis/privacy.html';
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -89,7 +90,7 @@ function openSettings() {
             '<textarea id="fbtext" rows="3" placeholder="What happened, or what would you like to see?" style="width:100%;font:13px sans-serif;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px"></textarea>' +
             '<button class="card" id="fbsend" style="margin-top:6px">Send feedback</button>')) +
             '<p id="setnote" class="mute" style="min-height:1.4em;margin:10px 0" aria-live="polite"></p>' +
-            '<p class="mute" style="font-size:12px;text-align:center;margin:4px 0 0">Antropolis version ' + APP_VER + ' \u00b7 build ' + BUILD + '</p>' +
+            '<p class="mute" style="font-size:12px;text-align:center;margin:4px 0 0">Antropolis version ' + APP_VER + ' \u00b7 build ' + BUILD + ' \u00b7 <a href="' + PRIVACY_URL + '" target="_blank" rel="noopener" style="color:inherit">Privacy policy</a></p>' +
             '<div class="irow"><button class="card dig" id="setok">Done</button></div></div>';
         document.body.appendChild(el);
         ['snd', 'mus', 'help'].forEach(function (id) { var b = $(id); b.className = 'card'; b.style.cssText = 'margin:0;justify-content:center;flex:1;min-width:90px'; $('setquick').appendChild(b); });

@@ -40,6 +40,7 @@ jobs:
         run: |
           mkdir -p www
           for f in index.html sw.js manifest.webmanifest logo.jpg icon-192.png icon-512.png icon-maskable.png apple-touch-icon.png; do cp "$f" www/; done
+          mkdir -p www/fonts && cp fonts/*.ttf www/fonts/
 
       - name: Install Capacitor (the tool that wraps the game as an app)
         run: |
