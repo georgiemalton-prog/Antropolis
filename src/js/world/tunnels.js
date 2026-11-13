@@ -126,6 +126,8 @@ function farDigTick(dt) {
         st[e.i] = Math.min(1, b + rate / F * dt / Math.max(20, e.q.LEN));
         S.soil = (S.soil || 0) + (st[e.i] - b) * e.q.LEN;
         DIGF.push(e);
+        if (st[e.i] >= 1 && b < 1 && dt < 5)
+            feed(e.deep ? 'Workers finished a new gallery in the ' + ['clay', 'stone', 'deep dark', 'bedrock'][e.L || 0] + '.' : 'Workers finished a new tunnel.', 'dig', at(1, e.q));
         if (st[e.i] >= 1 && e.deep && e.t && dt < 5)
             toast('Your workers dug the shaft down into the ' + ['clay', 'stone layer', 'deep dark', 'bedrock'][e.L] + '.');
     }

@@ -71,7 +71,7 @@ function armyCounts() {
     // door guards (build 83): like real soldier ants plugging the nest holes, a couple of the biggest stand in the
     // tunnel mouth and a couple at the queen's door, heads facing out; super majors first, then soldiers
     var cand = [];
-    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !(m.nap > 0)) cand.push(m); });
+    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !m.xr && !(m.nap > 0)) cand.push(m); });
     cand.sort(function (a, b) { return (b.k - a.k) || (a.u - b.u); });
     C.doorTop = S.dug >= 1 && tunOK() ? cand.slice(0, 2) : [];
     C.doorNest = cand.slice(C.doorTop.length, C.doorTop.length + 2);
@@ -360,6 +360,10 @@ function scoutPatrol(m, dt, t, C) {
 // soldiers and super majors: a job if there is one (mole battle, termite line, Armoury), otherwise fight or guard
 function soldierStep(m, dt, t, C) {
     var k = m.k;
+    if (m.xr) {
+        if (xrStep(m, dt))
+            return;
+    }
     if (m.mo || (MF && !MF.end && C.moTot < C.moCap && m.hero == null && trait(m, 12) < .55)) {
         if (!m.mo) {
             if (m.dr) {
@@ -396,12 +400,33 @@ function soldierStep(m, dt, t, C) {
         soldierGuard(m, dt, t, C);
 }
 
+// build 91: super majors are living doors. Where one stands in the main tunnel an invader pressing on it is held
+// back (moves at wallSlow), as big-headed majors plug the way in real colonies. Returns their positions.
+function majorWall() {
+    var o = [];
+    if (!foes.length)
+        return o;
+    for (var i = 0; i < marchers.length; i++) {
+        var m = marchers[i];
+        if (m.k === 4 && !m.inj && !m.mo && !m.tr && !m.dr && !m.xr && m.p > 1 - S.dug)
+            o.push(m.p);
+    }
+    return o;
+}
+function wallHolds(W, p) {
+    for (var i = 0; i < W.length; i++)
+        if (W[i] >= p - .003 && W[i] - p < TUNING.fights.wallReach)
+            return true;
+    return false;
+}
+
 // invaders in the tunnel: run at them (faster while the alarm is sounding)
 function soldierCharge(m, dt) {
     var fo = foes[m.fi % foes.length];
     var dpf = fo.p - m.p;
     m.p += Math.sign(dpf) * Math.min(Math.abs(dpf), dt * (m.k === 4 ? 60 : 95) * (m.v || 1) * (alarmT > 0 ? 1.6 : 1) / Math.max(1, LEN));
     m.d = dpf > 0 ? 1 : -1;
+    m.act = m.k === 4 && Math.abs(dpf) < TUNING.fights.wallReach ? 'Holding the line' : 'Charging the invaders';
 }
 
 // no invaders. Build 83, after how real colonies defend: a few door guards plug the entrances (heads out), the rest
@@ -533,6 +558,7 @@ function abilityTick(dt) {
         abilityUi(false);
     }
 }
+var ICO_RAID = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l9-9M14 4h6v6l-9 9-3-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
 var ICO_HORN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l8 5V5L6 10z" fill="currentColor"/><path d="M17 8c2 2 2 6 0 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 var ICO_GONG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="11" r="2.4" fill="currentColor"/><path d="M5 21l3-4M19 21l-3-4" stroke="currentColor" stroke-width="2"/></svg>';
 // round ability token: icon built once, then only the short label and the spoken label change
@@ -558,6 +584,14 @@ function abilityUi(force) {
     var rs = rallyT > 0 ? Math.ceil(rallyT) + 's' : rallyCd > 0 ? Math.ceil(rallyCd) + 's' : 'Rally', as = alarmCd > 0 ? Math.ceil(alarmCd) + 's' : injN() > 0 ? injN() + ' hurt' : 'Alarm';
     tokSet(r, ICO_HORN, rs, 'Rally: ' + rt);
     tokSet(a, ICO_GONG, as, 'Sound the alarm: ' + at);
+    var x = $('abX');
+    if (x) {
+        x.style.display = XR ? '' : 'none';
+        if (XR)
+            tokSet(x, ICO_RAID, XR.ph === 'ready' ? 'Raid' : XR.ph === 'go' ? 'Going' : 'Away', XR.ph === 'ready' ? 'Counter-raid the rival nest (' + Math.ceil(XR.until) + 's left)' : 'Your squad is raiding the rival nest');
+        x.classList.toggle('hot', !!XR && XR.ph === 'ready');
+        x.style.opacity = XR && XR.ph !== 'ready' ? .6 : 1;
+    }
     r.style.opacity = rallyCd > 0 || rallyT > 0 ? .55 : 1;
     a.style.opacity = alarmCd > 0 ? .55 : 1;
     r.classList.toggle('hot', fighting() && rallyCd <= 0);

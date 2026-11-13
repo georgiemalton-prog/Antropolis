@@ -281,6 +281,16 @@ function goalsTick() {
         SFX.fan();
         showEnding();
     }
+    // build 92: from Generation II on, the teaching goals (tap the queen, first hatch, level up...) are skipped;
+    // their rewards are still given, quietly, so a new generation goes straight to the growing goals
+    while (S.goalIndex < GOALS.length && (P.gen || 0) >= 1 && GOALS[S.goalIndex].tut && !GOALS[S.goalIndex].ok()) {
+        G = GOALS[S.goalIndex];
+        if (G.fd)
+            S.food = Math.min(foodCap(), S.food + G.fd);
+        if (G.jl)
+            S.jelly += G.jl;
+        S.goalIndex++;
+    }
     while (S.goalIndex < GOALS.length && GOALS[S.goalIndex].ok()) {
         G = GOALS[S.goalIndex];
         if (G.fd)
@@ -378,6 +388,7 @@ function goTab(t) {
     cv.classList.toggle('nestmode', t !== 'tun');
     document.body.classList.toggle('tt', t === 'tun');
     document.body.classList.toggle('nt', t === 'nest');
+    document.body.classList.toggle('glw', t === 'col' || t === 'store');
     // the Nest and Tunnel are full-screen and must not scroll: a scrolling page makes phones shrink their
     // toolbars, which resizes the scene over and over
     var full = t === 'tun' || t === 'nest';

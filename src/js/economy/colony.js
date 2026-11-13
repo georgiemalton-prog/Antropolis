@@ -27,7 +27,7 @@ function injN() { return S.injured[0] + S.injured[1] + S.injured[2] + S.injured[
 
 // ---- economy: eggs, food and rewards ----
 
-function layGap() { return (bio().eg || 1) * 30 * (1 - .04 * S.queenLevel) * (S.tier >= 4 ? 1 - .1 * (1 + .2 * rl(3)) : 1); }
+function layGap() { return (bio().eg || 1) * 30 * (1 - .04 * S.queenLevel) * (S.tier >= 4 ? 1 - .1 * (1 + .2 * rl(3)) : 1) * (S.tier < 3 && popn() < TUNING.start.earlyLayUpTo ? TUNING.start.earlyLay : 1); }
 
 function eggCost() { return Math.max(1, Math.ceil((1 + S.tier) * (1 - .15 * pk('fat')))); }
 
@@ -483,4 +483,4 @@ function colony(dt) {
         lose();
 }
 
-function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); signalsTick(dt); }
+function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); signalsTick(dt); }

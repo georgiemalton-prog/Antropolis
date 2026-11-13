@@ -94,6 +94,7 @@ function termRaidTick(dt, quiet) {
         var size = 14 + S.tier * 8 + Math.floor(popn() / 70) + Math.floor(Math.random() * 8), n = Math.min(30, 12 + Math.floor(size / 5));
         for (var i = 0; i < n; i++)
             trm.push({ p: 1, w: i * .55, back: 0, size: size, i: i });
+        feed('Termites are marching down the far east tunnel.', 'bad', function () { return trm[0] && trm[0].x != null ? { x: trm[0].x, y: trm[0].y } : at(.5, BP[17]); });
         toast('Termite raiders are marching down the far east tunnel!');
     }
     var sp = 38 / Math.max(1, B.LEN) * dt, def = quiet ? -1 : trmDef;

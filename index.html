@@ -220,6 +220,22 @@ body.nt .top .link{background:var(--gl-bg);border:1px solid var(--gl-bd);color:v
 @media (prefers-reduced-motion:reduce){#tov .tok.hot{animation:none;box-shadow:0 0 14px var(--gl-glow)}}
 .toast{background:rgba(8,20,12,.9);border-color:rgba(140,255,190,.4);color:var(--gl-ink);box-shadow:0 10px 26px -8px rgba(0,0,0,.7),0 0 14px -4px var(--gl-glow)}
 body.nt .hchip{padding:4px 11px}body.nt .hchip b{font-size:24px}
+/* Living glow on the Colony and Store pages (build 90): same layout, fungus-green glass instead of orange */
+body.glw{--accent:#3fcf86;--accent2:#a8f5c8;--aink:#03160b;--line:rgba(140,255,190,.17);--panel:rgba(12,24,16,.82);--mute:#93bfa4;--ink:#e8fbee;background:radial-gradient(ellipse at 50% -10%,#0f2a1a 0%,transparent 60%) fixed,radial-gradient(ellipse at 50% 120%,#1a1206 0%,transparent 60%) fixed,linear-gradient(180deg,#050a06,#0a0d07) fixed}
+body.glw h2{color:var(--accent2);text-shadow:0 0 12px rgba(100,255,170,.35)}
+body.glw .card{background:linear-gradient(180deg,rgba(14,28,19,.86),rgba(8,18,12,.86));box-shadow:0 1px 2px rgba(0,0,0,.6),0 10px 24px -14px rgba(0,0,0,.9)}
+body.glw .card:not(:disabled){border-color:rgba(140,255,190,.3)}
+body.glw .card.dig:not(:disabled){box-shadow:0 0 16px -4px rgba(100,255,170,.45)}
+body.glw .gcard{background:rgba(10,22,14,.82)}
+body.glw .top .link{background:var(--gl-bg);border-color:var(--gl-bd);color:var(--gl-ink)}
+body.glw .brand img{filter:drop-shadow(0 0 14px rgba(100,255,170,.25))}
+/* colony feed line (build 90) */
+#feed{display:none;left:8px;right:56px;bottom:calc(152px + env(safe-area-inset-bottom,0px));width:auto;max-width:330px;align-items:center;gap:8px;padding:7px 10px 7px 9px;border-radius:16px;border:1px solid var(--gl-bd);background:var(--gl-bg);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--gl-ink);font:700 12px/1.25 var(--ff);text-align:left;cursor:pointer;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .4s}
+#feed.on{display:flex;opacity:1;transform:none;animation:feedin .45s ease}#feed.dim{opacity:.5}
+@keyframes feedin{from{opacity:0;transform:translateY(6px)}}
+#feed i{flex:0 0 auto;width:8px;height:8px;border-radius:50%;box-shadow:0 0 8px currentColor}
+#feed span{flex:1}#feed b{flex:0 0 auto;font-size:18px;line-height:1;color:var(--gl-hi)}
+body.obs #feed{display:none}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
@@ -228,7 +244,7 @@ body.nt .hchip{padding:4px 11px}body.nt .hchip b{font-size:24px}
 <div id="goals"></div><p id="goal" class="gline"></p>
 <div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food <span class="jlc"><b id="jel">0</b> jelly</span></small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><button id="ninfo" aria-label="Queen and eggs: health, next egg, egg chances">i</button><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
  <div id="tzoom"><button class="card pod" id="tobs" aria-label="Watch the colony" title="Watch the colony"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg></button><button class="card pod" id="tmap" aria-label="Colony map" title="Colony map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/></svg></button><button class="card pod" id="zin" aria-label="Zoom in" title="Zoom in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button><button class="card pod" id="zout" aria-label="Zoom out" title="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button><button class="card pod" id="zfit" aria-label="Reset zoom" title="Reset zoom"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 1 0 2-5M5 4v4h4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="card pod" id="zfol" aria-label="Follow a busy ant" title="Follow a busy ant"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2"/></svg></button></div>
- <div id="tbot"><div id="abil" style="display:none"><button class="card tok" id="abR">Rally</button><button class="card tok" id="abA">Sound the alarm</button></div>
+ <button id="feed" type="button"></button><div id="tbot"><div id="abil" style="display:none"><button class="card tok" id="abR">Rally</button><button class="card tok" id="abA">Sound the alarm</button><button class="card tok" id="abX" style="display:none">Raid</button></div>
  <div id="wrow" style="display:none"><button class="card pod" id="jw" aria-label="Pan west" title="Pan west"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="card pod" id="jh" aria-label="Back home" title="Back home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20c0-7 2.7-11 6-11s6 4 6 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button><button class="card pod" id="je" aria-label="Pan east" title="Pan east"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
  <div id="tjump"><button class="card pod" id="j0" aria-label="Jump to the surface" title="Jump to the surface"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="card pod" id="j1" aria-label="Jump to the front line" title="Jump to the front line"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l9-9M14 4h6v6l-9 9-3-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></button><button class="card pod" id="j2" aria-label="Jump to the nest" title="Jump to the nest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div></div>
 
@@ -453,6 +469,9 @@ var TUNING = {
         firstFoes: 2,         // wood lice in the early first fight (Burrow stage, 2+ soldiers, tunnel 15% dug)
         firstFoesHp: 5,       // their health, in seconds of the colony's soldier damage
         firstFoesDelay: 20,   // seconds after those conditions are met
+        earlyLay: .6,         // build 92: eggs come this much quicker while the colony is small (the 15-20 and 30-35 ant waits)
+        earlyLayUpTo: 50,
+        firstSide: 2.2,       // build 92: the first side tunnel digs this much faster (it was a 5-minute wait on goal 15)     // ...below this many ants, before the Anthill stage
         queenBig: 1.3         // queen drawn this much bigger at the Dirt hole stage (halfway there at Burrow)
     },
     // Giant Mole (threats/mole.js) and the Great Hall built after beating it
@@ -499,7 +518,26 @@ var TUNING = {
         speed: .045,          // share of the main tunnel per second (invaders move .02)
         foodShare: .03,       // food a raider takes when there are no eggs to steal
         lootShare: .05,       // food won when no egg is lost
-        winJelly: 2
+        winJelly: 2,
+        hideMax: .6,          // panic alarm (build 91): nurses hide eggs; share of grabs that find none, at most
+        hideNurses: 30        // nurses needed for half of hideMax
+    },
+    // Fights (build 91)
+    fights: {
+        wallSlow: .25,        // invaders pressing on a super major move at this share of their speed
+        wallReach: .02        // how far ahead of an invader (share of the main tunnel) a super major blocks it
+    },
+    // Counter-raid on the rival nest after a raid (threats/counter.js)
+    counter: {
+        window: 240,          // seconds the Raid token stays up after a rival raid ends
+        squadMin: 3,
+        squadMax: 12,         // 4 + 1 per 15 soldiers, up to this
+        away: 25,             // seconds inside the rival nest
+        baseWin: .45,         // chance to win with the smallest squad; +.04 per extra ant, +.03 per soldier level
+        foodShare: .06,       // share of the food store brought back on a win
+        jelly: 3,
+        delay: 600,           // seconds added before the next rival raid after a win
+        hurtMin: 2, hurtMax: 4 // soldiers that come back injured after a loss
     },
     // Deep layers (layers/*.js)
     larder: { carriers: 6, nursesPer: 8, storeBonus: 1.25, awayHours: 10, awayHoursOff: 8, reserve: 1, refill: .02 },
@@ -694,19 +732,19 @@ var exc = null, crewA = [], spoil = [], cavHeap = 0;
 var IP = [], ii = 0, introWasDead = false;
 
 var GOALS = [
-    { t: 'Tap the queen to hurry an egg', h: 'Tap her on the Nest tab.', tab: 'nest', n: function () { return Math.min(3, S.queenTaps || 0) + ' / 3'; }, ok: function () { return (S.queenTaps || 0) >= 3; }, fd: 15, r: '+15 food' },
-    { t: 'Hatch your first new ant', h: 'Eggs hatch by themselves. Keep tapping to speed them up.', tab: 'nest', ok: function () { return S.totalHatched >= 1; }, fd: 20, r: '+20 food' },
-    { t: 'Workers discover a food spot', h: 'Your workers are digging. Watch the Tunnel tab.', tab: 'tun', ok: function () { return S.foodSpots.length >= 1; }, fd: 25, r: '+25 food' },
-    { t: 'A forager brings food home', h: 'Foragers carry food along the tunnel to the queen.', tab: 'tun', ok: function () { return (S.deliveries || 0) >= 1; }, jl: 3, fd: 20, r: '+3 royal jelly' },
+    { tut: 1, t: 'Tap the queen to hurry an egg', h: 'Tap her on the Nest tab.', tab: 'nest', n: function () { return Math.min(3, S.queenTaps || 0) + ' / 3'; }, ok: function () { return (S.queenTaps || 0) >= 3; }, fd: 15, r: '+15 food' },
+    { tut: 1, t: 'Hatch your first new ant', h: 'Eggs hatch by themselves. Keep tapping to speed them up.', tab: 'nest', ok: function () { return S.totalHatched >= 1; }, fd: 20, r: '+20 food' },
+    { tut: 1, t: 'Workers discover a food spot', h: 'Your workers are digging. Watch the Tunnel tab.', tab: 'tun', ok: function () { return S.foodSpots.length >= 1; }, fd: 25, r: '+25 food' },
+    { tut: 1, t: 'A forager brings food home', h: 'Foragers carry food along the tunnel to the queen.', tab: 'tun', ok: function () { return (S.deliveries || 0) >= 1; }, jl: 3, fd: 20, r: '+3 royal jelly' },
     { t: 'Reach 10 ants', h: 'Every egg costs a little food. Foragers keep it coming.', tab: 'nest', n: function () { return Math.min(10, popn()) + ' / 10'; }, ok: function () { return popn() >= 10; }, fd: 40, r: '+40 food' },
     { t: 'Dig your first nest upgrade', h: 'Open the Colony tab and tap Dig a Burrow.', tab: 'col', ok: function () { return S.tier >= 1; }, jl: 3, r: '+3 royal jelly' },
-    { t: 'Level up an ant with royal jelly', h: 'Colony tab, Your ants and queen. Tap a card to spend jelly.', tab: 'col', ok: function () { return S.queenLevel > 0 || S.classLevel.some(function (l) { return l > 0; }); }, fd: 40, r: '+40 food' },
+    { tut: 1, t: 'Level up an ant with royal jelly', h: 'Colony tab, Your ants and queen. Tap a card to spend jelly.', tab: 'col', ok: function () { return S.queenLevel > 0 || S.classLevel.some(function (l) { return l > 0; }); }, fd: 40, r: '+40 food' },
     { t: 'Reach 15 ants', h: 'Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(15, popn()) + ' / 15'; }, ok: function () { return popn() >= 15; }, fd: 40, r: '+40 food' },
-    { t: 'Start your first building', h: 'In the Nest, press and hold the Food Store or the Nursery, then tap Build.', tab: 'nest', ok: function () { return !!S.proj || Object.keys(S.bld).some(function (k) { return S.bld[k] > 0; }); }, jl: 2, r: '+2 royal jelly' },
+    { tut: 1, t: 'Start your first building', h: 'In the Nest, press and hold the Food Store or the Nursery, then tap Build.', tab: 'nest', ok: function () { return !!S.proj || Object.keys(S.bld).some(function (k) { return S.bld[k] > 0; }); }, jl: 2, r: '+2 royal jelly' },
     { t: 'Bring home 15 loads of food', h: 'More foragers means more food.', tab: 'tun', n: function () { return Math.min(15, S.deliveries || 0) + ' / 15'; }, ok: function () { return (S.deliveries || 0) >= 15; }, jl: 2, r: '+2 royal jelly' },
     { t: 'Reach 20 ants', h: 'More ants means more foragers and more food.', tab: 'nest', n: function () { return Math.min(20, popn()) + ' / 20'; }, ok: function () { return popn() >= 20; }, jl: 1, fd: 40, r: '+1 jelly, +40 food' },
     { t: 'Reach 25 ants', h: 'Bigger nests hold more ants.', tab: 'nest', n: function () { return Math.min(25, popn()) + ' / 25'; }, ok: function () { return popn() >= 25; }, fd: 60, r: '+60 food' },
-    { t: 'Upgrade a nest chamber', h: 'In the Nest, press and hold the Fungus Garden or Nursery and upgrade its chamber.', tab: 'nest', ok: function () { return (S.roomLv || []).some(function (l) { return l > 0; }); }, fd: 60, r: '+60 food' },
+    { tut: 1, t: 'Upgrade a nest chamber', h: 'In the Nest, press and hold the Fungus Garden or Nursery and upgrade its chamber.', tab: 'nest', ok: function () { return (S.roomLv || []).some(function (l) { return l > 0; }); }, fd: 60, r: '+60 food' },
     { t: 'Bring home ' + TUNING.start.loadsGoal + ' loads of food', h: 'Send more foragers out by hatching more eggs.', tab: 'tun', n: function () { return Math.min(TUNING.start.loadsGoal, S.deliveries || 0) + ' / ' + TUNING.start.loadsGoal; }, ok: function () { return (S.deliveries || 0) >= TUNING.start.loadsGoal; }, fd: 80, r: '+80 food' },
     { t: 'Dig your first side tunnel', h: 'Workers dig it by themselves. It leads to chambers and finds.', tab: 'tun', ok: function () { return S.sideTunnels > 0 && S.sideDug[0] >= 1; }, jl: 2, r: '+2 royal jelly' },
     { t: 'Reach 35 ants', h: 'At 35 ants you can dig the next nest stage. Keep the eggs coming.', tab: 'nest', n: function () { return Math.min(35, popn()) + ' / 35'; }, ok: function () { return popn() >= 35; }, jl: 1, fd: 60, r: '+1 jelly, +60 food' },
@@ -1111,6 +1149,7 @@ function clearOldRun() {
     MSGR.length = 0;
     SCENT.length = 0;
     RV = null;
+    XR = null;
     rvT = TUNING.rivals.firstAt;
     ffT = TUNING.start.firstFoesDelay;
     trm.length = 0;
@@ -1164,7 +1203,7 @@ function injN() { return S.injured[0] + S.injured[1] + S.injured[2] + S.injured[
 
 // ---- economy: eggs, food and rewards ----
 
-function layGap() { return (bio().eg || 1) * 30 * (1 - .04 * S.queenLevel) * (S.tier >= 4 ? 1 - .1 * (1 + .2 * rl(3)) : 1); }
+function layGap() { return (bio().eg || 1) * 30 * (1 - .04 * S.queenLevel) * (S.tier >= 4 ? 1 - .1 * (1 + .2 * rl(3)) : 1) * (S.tier < 3 && popn() < TUNING.start.earlyLayUpTo ? TUNING.start.earlyLay : 1); }
 
 function eggCost() { return Math.max(1, Math.ceil((1 + S.tier) * (1 - .15 * pk('fat')))); }
 
@@ -1620,7 +1659,7 @@ function colony(dt) {
         lose();
 }
 
-function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); signalsTick(dt); }
+function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); signalsTick(dt); }
 
 /* economy/away.js
    Offline progress, the welcome-back screen and the rested-colony boost.
@@ -2780,6 +2819,8 @@ function farDigTick(dt) {
         st[e.i] = Math.min(1, b + rate / F * dt / Math.max(20, e.q.LEN));
         S.soil = (S.soil || 0) + (st[e.i] - b) * e.q.LEN;
         DIGF.push(e);
+        if (st[e.i] >= 1 && b < 1 && dt < 5)
+            feed(e.deep ? 'Workers finished a new gallery in the ' + ['clay', 'stone', 'deep dark', 'bedrock'][e.L || 0] + '.' : 'Workers finished a new tunnel.', 'dig', at(1, e.q));
         if (st[e.i] >= 1 && e.deep && e.t && dt < 5)
             toast('Your workers dug the shaft down into the ' + ['clay', 'stone layer', 'deep dark', 'bedrock'][e.L] + '.');
     }
@@ -2949,6 +2990,7 @@ function addSpotAt(p, quiet) {
     if (!quiet) {
         var a = at(p);
         recruitFrom(p);
+        feed('A worker found food! A scout runs home laying a scent trail for the foragers.', 'food', a);
         toast(S.foodSpots.length === 1 ? 'Your workers found a food spot! Foragers will harvest it, and it slowly grows back.' : 'Your workers found another food spot.');
         SFX.buy();
         for (var i = 0; i < 8; i++)
@@ -3216,7 +3258,7 @@ function crewSites(now) {
         if (BP[k] && S.sideDug[k] < 1)
             (function (k) {
                 var pr = S.sideDug[k], b = BP[k], a2 = at(pr, b), bl = Math.max(2, Math.min(D, pr * b.LEN)), sEnd = Math.max(0, pr - bl / b.LEN);
-                s.push(mk2('b' + k, { x: a2.x, y: a2.y, ang: a2.ang }, [brSeg(b, pr, sEnd)], function (len) { S.sideDug[k] = Math.min(1, S.sideDug[k] + len / b.LEN); if (S.sideDug[k] >= 1) {
+                s.push(mk2('b' + k, { x: a2.x, y: a2.y, ang: a2.ang }, [brSeg(b, pr, sEnd)], function (len) { S.sideDug[k] = Math.min(1, S.sideDug[k] + len * (k === 0 ? TUNING.start.firstSide : 1) / b.LEN); if (S.sideDug[k] >= 1) {
                     toast('Your workers finished digging a new side tunnel.');
                     SFX.buy();
                     nbt = 4;
@@ -3870,7 +3912,7 @@ function armyCounts() {
     // door guards (build 83): like real soldier ants plugging the nest holes, a couple of the biggest stand in the
     // tunnel mouth and a couple at the queen's door, heads facing out; super majors first, then soldiers
     var cand = [];
-    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !(m.nap > 0)) cand.push(m); });
+    marchers.forEach(function (m) { if ((m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !m.xr && !(m.nap > 0)) cand.push(m); });
     cand.sort(function (a, b) { return (b.k - a.k) || (a.u - b.u); });
     C.doorTop = S.dug >= 1 && tunOK() ? cand.slice(0, 2) : [];
     C.doorNest = cand.slice(C.doorTop.length, C.doorTop.length + 2);
@@ -4159,6 +4201,10 @@ function scoutPatrol(m, dt, t, C) {
 // soldiers and super majors: a job if there is one (mole battle, termite line, Armoury), otherwise fight or guard
 function soldierStep(m, dt, t, C) {
     var k = m.k;
+    if (m.xr) {
+        if (xrStep(m, dt))
+            return;
+    }
     if (m.mo || (MF && !MF.end && C.moTot < C.moCap && m.hero == null && trait(m, 12) < .55)) {
         if (!m.mo) {
             if (m.dr) {
@@ -4195,12 +4241,33 @@ function soldierStep(m, dt, t, C) {
         soldierGuard(m, dt, t, C);
 }
 
+// build 91: super majors are living doors. Where one stands in the main tunnel an invader pressing on it is held
+// back (moves at wallSlow), as big-headed majors plug the way in real colonies. Returns their positions.
+function majorWall() {
+    var o = [];
+    if (!foes.length)
+        return o;
+    for (var i = 0; i < marchers.length; i++) {
+        var m = marchers[i];
+        if (m.k === 4 && !m.inj && !m.mo && !m.tr && !m.dr && !m.xr && m.p > 1 - S.dug)
+            o.push(m.p);
+    }
+    return o;
+}
+function wallHolds(W, p) {
+    for (var i = 0; i < W.length; i++)
+        if (W[i] >= p - .003 && W[i] - p < TUNING.fights.wallReach)
+            return true;
+    return false;
+}
+
 // invaders in the tunnel: run at them (faster while the alarm is sounding)
 function soldierCharge(m, dt) {
     var fo = foes[m.fi % foes.length];
     var dpf = fo.p - m.p;
     m.p += Math.sign(dpf) * Math.min(Math.abs(dpf), dt * (m.k === 4 ? 60 : 95) * (m.v || 1) * (alarmT > 0 ? 1.6 : 1) / Math.max(1, LEN));
     m.d = dpf > 0 ? 1 : -1;
+    m.act = m.k === 4 && Math.abs(dpf) < TUNING.fights.wallReach ? 'Holding the line' : 'Charging the invaders';
 }
 
 // no invaders. Build 83, after how real colonies defend: a few door guards plug the entrances (heads out), the rest
@@ -4332,6 +4399,7 @@ function abilityTick(dt) {
         abilityUi(false);
     }
 }
+var ICO_RAID = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l9-9M14 4h6v6l-9 9-3-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
 var ICO_HORN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l8 5V5L6 10z" fill="currentColor"/><path d="M17 8c2 2 2 6 0 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 var ICO_GONG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="11" r="2.4" fill="currentColor"/><path d="M5 21l3-4M19 21l-3-4" stroke="currentColor" stroke-width="2"/></svg>';
 // round ability token: icon built once, then only the short label and the spoken label change
@@ -4357,6 +4425,14 @@ function abilityUi(force) {
     var rs = rallyT > 0 ? Math.ceil(rallyT) + 's' : rallyCd > 0 ? Math.ceil(rallyCd) + 's' : 'Rally', as = alarmCd > 0 ? Math.ceil(alarmCd) + 's' : injN() > 0 ? injN() + ' hurt' : 'Alarm';
     tokSet(r, ICO_HORN, rs, 'Rally: ' + rt);
     tokSet(a, ICO_GONG, as, 'Sound the alarm: ' + at);
+    var x = $('abX');
+    if (x) {
+        x.style.display = XR ? '' : 'none';
+        if (XR)
+            tokSet(x, ICO_RAID, XR.ph === 'ready' ? 'Raid' : XR.ph === 'go' ? 'Going' : 'Away', XR.ph === 'ready' ? 'Counter-raid the rival nest (' + Math.ceil(XR.until) + 's left)' : 'Your squad is raiding the rival nest');
+        x.classList.toggle('hot', !!XR && XR.ph === 'ready');
+        x.style.opacity = XR && XR.ph !== 'ready' ? .6 : 1;
+    }
     r.style.opacity = rallyCd > 0 || rallyT > 0 ? .55 : 1;
     a.style.opacity = alarmCd > 0 ? .55 : 1;
     r.classList.toggle('hot', fighting() && rallyCd <= 0);
@@ -4400,6 +4476,7 @@ function heroBorn() {
     var tr = HTRAIT[k], c = HCOL[H.length % HCOL.length], same = H.filter(function (h) { return h.k === k; }).length;
     H.push({ n: n, t: tr.ep[same % 3], k: k, c: c[0], g: c[1], s: n + ' ' + tr.st[(ni + same) % 3], bd: S.days || 0 });
     SFX.win();
+    feed('A hero hatched: ' + n + '!', 'good', { x: QX, y: QY });
     toast('A hero hatched: ' + n + ' ' + tr.ep[same % 3] + '! Find her in the Colony tab.');
     save();
     heroUi(true);
@@ -4619,6 +4696,7 @@ function wave() {
     alarmT = 5;
     var en = at(0);
     alarmAt(en.x, en.y);
+    feed((boss ? 'A boss wave' : cnt + ' invader' + (cnt > 1 ? 's' : '')) + ' broke in at the tunnel mouth. The alarm is spreading.', 'bad', function () { return foes[0] ? at(foes[0].p) : null; });
     burst(en.x, en.y, boss ? 26 : 14, ['#a07a50', '#7a5636', '#c9a46a'], boss ? 90 : 60);
     fx.push({ x: en.x, y: en.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
     fx.push({ x: en.x, y: en.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: boss ? 22 : 17, c: '#ff5a3a', g: 0, pop: 1 });
@@ -4659,6 +4737,7 @@ function firstFoesTick(dt) {
     fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#ff5a3a', g: 0, pop: 1 });
     var fa = at(Math.max(0, 1 - S.dug));
     alarmAt(fa.x, fa.y);
+    feed('Wood lice dug into the tunnel. Soldiers march out.', 'bad', function () { return foes[0] ? at(foes[0].p) : null; });
     toast('Wood lice dug into your tunnel! Your soldiers march out to stop them.' + (tab === 'tun' ? '' : ' Watch on the Tunnel tab.'));
 }
 
@@ -4668,6 +4747,7 @@ function loot(p, w) {
     gainJelly(w.boss ? 5 : 1);
     SFX.victory();
     fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
+    feed(w.boss ? 'The boss is beaten!' : 'The tunnel is clear again.', 'good', null);
     toast((w.boss ? 'Boss defeated! ' : w.ff ? 'The wood lice are beaten! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
 
@@ -4967,6 +5047,7 @@ function rivalTick(dt) {
             return;
         var ks = rivalTunnels();
         RV = { k: ks[Math.floor(Math.random() * ks.length)], ph: 'scout', t: 0, u: 1, lost: 0, saved: 0 };
+        feed('A rival scout is creeping down a side tunnel.', 'bad', function () { return RV && RV.ph === 'scout' && BP[RV.k] ? at(RV.u, BP[RV.k]) : null; });
         toast('A rival ant scout is sniffing round one of your side tunnels! A raid on your eggs is coming.');
         SFX.alarm();
         return;
@@ -5000,6 +5081,7 @@ function rivalRaid() {
         foes.push({ p: jp - .015 * i, rv: 1, ex: jp, dir: 1, tp: 4, boss: false, hp: unit, max: unit, kl: 0, kt: 9, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i % 3 - 1) * 2 });
     var a = at(jp);
     alarmAt(a.x, a.y);
+    feed(cnt + ' rival raiders are after your eggs!', 'bad', function () { var g = foes.filter(function (o) { return o.rv; })[0]; return g ? at(g.p) : null; });
     burst(a.x, a.y, 16, ['#5a3a8a', '#2a1a40', '#c9a6ff'], 70);
     fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#c9a6ff', g: 0, pop: 1 });
     toast('Raid! ' + cnt + ' rival ants are coming for your eggs. Your soldiers are on their way.');
@@ -5014,7 +5096,13 @@ function rivalStep(f, dt) {
         f.p = Math.min(1, f.p + sp * dt);
         if (f.p >= 1) {
             // at the brood: grab an egg (or, with none, a mouthful of food) and turn for home
-            if (S.eggs.length) {
+            var R = TUNING.rivals, nu = healthy(0), hide = R.hideMax * nu / (nu + R.hideNurses);
+            if (S.eggs.length && Math.random() < hide) {
+                // panic alarm: the nurses have carried the brood deeper and the raider finds an empty bed
+                RV.hid = (RV.hid || 0) + 1;
+                fx.push({ x: QX, y: QY - 14, vx: 0, vy: -20, l: 1.1, t: 'nurses hid the eggs!', f: 12, c: '#b6ffd6', g: 0 });
+            }
+            else if (S.eggs.length) {
                 f.egg = S.eggs.splice(Math.floor(Math.random() * S.eggs.length), 1)[0];
                 fx.push({ x: QX, y: QY - 14, vx: 0, vy: -20, l: 1, t: '-1 egg', f: 12, c: '#c9a6ff', g: 0 });
             }
@@ -5053,6 +5141,7 @@ function rivalDrop(f) {
 function rivalEnd() {
     var R = TUNING.rivals, lost = RV.lost;
     if (lost) {
+        feed('The raiders got away with ' + lost + ' egg' + (lost > 1 ? 's' : '') + '.', 'bad', null);
         toast('The raiders got away with ' + lost + ' egg' + (lost > 1 ? 's' : '') + '. More soldiers on patrol would stop them sooner.');
         SFX.lose && tn(220, .4, 'sawtooth', .08, .5);
     }
@@ -5061,9 +5150,13 @@ function rivalEnd() {
         S.food = Math.min(foodCap(), S.food + f);
         gainJelly(R.winJelly);
         S.rvWins = (S.rvWins || 0) + 1;
+        feed('Raid beaten! Not one egg lost.', 'good', null);
         toast('Raid beaten! Not one egg lost. +' + fmt(f) + ' food from the raiders.' + (RV.saved ? ' ' + RV.saved + ' egg' + (RV.saved > 1 ? 's' : '') + ' rescued.' : ''));
         SFX.victory();
     }
+    if (RV.hid)
+        feed('Your nurses hid the brood from ' + RV.hid + ' raider' + (RV.hid > 1 ? 's' : '') + '.', 'good', null);
+    counterOffer(RV.k);
     RV = null;
     rvT = R.gapMin + Math.random() * R.gapRand;
 }
@@ -5109,6 +5202,135 @@ function nsRaiders(g, t) {
         cx = c0;
         g.restore();
     });
+}
+
+/* threats/counter.js
+   Counter-raid (build 91). After a rival raid ends, a Raid token appears beside Rally and Alarm for a few
+   minutes. Tap it and a squad of soldiers marches up the side tunnel the raiders came down and out of sight into
+   the rival nest. After a while they come back: a win brings food and jelly and keeps the rivals away longer; a
+   loss sends a few soldiers home injured. Not saved (like the mole battle): a reload just drops the offer.
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+var XR = null;
+
+function counterOffer(k) {
+    if (!BP[k] || S.sideDug[k] < 1)
+        return;
+    XR = { k: k, ph: 'ready', until: TUNING.counter.window, t: 0, n: 0, in: 0 };
+    feed('Strike back! Tap the Raid token to send a squad into the rival nest.', 'info', function () { return XR ? at(1, BP[XR.k]) : null; });
+    abilityUi(true);
+}
+
+function counterGo() {
+    var C = TUNING.counter;
+    if (!XR || XR.ph !== 'ready')
+        return;
+    if (foes.length || (MF && !MF.end))
+        return toast('Finish this fight first.');
+    var want = Math.min(C.squadMax, 4 + Math.floor((S.soldiers + S.superMajors) / 15)), sq = [];
+    marchers.forEach(function (m) { if (sq.length < want && (m.k === 2 || m.k === 4) && !m.inj && !m.tired && !m.mo && !m.tr && !m.dr && !m.xr && m.hero == null && !(m.nap > 0)) sq.push(m); });
+    if (sq.length < C.squadMin)
+        return toast('Not enough rested soldiers for a raid right now.');
+    sq.forEach(function (m, i) { m.xr = { k: XR.k, ph: 'main', s: 0, slot: i, dir: 1 }; });
+    XR.ph = 'go';
+    XR.n = sq.length;
+    XR.t = 0;
+    XR.in = 0;
+    toast('A squad of ' + sq.length + ' sets off for the rival nest.');
+    feed('A squad of ' + sq.length + ' marches on the rival nest.', 'info', function () { var m = marchers.filter(function (o) { return o.xr && o.xr.ph !== 'away'; })[0]; return m && m.wx != null ? { x: m.wx, y: m.wy } : null; });
+    SFX.rally && SFX.rally();
+    abilityUi(true);
+}
+
+function counterTick(dt) {
+    if (!XR)
+        return;
+    var C = TUNING.counter;
+    if (XR.ph === 'ready') {
+        XR.until -= dt;
+        if (XR.until <= 0)
+            XR = null;
+        return;
+    }
+    XR.t += dt;
+    if (XR.ph === 'go' && (XR.in >= XR.n || XR.t > 90)) {
+        XR.ph = 'in';
+        XR.t = 0;
+    }
+    if (XR.ph === 'in' && XR.t >= C.away)
+        counterResolve();
+    if (XR.ph === 'back' && !marchers.some(function (m) { return m.xr; }))
+        XR = null;
+}
+
+function counterResolve() {
+    var C = TUNING.counter, win = Math.random() < Math.min(.9, C.baseWin + .04 * (XR.n - C.squadMin) + .03 * (S.classLevel[2] || 0));
+    XR.ph = 'back';
+    if (win) {
+        var f = Math.round(foodCap() * C.foodShare);
+        S.food = Math.min(foodCap(), S.food + f);
+        gainJelly(C.jelly);
+        rvT += C.delay;
+        S.xrWins = (S.xrWins || 0) + 1;
+        toast('The counter-raid worked! Your squad is bringing back ' + fmt(f) + ' food and ' + C.jelly + ' jelly, and the rivals will think twice.');
+        feed('Counter-raid won! The squad is heading home with the loot.', 'good', function () { return XR ? at(1, BP[XR.k]) : null; });
+        SFX.victory();
+    }
+    else {
+        var h = Math.min(S.soldiers - S.injured[2], C.hurtMin + Math.floor(Math.random() * (C.hurtMax - C.hurtMin + 1)));
+        if (h > 0)
+            S.injured[2] += h;
+        toast('The rivals were ready for us. ' + (h > 0 ? h + ' soldiers are limping home injured.' : 'The squad is falling back.'));
+        feed('The counter-raid failed. The squad is falling back.', 'bad', function () { return XR ? at(1, BP[XR.k]) : null; });
+    }
+}
+
+// one step for a squad soldier; false hands it back to its usual job
+function xrStep(m, dt) {
+    var o = m.xr, B = BP[o.k], V = (m.k === 4 ? 40 : 55) * (m.v || 1) * dt;
+    if (!B || !XR) {
+        m.xr = null;
+        return false;
+    }
+    if (o.ph === 'main') {
+        var J = juncP(o.k), d = J - m.p;
+        m.p += Math.sign(d) * Math.min(Math.abs(d), V / Math.max(1, LEN));
+        m.d = d > 0 ? 1 : -1;
+        m.act = 'Marching on the rival nest';
+        if (Math.abs(d) < 1e-4) {
+            o.ph = 'tun';
+            o.s = 0;
+        }
+        return true;
+    }
+    if (o.ph === 'tun') {
+        o.s = Math.min(1, o.s + V / B.LEN);
+        o.dir = 1;
+        m.act = 'Marching on the rival nest';
+        if (o.s >= 1) {
+            o.ph = 'away';
+            XR.in++;
+        }
+        return true;
+    }
+    if (o.ph === 'away') {
+        m.act = 'Raiding the rival nest';
+        if (XR.ph === 'back') {
+            o.ph = 'ret';
+            o.s = 1;
+        }
+        return true;
+    }
+    // home again down the side tunnel, then back to normal duty
+    o.s = Math.max(0, o.s - V / B.LEN);
+    o.dir = -1;
+    m.act = 'Coming home from the raid';
+    if (o.s <= 0) {
+        m.xr = null;
+        m.p = juncP(o.k);
+        m.d = -1;
+    }
+    return true;
 }
 
 /* threats/termites.js
@@ -5207,6 +5429,7 @@ function termRaidTick(dt, quiet) {
         var size = 14 + S.tier * 8 + Math.floor(popn() / 70) + Math.floor(Math.random() * 8), n = Math.min(30, 12 + Math.floor(size / 5));
         for (var i = 0; i < n; i++)
             trm.push({ p: 1, w: i * .55, back: 0, size: size, i: i });
+        feed('Termites are marching down the far east tunnel.', 'bad', function () { return trm[0] && trm[0].x != null ? { x: trm[0].x, y: trm[0].y } : at(.5, BP[17]); });
         toast('Termite raiders are marching down the far east tunnel!');
     }
     var sp = 38 / Math.max(1, B.LEN) * dt, def = quiet ? -1 : trmDef;
@@ -5313,6 +5536,7 @@ function cricSpawn() {
     cricStole = 0;
     for (var i = 0; i < n; i++)
         cric.push({ s: 1, w: i * 1.6, hp: TUNING.crickets.hp, mhp: TUNING.crickets.hp, back: 0, i: i, ph: Math.random() * 6, ate: 0 });
+    feed('Cave crickets are creeping up from the stone layer.', 'bad', function () { return cric[0] && cric[0].x != null ? { x: cric[0].x, y: cric[0].y } : armouryPos(); });
     toast('Cave crickets are creeping up from the stone layer towards the Larder! Soldiers are on their way.');
     SFX.hit();
 }
@@ -9411,6 +9635,13 @@ function drawArmy(now) {
             y = m.py;
             ang = m.ang;
         }
+        else if (m.xr && m.xr.ph !== 'main' && BP[m.xr.k]) {
+            var xb = BP[m.xr.k], xl = ((m.xr.slot % 3) - 1) * tw * .32;
+            a = at(Math.max(0, Math.min(1, m.xr.s)), xb);
+            x = a.x + a.nx * xl;
+            y = a.y + a.ny * xl;
+            ang = m.xr.dir < 0 ? a.ang + Math.PI : a.ang;
+        }
         else if (m.tr && m.tr.ph !== 'main' && BP[17]) {
             var tb = BP[17], tl = ((m.tr.slot % 3) - 1) * tw * .32, lg = trm.fT > 0 && m.tr.slot < 6 ? Math.max(0, Math.sin(now * .013 + mSeed(m) * 5)) * 2.5 / tb.LEN : 0;
             a = at(Math.max(0, Math.min(1, m.tr.s + lg)), tb);
@@ -9505,7 +9736,7 @@ function drawArmy(now) {
         m.wy = y;
         m.wa = ang;
         m.wp = ph;
-        if (x < vx0 || x > vx1 || y < vy0 || y > vy1)
+        if (x < vx0 || x > vx1 || y < vy0 || y > vy1 || (m.xr && m.xr.ph === 'away'))
             return;
         if (k === 4) {
             cx.save();
@@ -11029,6 +11260,16 @@ function goalsTick() {
         SFX.fan();
         showEnding();
     }
+    // build 92: from Generation II on, the teaching goals (tap the queen, first hatch, level up...) are skipped;
+    // their rewards are still given, quietly, so a new generation goes straight to the growing goals
+    while (S.goalIndex < GOALS.length && (P.gen || 0) >= 1 && GOALS[S.goalIndex].tut && !GOALS[S.goalIndex].ok()) {
+        G = GOALS[S.goalIndex];
+        if (G.fd)
+            S.food = Math.min(foodCap(), S.food + G.fd);
+        if (G.jl)
+            S.jelly += G.jl;
+        S.goalIndex++;
+    }
     while (S.goalIndex < GOALS.length && GOALS[S.goalIndex].ok()) {
         G = GOALS[S.goalIndex];
         if (G.fd)
@@ -11126,6 +11367,7 @@ function goTab(t) {
     cv.classList.toggle('nestmode', t !== 'tun');
     document.body.classList.toggle('tt', t === 'tun');
     document.body.classList.toggle('nt', t === 'nest');
+    document.body.classList.toggle('glw', t === 'col' || t === 'store');
     // the Nest and Tunnel are full-screen and must not scroll: a scrolling page makes phones shrink their
     // toolbars, which resizes the scene over and over
     var full = t === 'tun' || t === 'nest';
@@ -12274,6 +12516,56 @@ function obsTick(dt) {
 // a tap during Observe looks around by hand for a few seconds
 function obsTouch() { if (OBS.on) OBS.hold = 6; }
 
+/* ui/feed.js
+   Colony feed (build 90): a slim line above the Rally and Alarm tokens on the Tunnel tab saying what just
+   happened in the colony ("A scout found food and is running home to tell the others"). Tap it and the camera
+   jumps to the spot. The line glows for a few seconds, then dims and finally hides, so it never clutters.
+   Purely visual: it reads the game, never changes it, and uses no Math.random (the replay test stays exact).
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+var FEED = { last: null, shown: null }, FEEDK = { bad: '#ff6a4a', food: '#7ee08a', dig: '#f5b23c', good: '#b6ffd6', info: '#cfe9d8' };
+
+// kind: bad | food | dig | good | info; where: {x, y} in the world, or a function returning one (or null when gone)
+function feed(text, kind, where) {
+    FEED.last = { t: text, k: kind || 'info', w: where || null, at: performance.now() };
+}
+function feedTick() {
+    var el = $('feed');
+    if (!el)
+        return;
+    var e = FEED.last, age = e ? (performance.now() - e.at) / 1000 : 1e9;
+    if (!e || age > 40 || tab !== 'tun') {
+        if (el.className !== '')
+            el.className = '';
+        return;
+    }
+    if (FEED.shown !== e) {
+        FEED.shown = e;
+        el.innerHTML = '<i style="background:' + (FEEDK[e.k] || FEEDK.info) + ';color:' + (FEEDK[e.k] || FEEDK.info) + '"></i><span></span>' + (e.w ? '<b aria-hidden="true">›</b>' : '');
+        el.children[1].textContent = e.t;
+        el.setAttribute('aria-label', e.t + (e.w ? '. Tap to look.' : ''));
+    }
+    var c = age < 8 ? 'on' : 'on dim';
+    if (el.className !== c)
+        el.className = c;
+}
+function feedGo() {
+    var e = FEED.last;
+    if (!e || !e.w)
+        return;
+    var p = typeof e.w === 'function' ? e.w() : e.w;
+    if (!p)
+        return toast('That has moved on now.');
+    if (tab !== 'tun')
+        go('tun');
+    if (uz < 2)
+        setZoom(2.2);
+    camX = camXc(p.x - W / (2 * uz));
+    camT = camClamp(p.y - H * .45 / uz);
+    follow = performance.now() + 8000;
+    e.at = Math.min(e.at, performance.now() - 8000);
+}
+
 /* ui/events.js
    Random events, achievements, the golden beetle and worms.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
@@ -13208,7 +13500,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 89, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 92, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -14239,6 +14531,7 @@ function frame(n) {
     statsTick(dt);
     ambTick(dt);
     obsTick(dt);
+    feedTick();
     if (tab !== 'col' && !battery)
         rqTick(dt, fpsCap);
     if (!dead) {
@@ -14256,13 +14549,17 @@ function frame(n) {
                 wave();
         }
         var team = dps() * (.8 + .5 * S.orders.gd / 100) / (foes.length || 1), softShare = Math.max(0, 1 - majorDps() / Math.max(1, dps())), armBlock = .4 * softShare * Math.max(.1, 1 - .2 * S.bld.rax);
+        var WALL = majorWall();
         foes = foes.filter(function (f) {
+            var p0 = f.p;
             if (f.rv) {
                 if (!rivalStep(f, dt))
                     return false;
             }
             else
                 f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt);
+            if (WALL.length && f.p > p0 && wallHolds(WALL, p0))
+                f.p = p0 + (f.p - p0) * TUNING.fights.wallSlow;
             var a = at(f.p);
             if (f.p > .05) {
                 var d = team * dt * (f.tp === 0 ? 1 - armBlock : 1);
@@ -14469,6 +14766,7 @@ card($('tier'), 'tierbtn', function () { dig(); }).classList.add('dig');
 fly = card($('pr'), 'fly', function () { royal(); });
 $('abR').onclick = rallyGo;
 $('abA').onclick = alarmGo;
+$('abX').onclick = counterGo;
 $('gencont').onclick = function () { $('gen').classList.remove('on'); };
 fly.classList.add('dig');
 LG.forEach(function (l) { card($('pr'), 'l-' + l.id, function () { perk(l); }); });
@@ -14552,6 +14850,7 @@ cv.addEventListener('wheel', function (e) { if (tab !== 'tun')
     return; e.preventDefault(); setZoom(uz * (e.deltaY < 0 ? 1.15 : 1 / 1.15)); }, { passive: false });
 $('zin').onclick = function () { setZoom(uz * 1.5); };
 $('tobs').onclick = obsStart;
+$('feed').onclick = feedGo;
 $('nobs').onclick = obsStart;
 $('obsx').onclick = obsStop;
 cv.addEventListener('pointerdown', obsTouch);

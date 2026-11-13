@@ -25,6 +25,7 @@ function rivalTick(dt) {
             return;
         var ks = rivalTunnels();
         RV = { k: ks[Math.floor(Math.random() * ks.length)], ph: 'scout', t: 0, u: 1, lost: 0, saved: 0 };
+        feed('A rival scout is creeping down a side tunnel.', 'bad', function () { return RV && RV.ph === 'scout' && BP[RV.k] ? at(RV.u, BP[RV.k]) : null; });
         toast('A rival ant scout is sniffing round one of your side tunnels! A raid on your eggs is coming.');
         SFX.alarm();
         return;
@@ -58,6 +59,7 @@ function rivalRaid() {
         foes.push({ p: jp - .015 * i, rv: 1, ex: jp, dir: 1, tp: 4, boss: false, hp: unit, max: unit, kl: 0, kt: 9, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i % 3 - 1) * 2 });
     var a = at(jp);
     alarmAt(a.x, a.y);
+    feed(cnt + ' rival raiders are after your eggs!', 'bad', function () { var g = foes.filter(function (o) { return o.rv; })[0]; return g ? at(g.p) : null; });
     burst(a.x, a.y, 16, ['#5a3a8a', '#2a1a40', '#c9a6ff'], 70);
     fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#c9a6ff', g: 0, pop: 1 });
     toast('Raid! ' + cnt + ' rival ants are coming for your eggs. Your soldiers are on their way.');
@@ -72,7 +74,13 @@ function rivalStep(f, dt) {
         f.p = Math.min(1, f.p + sp * dt);
         if (f.p >= 1) {
             // at the brood: grab an egg (or, with none, a mouthful of food) and turn for home
-            if (S.eggs.length) {
+            var R = TUNING.rivals, nu = healthy(0), hide = R.hideMax * nu / (nu + R.hideNurses);
+            if (S.eggs.length && Math.random() < hide) {
+                // panic alarm: the nurses have carried the brood deeper and the raider finds an empty bed
+                RV.hid = (RV.hid || 0) + 1;
+                fx.push({ x: QX, y: QY - 14, vx: 0, vy: -20, l: 1.1, t: 'nurses hid the eggs!', f: 12, c: '#b6ffd6', g: 0 });
+            }
+            else if (S.eggs.length) {
                 f.egg = S.eggs.splice(Math.floor(Math.random() * S.eggs.length), 1)[0];
                 fx.push({ x: QX, y: QY - 14, vx: 0, vy: -20, l: 1, t: '-1 egg', f: 12, c: '#c9a6ff', g: 0 });
             }
@@ -111,6 +119,7 @@ function rivalDrop(f) {
 function rivalEnd() {
     var R = TUNING.rivals, lost = RV.lost;
     if (lost) {
+        feed('The raiders got away with ' + lost + ' egg' + (lost > 1 ? 's' : '') + '.', 'bad', null);
         toast('The raiders got away with ' + lost + ' egg' + (lost > 1 ? 's' : '') + '. More soldiers on patrol would stop them sooner.');
         SFX.lose && tn(220, .4, 'sawtooth', .08, .5);
     }
@@ -119,9 +128,13 @@ function rivalEnd() {
         S.food = Math.min(foodCap(), S.food + f);
         gainJelly(R.winJelly);
         S.rvWins = (S.rvWins || 0) + 1;
+        feed('Raid beaten! Not one egg lost.', 'good', null);
         toast('Raid beaten! Not one egg lost. +' + fmt(f) + ' food from the raiders.' + (RV.saved ? ' ' + RV.saved + ' egg' + (RV.saved > 1 ? 's' : '') + ' rescued.' : ''));
         SFX.victory();
     }
+    if (RV.hid)
+        feed('Your nurses hid the brood from ' + RV.hid + ' raider' + (RV.hid > 1 ? 's' : '') + '.', 'good', null);
+    counterOffer(RV.k);
     RV = null;
     rvT = R.gapMin + Math.random() * R.gapRand;
 }

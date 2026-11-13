@@ -22,6 +22,7 @@ function frame(n) {
     statsTick(dt);
     ambTick(dt);
     obsTick(dt);
+    feedTick();
     if (tab !== 'col' && !battery)
         rqTick(dt, fpsCap);
     if (!dead) {
@@ -39,13 +40,17 @@ function frame(n) {
                 wave();
         }
         var team = dps() * (.8 + .5 * S.orders.gd / 100) / (foes.length || 1), softShare = Math.max(0, 1 - majorDps() / Math.max(1, dps())), armBlock = .4 * softShare * Math.max(.1, 1 - .2 * S.bld.rax);
+        var WALL = majorWall();
         foes = foes.filter(function (f) {
+            var p0 = f.p;
             if (f.rv) {
                 if (!rivalStep(f, dt))
                     return false;
             }
             else
                 f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt);
+            if (WALL.length && f.p > p0 && wallHolds(WALL, p0))
+                f.p = p0 + (f.p - p0) * TUNING.fights.wallSlow;
             var a = at(f.p);
             if (f.p > .05) {
                 var d = team * dt * (f.tp === 0 ? 1 - armBlock : 1);

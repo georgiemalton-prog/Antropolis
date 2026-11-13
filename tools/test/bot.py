@@ -75,7 +75,7 @@ with sync_playwright() as p:
         if st['tab']=='col':
             # tap any affordable highlighted action that matches the goal
             clicked=pg.evaluate("""(()=>{var bs=[...document.querySelectorAll('#p-col button, #p-col .card')].filter(b=>b.offsetParent&&!b.disabled&&!b.classList.contains('off')&&!b.classList.contains('dim'));
-               var want=/^Dig a|Level up|Lv /i; for(var b of bs){var t=b.innerText; if(want.test(t)&&!/locked/i.test(t)){b.click();return t.slice(0,120)}} return ''})()""")
+               var want=/^Dig a|Level up|Lv /i; for(var b of bs){var t=b.innerText; if(want.test(t)&&!/locked/i.test(t)){b.click();return t.slice(0,120)}} for(var b of bs){var t=b.innerText; if(/^ready now\s+Dig a/i.test(t)){b.click();return t.slice(0,120)}} return ''})()""")
             if clicked: L('CLICK',clicked.replace('\n',' / '))
         pg.wait_for_timeout(1200)
     L('END errors',errs)

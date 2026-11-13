@@ -210,3 +210,19 @@ body.nt .top .link{background:var(--gl-bg);border:1px solid var(--gl-bd);color:v
 @media (prefers-reduced-motion:reduce){#tov .tok.hot{animation:none;box-shadow:0 0 14px var(--gl-glow)}}
 .toast{background:rgba(8,20,12,.9);border-color:rgba(140,255,190,.4);color:var(--gl-ink);box-shadow:0 10px 26px -8px rgba(0,0,0,.7),0 0 14px -4px var(--gl-glow)}
 body.nt .hchip{padding:4px 11px}body.nt .hchip b{font-size:24px}
+/* Living glow on the Colony and Store pages (build 90): same layout, fungus-green glass instead of orange */
+body.glw{--accent:#3fcf86;--accent2:#a8f5c8;--aink:#03160b;--line:rgba(140,255,190,.17);--panel:rgba(12,24,16,.82);--mute:#93bfa4;--ink:#e8fbee;background:radial-gradient(ellipse at 50% -10%,#0f2a1a 0%,transparent 60%) fixed,radial-gradient(ellipse at 50% 120%,#1a1206 0%,transparent 60%) fixed,linear-gradient(180deg,#050a06,#0a0d07) fixed}
+body.glw h2{color:var(--accent2);text-shadow:0 0 12px rgba(100,255,170,.35)}
+body.glw .card{background:linear-gradient(180deg,rgba(14,28,19,.86),rgba(8,18,12,.86));box-shadow:0 1px 2px rgba(0,0,0,.6),0 10px 24px -14px rgba(0,0,0,.9)}
+body.glw .card:not(:disabled){border-color:rgba(140,255,190,.3)}
+body.glw .card.dig:not(:disabled){box-shadow:0 0 16px -4px rgba(100,255,170,.45)}
+body.glw .gcard{background:rgba(10,22,14,.82)}
+body.glw .top .link{background:var(--gl-bg);border-color:var(--gl-bd);color:var(--gl-ink)}
+body.glw .brand img{filter:drop-shadow(0 0 14px rgba(100,255,170,.25))}
+/* colony feed line (build 90) */
+#feed{display:none;left:8px;right:56px;bottom:calc(152px + env(safe-area-inset-bottom,0px));width:auto;max-width:330px;align-items:center;gap:8px;padding:7px 10px 7px 9px;border-radius:16px;border:1px solid var(--gl-bd);background:var(--gl-bg);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--gl-ink);font:700 12px/1.25 var(--ff);text-align:left;cursor:pointer;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .4s}
+#feed.on{display:flex;opacity:1;transform:none;animation:feedin .45s ease}#feed.dim{opacity:.5}
+@keyframes feedin{from{opacity:0;transform:translateY(6px)}}
+#feed i{flex:0 0 auto;width:8px;height:8px;border-radius:50%;box-shadow:0 0 8px currentColor}
+#feed span{flex:1}#feed b{flex:0 0 auto;font-size:18px;line-height:1;color:var(--gl-hi)}
+body.obs #feed{display:none}

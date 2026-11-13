@@ -60,7 +60,7 @@ function crewSites(now) {
         if (BP[k] && S.sideDug[k] < 1)
             (function (k) {
                 var pr = S.sideDug[k], b = BP[k], a2 = at(pr, b), bl = Math.max(2, Math.min(D, pr * b.LEN)), sEnd = Math.max(0, pr - bl / b.LEN);
-                s.push(mk2('b' + k, { x: a2.x, y: a2.y, ang: a2.ang }, [brSeg(b, pr, sEnd)], function (len) { S.sideDug[k] = Math.min(1, S.sideDug[k] + len / b.LEN); if (S.sideDug[k] >= 1) {
+                s.push(mk2('b' + k, { x: a2.x, y: a2.y, ang: a2.ang }, [brSeg(b, pr, sEnd)], function (len) { S.sideDug[k] = Math.min(1, S.sideDug[k] + len * (k === 0 ? TUNING.start.firstSide : 1) / b.LEN); if (S.sideDug[k] >= 1) {
                     toast('Your workers finished digging a new side tunnel.');
                     SFX.buy();
                     nbt = 4;

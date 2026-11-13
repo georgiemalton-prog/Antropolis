@@ -35,6 +35,7 @@ function heroBorn() {
     var tr = HTRAIT[k], c = HCOL[H.length % HCOL.length], same = H.filter(function (h) { return h.k === k; }).length;
     H.push({ n: n, t: tr.ep[same % 3], k: k, c: c[0], g: c[1], s: n + ' ' + tr.st[(ni + same) % 3], bd: S.days || 0 });
     SFX.win();
+    feed('A hero hatched: ' + n + '!', 'good', { x: QX, y: QY });
     toast('A hero hatched: ' + n + ' ' + tr.ep[same % 3] + '! Find her in the Colony tab.');
     save();
     heroUi(true);

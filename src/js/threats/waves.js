@@ -28,6 +28,7 @@ function wave() {
     alarmT = 5;
     var en = at(0);
     alarmAt(en.x, en.y);
+    feed((boss ? 'A boss wave' : cnt + ' invader' + (cnt > 1 ? 's' : '')) + ' broke in at the tunnel mouth. The alarm is spreading.', 'bad', function () { return foes[0] ? at(foes[0].p) : null; });
     burst(en.x, en.y, boss ? 26 : 14, ['#a07a50', '#7a5636', '#c9a46a'], boss ? 90 : 60);
     fx.push({ x: en.x, y: en.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
     fx.push({ x: en.x, y: en.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: boss ? 22 : 17, c: '#ff5a3a', g: 0, pop: 1 });
@@ -68,6 +69,7 @@ function firstFoesTick(dt) {
     fx.push({ x: a.x, y: a.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: 17, c: '#ff5a3a', g: 0, pop: 1 });
     var fa = at(Math.max(0, 1 - S.dug));
     alarmAt(fa.x, fa.y);
+    feed('Wood lice dug into the tunnel. Soldiers march out.', 'bad', function () { return foes[0] ? at(foes[0].p) : null; });
     toast('Wood lice dug into your tunnel! Your soldiers march out to stop them.' + (tab === 'tun' ? '' : ' Watch on the Tunnel tab.'));
 }
 
@@ -77,6 +79,7 @@ function loot(p, w) {
     gainJelly(w.boss ? 5 : 1);
     SFX.victory();
     fx.push({ x: a.x, y: a.y - 10, vx: 0, vy: -28, l: 2, t: '@leaf', f: 22, g: 0 });
+    feed(w.boss ? 'The boss is beaten!' : 'The tunnel is clear again.', 'good', null);
     toast((w.boss ? 'Boss defeated! ' : w.ff ? 'The wood lice are beaten! ' : 'Wave cleared! ') + '+' + f + ' food.');
 }
 

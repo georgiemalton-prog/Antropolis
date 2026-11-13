@@ -17,6 +17,9 @@ var TUNING = {
         firstFoes: 2,         // wood lice in the early first fight (Burrow stage, 2+ soldiers, tunnel 15% dug)
         firstFoesHp: 5,       // their health, in seconds of the colony's soldier damage
         firstFoesDelay: 20,   // seconds after those conditions are met
+        earlyLay: .6,         // build 92: eggs come this much quicker while the colony is small (the 15-20 and 30-35 ant waits)
+        earlyLayUpTo: 50,
+        firstSide: 2.2,       // build 92: the first side tunnel digs this much faster (it was a 5-minute wait on goal 15)     // ...below this many ants, before the Anthill stage
         queenBig: 1.3         // queen drawn this much bigger at the Dirt hole stage (halfway there at Burrow)
     },
     // Giant Mole (threats/mole.js) and the Great Hall built after beating it
@@ -63,7 +66,26 @@ var TUNING = {
         speed: .045,          // share of the main tunnel per second (invaders move .02)
         foodShare: .03,       // food a raider takes when there are no eggs to steal
         lootShare: .05,       // food won when no egg is lost
-        winJelly: 2
+        winJelly: 2,
+        hideMax: .6,          // panic alarm (build 91): nurses hide eggs; share of grabs that find none, at most
+        hideNurses: 30        // nurses needed for half of hideMax
+    },
+    // Fights (build 91)
+    fights: {
+        wallSlow: .25,        // invaders pressing on a super major move at this share of their speed
+        wallReach: .02        // how far ahead of an invader (share of the main tunnel) a super major blocks it
+    },
+    // Counter-raid on the rival nest after a raid (threats/counter.js)
+    counter: {
+        window: 240,          // seconds the Raid token stays up after a rival raid ends
+        squadMin: 3,
+        squadMax: 12,         // 4 + 1 per 15 soldiers, up to this
+        away: 25,             // seconds inside the rival nest
+        baseWin: .45,         // chance to win with the smallest squad; +.04 per extra ant, +.03 per soldier level
+        foodShare: .06,       // share of the food store brought back on a win
+        jelly: 3,
+        delay: 600,           // seconds added before the next rival raid after a win
+        hurtMin: 2, hurtMax: 4 // soldiers that come back injured after a loss
     },
     // Deep layers (layers/*.js)
     larder: { carriers: 6, nursesPer: 8, storeBonus: 1.25, awayHours: 10, awayHoursOff: 8, reserve: 1, refill: .02 },

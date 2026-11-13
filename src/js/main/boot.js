@@ -18,6 +18,7 @@ card($('tier'), 'tierbtn', function () { dig(); }).classList.add('dig');
 fly = card($('pr'), 'fly', function () { royal(); });
 $('abR').onclick = rallyGo;
 $('abA').onclick = alarmGo;
+$('abX').onclick = counterGo;
 $('gencont').onclick = function () { $('gen').classList.remove('on'); };
 fly.classList.add('dig');
 LG.forEach(function (l) { card($('pr'), 'l-' + l.id, function () { perk(l); }); });
@@ -101,6 +102,7 @@ cv.addEventListener('wheel', function (e) { if (tab !== 'tun')
     return; e.preventDefault(); setZoom(uz * (e.deltaY < 0 ? 1.15 : 1 / 1.15)); }, { passive: false });
 $('zin').onclick = function () { setZoom(uz * 1.5); };
 $('tobs').onclick = obsStart;
+$('feed').onclick = feedGo;
 $('nobs').onclick = obsStart;
 $('obsx').onclick = obsStop;
 cv.addEventListener('pointerdown', obsTouch);

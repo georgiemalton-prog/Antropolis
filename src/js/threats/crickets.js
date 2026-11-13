@@ -16,6 +16,7 @@ function cricSpawn() {
     cricStole = 0;
     for (var i = 0; i < n; i++)
         cric.push({ s: 1, w: i * 1.6, hp: TUNING.crickets.hp, mhp: TUNING.crickets.hp, back: 0, i: i, ph: Math.random() * 6, ate: 0 });
+    feed('Cave crickets are creeping up from the stone layer.', 'bad', function () { return cric[0] && cric[0].x != null ? { x: cric[0].x, y: cric[0].y } : armouryPos(); });
     toast('Cave crickets are creeping up from the stone layer towards the Larder! Soldiers are on their way.');
     SFX.hit();
 }

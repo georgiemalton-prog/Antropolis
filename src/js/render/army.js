@@ -235,6 +235,13 @@ function drawArmy(now) {
             y = m.py;
             ang = m.ang;
         }
+        else if (m.xr && m.xr.ph !== 'main' && BP[m.xr.k]) {
+            var xb = BP[m.xr.k], xl = ((m.xr.slot % 3) - 1) * tw * .32;
+            a = at(Math.max(0, Math.min(1, m.xr.s)), xb);
+            x = a.x + a.nx * xl;
+            y = a.y + a.ny * xl;
+            ang = m.xr.dir < 0 ? a.ang + Math.PI : a.ang;
+        }
         else if (m.tr && m.tr.ph !== 'main' && BP[17]) {
             var tb = BP[17], tl = ((m.tr.slot % 3) - 1) * tw * .32, lg = trm.fT > 0 && m.tr.slot < 6 ? Math.max(0, Math.sin(now * .013 + mSeed(m) * 5)) * 2.5 / tb.LEN : 0;
             a = at(Math.max(0, Math.min(1, m.tr.s + lg)), tb);
@@ -329,7 +336,7 @@ function drawArmy(now) {
         m.wy = y;
         m.wa = ang;
         m.wp = ph;
-        if (x < vx0 || x > vx1 || y < vy0 || y > vy1)
+        if (x < vx0 || x > vx1 || y < vy0 || y > vy1 || (m.xr && m.xr.ph === 'away'))
             return;
         if (k === 4) {
             cx.save();
