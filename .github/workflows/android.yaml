@@ -8,9 +8,6 @@ name: Build Android app
 
 on:
   workflow_dispatch:
-  push:
-    branches: [release-build]
-    paths: ['.github/workflows/android.yaml']
 
 jobs:
   build:
