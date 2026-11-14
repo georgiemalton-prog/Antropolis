@@ -75,6 +75,18 @@ var TUNING = {
         wallSlow: .25,        // invaders pressing on a super major move at this share of their speed
         wallReach: .02        // how far ahead of an invader (share of the main tunnel) a super major blocks it
     },
+    // Boss fights you play (threats/bosstac.js)
+    boss: {
+        pickTime: 12,         // seconds to choose a tactic before the colony picks
+        holdSlow: .33,        // Hold the line: boss speed
+        ambush: .35,          // Ambush: extra damage to the boss
+        bait: .25,            // Bait trap: share of the boss's health torn off...
+        baitCost: .15,        // ...for this share of the food store
+        spotGap: 2.6,         // seconds between weak spots
+        spotLife: 1.5,        // seconds a weak spot stays open
+        spotHit: .06,         // share of the boss's health a weak-spot tap takes
+        hitsPerJelly: 3, hitJellyMax: 3
+    },
     // Protecting the queen (threats/queenguard.js)
     queen: {
         near: .8,             // invaders past this share of the main tunnel count as close to the queen

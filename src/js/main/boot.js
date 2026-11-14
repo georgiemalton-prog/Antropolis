@@ -252,3 +252,6 @@ catch (e) { }
 // skipped it for the Nest, so a game opened on the Nest kept the old scrolling page)
 go(lastTab === 'tun' || lastTab === 'col' || lastTab === 'store' ? lastTab : 'nest');
 requestAnimationFrame(frame);
+
+// build 95: tap the goal card to see its hint again
+$('goals').onclick = function () { GH.until = performance.now() + 9000; GH.html = ''; renderGoals(); };

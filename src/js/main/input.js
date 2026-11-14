@@ -96,7 +96,7 @@ function initTapToSelect() {
             return;
         }
         var r = cv.getBoundingClientRect(), sc = K * uz, wx = camX + (e.clientX - r.left) / sc, wy = cam + (e.clientY - r.top) / sc, best = null, bd = 12 + 8 / uz;
-        if (goldTap(wx, wy))
+        if (bossTap(wx, wy) || goldTap(wx, wy))
             return;
         marchers.forEach(function (m) { if (m.wx == null)
             return; var d = Math.hypot(m.wx - wx, m.wy - wy); if (d < bd) {

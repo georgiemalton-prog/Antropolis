@@ -23,6 +23,7 @@ threats/waves.js
 threats/rivals.js
 threats/counter.js
 threats/queenguard.js
+threats/bosstac.js
 threats/termites.js
 threats/crickets.js
 threats/mole.js
@@ -51,6 +52,7 @@ ui/shop.js
 ui/map.js
 ui/observe.js
 ui/feed.js
+ui/unlock.js
 ui/events.js
 ui/buildings.js
 ui/settings.js

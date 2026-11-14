@@ -239,12 +239,51 @@ body.obs #feed{display:none}
 /* ant info card in the glow style (build 93) */
 #antlbl{background:rgba(8,20,12,.94);border-color:rgba(140,255,190,.38);color:var(--gl-ink);box-shadow:0 12px 26px -8px rgba(0,0,0,.8),0 0 16px -6px var(--gl-glow)}
 #antlbl b{color:var(--gl-hi)}#antlbl .asub{color:#9cc7ad}#antlbl .arow{border-top-color:rgba(140,255,190,.12)}#antlbl .arow i{color:#93bfa4}
+/* gradual unlocks and chapters (build 95) */
+body:not(.u-tun) .nav button[data-t="tun"],body:not(.u-col) .nav button[data-t="col"],body:not(.u-store) .nav button[data-t="store"],
+body:not(.u-ants) #ctabs [data-c="ants"],body:not(.u-today) #ctabs [data-c="today"],body:not(.u-more) #ctabs [data-c="more"],
+body:not(.u-jelly) .jlc,body:not(.u-nav2) #tmap,body:not(.u-nav2) #tobs,body:not(.u-nav2) #nobs,body:not(.u-nav2) #zfit,body:not(.u-nav2) #zfol,body:not(.u-nav2) #tjump,body:not(.u-nav2) #ninfo,body:not(.u-feed) #feed{display:none!important}
+.newly{animation:newly 1.3s ease-in-out 3}
+@keyframes newly{50%{box-shadow:0 0 0 3px rgba(182,255,214,.75),0 0 22px 4px rgba(100,255,170,.6);transform:scale(1.06)}}
+.gcard{cursor:pointer}.gcard:not(.hint) .gh2{display:none}
+.gh .cdots{display:inline-flex;gap:4px;margin-left:6px;vertical-align:middle}.cdots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18)}.cdots i.d{background:var(--gl-hi,#b6ffd6)}.cdots i.c{background:#ffd35a;box-shadow:0 0 6px #ffd35a}
+#chapc{position:fixed;left:50%;top:32%;z-index:30;transform:translate(-50%,-50%) scale(.94);opacity:0;pointer-events:none;text-align:center;padding:18px 28px 20px;border-radius:22px;background:rgba(6,14,9,.86);border:1px solid rgba(140,255,190,.3);box-shadow:0 20px 60px -10px rgba(0,0,0,.8),0 0 30px -8px rgba(100,255,170,.45);transition:opacity .6s,transform .6s;width:min(86vw,360px)}
+#chapc.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#chapc small{display:block;font:800 11px var(--ff);letter-spacing:.18em;text-transform:uppercase;color:#93bfa4}
+#chapc b{display:block;font:400 38px/1.05 var(--fh);letter-spacing:.05em;color:#ffd35a;margin:4px 0 6px;text-shadow:0 0 18px rgba(255,190,60,.45)}
+#chapc span{font-size:14px;color:#e8fbee}
+@media (prefers-reduced-motion:reduce){.newly{animation:none;box-shadow:0 0 0 3px rgba(182,255,214,.75)}}
+/* Nest tab: tips sit above the egg timer, clear of the goal card (build 95) */
+html.full body.nt .toast{top:auto;bottom:calc(var(--navh,84px) + 52px + env(safe-area-inset-bottom,0px));transform:translateY(10px)}
+html.full body.nt .toast.on{transform:none}
+/* boss tactic card (build 96) */
+#bossc{position:fixed;left:50%;top:44%;z-index:31;transform:translate(-50%,-50%) scale(.95);opacity:0;pointer-events:none;width:min(90vw,370px);padding:16px 14px 12px;border-radius:22px;background:rgba(18,6,4,.93);border:1px solid rgba(255,110,70,.45);box-shadow:0 24px 60px -10px rgba(0,0,0,.85),0 0 30px -6px rgba(255,90,50,.45);text-align:center;transition:opacity .35s,transform .35s}
+#bossc.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+#bossc small{display:block;font:800 11px var(--ff);letter-spacing:.2em;text-transform:uppercase;color:#ff8a6a}
+#bossc>b{display:block;font:400 30px/1.1 var(--fh);letter-spacing:.04em;color:#ffd35a;margin:2px 0 10px}
+#bossc .bt{display:block;width:100%;text-align:left;margin:0 0 8px;padding:10px 12px;border-radius:14px;background:rgba(40,16,10,.9);border:1px solid rgba(255,160,90,.35);color:#fbe9dc}
+#bossc .bt strong{display:block;font:400 21px/1.1 var(--fh);letter-spacing:.04em;color:#ffcf7a}#bossc .bt span{font-size:12.5px;color:#e9c9b6}
+#bossc .bt:active{transform:scale(.97)}#bossc .bt.no{opacity:.45}
+#bossc em{display:block;font-style:normal;font-size:12px;color:#c99a86;margin-top:2px}
+/* welcome-back story (build 97) */
+.story{list-style:none;margin:8px 0 10px;padding:0 0 0 4px;position:relative}
+.story:before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:rgba(255,255,255,.12);border-radius:2px}
+.story li{position:relative;padding:0 0 10px 24px}.story li i{position:absolute;left:4px;top:5px;width:10px;height:10px;border-radius:50%;box-shadow:0 0 8px currentColor}
+.story li p{margin:0;font-size:14px;line-height:1.4}.story li p i{position:static;width:auto;height:auto;box-shadow:none;background:none!important;color:var(--mute)}
+.afind{margin:12px 0 4px;padding:12px;border-radius:16px;background:rgba(100,255,170,.07);border:1px solid rgba(140,255,190,.3)}
+.afind>b{display:block;font-size:15px}.afind>span{display:block;color:var(--mute);font-size:13px;margin:2px 0 8px}
+.afind button{display:block;width:100%;text-align:left;margin:0 0 7px;padding:9px 12px}.afind button strong{display:block;font-size:14.5px}.afind button em{font-style:normal;font-size:12.5px;color:var(--mute)}
+/* pop-up cards in the glow style (build 97) */
+.intro .icard{background:linear-gradient(180deg,rgba(14,28,19,.97),rgba(8,18,12,.97));border-color:rgba(140,255,190,.38);box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 30px -10px rgba(100,255,170,.45)}
+.intro .icard h3{color:#b6ffd6}
+.intro .card.dig:not(:disabled){background:linear-gradient(180deg,#a8f5c8,#3fcf86);color:#03160b;border-color:#2c9a63}
+.intro .card:not(.dig){background:rgba(10,24,15,.9);border-color:rgba(140,255,190,.28);color:#e8fbee}
 </style></head>
 <body><noscript><p style="padding:16px">This game needs JavaScript. Open the file in Safari or Chrome rather than a message or email preview.</p></noscript><div id="title"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none';document.getElementById('tfall').style.display='block'"><div id="tfall" style="display:none;font:400 64px/1 var(--fh);letter-spacing:.08em;color:#f5b23c">ANTROPOLIS</div><button class="go" id="tgo">PLAY</button><button class="sub" id="thelp">HOW TO PLAY</button><div id="tver" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11px system-ui;color:rgba(255,235,200,.45)"></div></div><main>
 <div class="brand"><img src="logo.jpg" alt="Antropolis" onerror="this.style.display='none'"></div>
 <div class="top"><button class="link" id="nobs">&#9673; Watch</button><button class="link" id="setb">&#9881; Menu</button><span id="quick" style="display:none"><button class="link" id="snd">Sound on</button> <button class="link" id="mus">Music on</button> <button class="link" id="help">How to play</button></span></div>
 <div class="row tpw" style="margin:0 0 4px"><span class="mute" id="tpl"></span></div><div class="bar tpw" style="margin-bottom:8px"><i id="tpb" style="background:var(--accent)"></i></div>
-<div id="goals"></div><p id="goal" class="gline"></p>
+<div id="goals"></div><div id="chapc" aria-live="polite"></div><div id="bossc" role="dialog" aria-label="Boss wave tactics"></div><p id="goal" class="gline"></p>
 <div class="scene" id="view"><div class="hud"><div class="hchip"><b id="ants">0</b><small>ants</small></div><div class="hchip r"><b id="aps">0</b><small>food <span class="jlc"><b id="jel">0</b> jelly</span></small></div></div><canvas id="cv" role="img" aria-label="Your ant colony underground"></canvas><button id="ninfo" aria-label="Queen and eggs: health, next egg, egg chances">i</button><div id="tov"><div id="tstw"><p id="tst"></p><div id="tinfo"><p class="mute" id="tdf"></p><p class="mute" id="tin"></p></div></div>
  <div id="tzoom"><button class="card pod" id="tobs" aria-label="Watch the colony" title="Watch the colony"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg></button><button class="card pod" id="tmap" aria-label="Colony map" title="Colony map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/></svg></button><button class="card pod" id="zin" aria-label="Zoom in" title="Zoom in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button><button class="card pod" id="zout" aria-label="Zoom out" title="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button><button class="card pod" id="zfit" aria-label="Reset zoom" title="Reset zoom"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 1 0 2-5M5 4v4h4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="card pod" id="zfol" aria-label="Follow a busy ant" title="Follow a busy ant"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2"/></svg></button></div>
  <button id="feed" type="button"></button><div id="tbot"><div id="abil" style="display:none"><button class="card tok" id="abR">Rally</button><button class="card tok" id="abA">Sound the alarm</button><button class="card tok" id="abX" style="display:none">Raid</button></div>
@@ -529,6 +568,18 @@ var TUNING = {
     fights: {
         wallSlow: .25,        // invaders pressing on a super major move at this share of their speed
         wallReach: .02        // how far ahead of an invader (share of the main tunnel) a super major blocks it
+    },
+    // Boss fights you play (threats/bosstac.js)
+    boss: {
+        pickTime: 12,         // seconds to choose a tactic before the colony picks
+        holdSlow: .33,        // Hold the line: boss speed
+        ambush: .35,          // Ambush: extra damage to the boss
+        bait: .25,            // Bait trap: share of the boss's health torn off...
+        baitCost: .15,        // ...for this share of the food store
+        spotGap: 2.6,         // seconds between weak spots
+        spotLife: 1.5,        // seconds a weak spot stays open
+        spotHit: .06,         // share of the boss's health a weak-spot tap takes
+        hitsPerJelly: 3, hitJellyMax: 3
     },
     // Protecting the queen (threats/queenguard.js)
     queen: {
@@ -1164,6 +1215,7 @@ function clearOldRun() {
     RV = null;
     XR = null;
     QG = { on: 0, t: 0, warned: 0, n: 0 };
+    BT = null;
     rvT = TUNING.rivals.firstAt;
     ffT = TUNING.start.firstFoesDelay;
     trm.length = 0;
@@ -1628,6 +1680,10 @@ function colony(dt) {
                 S.eggs.push({ t: et, d: et, b: performance.now(), c: rollClass() });
             }
             S.layTimer = layGap();
+            if (S.quickEggs > 0) {
+                S.quickEggs--;
+                S.layTimer = Math.min(S.layTimer, 2);
+            }
             pulse = 1;
             SFX.lay();
             var qr = qRear(); fx.push({ x: qr.x, y: qr.y - 2, vx: Q.fx * -20, vy: -20, l: .9, t: '@egg', f: 10, g: 140 });
@@ -1676,7 +1732,7 @@ function colony(dt) {
         lose();
 }
 
-function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); qgTick(dt); signalsTick(dt); }
+function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); qgTick(dt); bossTick(dt); signalsTick(dt); }
 
 /* economy/away.js
    Offline progress, the welcome-back screen and the rested-colony boost.
@@ -1738,12 +1794,15 @@ function trackRates(el) {
     digPrev = S.dug;
 }
 
+// finished ant-farm and deep tunnels, for the story
+function farDone() { var n = 0, k; for (k in (S.fdg || {})) if (S.fdg[k] >= 1) n++; for (k in (S.ddg || {})) if (S.ddg[k] >= 1) n++; return n; }
 function catchUp(secs) {
     if (dead || !(secs >= 60) || (S.totalHatched < 1 && S.dug < .02))
         return null;
     var capped = secs > awayMax();
     secs = Math.min(secs, awayMax());
     var rate = S.foodRate != null ? S.foodRate : Math.max(0, S.foragers) * leaf() / 70, r = { secs: secs, capped: capped, f0: S.food, got: 0, born: [0, 0, 0, 0, 0, 0, 0], gold: 0, dg0: S.dug, healed: 0, full: false, hungry: false }, t = 0, lay = Math.max(0, S.layTimer || 0);
+    var fin0 = farDone();
     while (t < secs) {
         var dt = Math.min(30, secs - t);
         t += dt;
@@ -1784,6 +1843,9 @@ function catchUp(secs) {
             S.dug = Math.min(digCap(), S.dug + S.digRate * dt);
         farDigTick(dt);
     }
+    r.tun = Math.max(0, farDone() - fin0);
+    if (secs >= 1800)
+        r.find = Math.floor(Math.random() * FINDS.length);
     S.layTimer = Math.min(layGap(), Math.max(1, lay));
     S.injured.forEach(function (n) { r.healed += n; });
     S.injured = S.injured.map(function () { return 0; });
@@ -1805,38 +1867,72 @@ function catchUp(secs) {
     return r;
 }
 
+/* Welcome back as a story (build 97): what happened, told as a few moments with named ants, then one find
+   your scouts made while you were gone and a choice of what to do with it (after 30 minutes or more away). */
+var FINDS = [
+    { t: 'a dead beetle near the tunnel mouth', o: [
+        { n: 'Feast on it', d: '+25% of the food store', go: function () { S.food = Math.min(foodCap(), S.food + foodCap() * .25); } },
+        { n: 'Leave it as bait', d: 'The next wave starts 30% weaker', go: function () { S.baitNext = .7; } }] },
+    { t: 'a buried cache of seeds', o: [
+        { n: 'Carry it home', d: '+15% of the food store', go: function () { S.food = Math.min(foodCap(), S.food + foodCap() * .15); } },
+        { n: 'Feed it to the fungus', d: '+2 royal jelly', go: function () { gainJelly(2); } }] },
+    { t: 'a drop of sweet honeydew on a grass stem', o: [
+        { n: 'Share it with the nurses', d: 'Heals the queen fully and hurries the next egg', go: function () { S.queenHp = hpMax(); S.layTimer = 1; } },
+        { n: 'Turn it into jelly', d: '+3 royal jelly', go: function () { gainJelly(3); } }] },
+    { t: 'an empty snail shell by a root', o: [
+        { n: 'Use it as a lookout', d: 'Scouts warn of the next wave sooner', go: function () { nf += 30000; } },
+        { n: 'Grind it for the nursery', d: 'The next 3 eggs come quickly', go: function () { S.layTimer = 1; S.quickEggs = 3; } }] }
+];
+function awayName(i) { var n = (S.seed || 7) + i * 7919 + Math.floor((r0 || 0) * 3); return NAMES[Math.abs(n) % NAMES.length]; }
+var r0 = 0;
 function awayText(r) {
-    var hrs = Math.floor(r.secs / 3600), mins = Math.round((r.secs % 3600) / 60), dur = hrs ? hrs + 'h ' + mins + 'm' : mins + ' minutes', total = 0, parts = [];
+    var hrs = Math.floor(r.secs / 3600), mins = Math.round((r.secs % 3600) / 60), dur = hrs ? hrs + 'h ' + mins + 'm' : mins + ' minutes', total = 0, parts = [], st = [];
+    r0 = r.secs;
     r.born.forEach(function (n, c) { if (n) {
         total += n;
         parts.push(n + ' ' + CN[c].toLowerCase() + (n > 1 ? 's' : ''));
     } });
-    var s = '<h3>While you were away</h3><p class="mute" style="margin-top:-4px">' + dur + (r.capped ? ' (your ants work for up to ' + awayMax() / 3600 + ' hours)' : '') + '</p>';
-    s += '<p>Your foragers gathered <b>' + fmt(Math.round(r.got)) + ' food</b>.</p>';
-    if (r.res >= 1)
-        s += '<p>The store filled up, so <b>' + fmt(Math.round(r.res)) + '</b> of it went into the <b>Larder</b>. It tops up the store as you use food.</p>';
-    else if (r.lost >= 1)
-        s += '<p class="mute">The food store filled up and ' + fmt(Math.round(r.lost)) + ' food was left on the surface.' + (S.tier >= 3 ? ' The Larder, down in the Clay layer, keeps the extra.' : '') + '</p>';
-    s += total ? '<p>The queen raised <b>' + total + ' new ant' + (total > 1 ? 's' : '') + '</b>: ' + parts.join(', ') + '.</p>' : '';
-    if (r.gold)
-        s += '<p>A golden egg hatched a <b>Super Major</b>! +' + 10 * r.gold + ' jelly.</p>';
+    function beat(c, h) { st.push('<li><i style="background:' + c + '"></i><p>' + h + '</p></li>'); }
+    beat('#7ee08a', r.got < 1 ? 'The foragers kept the tunnels busy but found little to bring home. More foragers would help.' : '<b>' + awayName(1) + '</b> led the foragers out again and again. They brought home <b>' + fmt(Math.round(r.got)) + ' food</b>.' + (r.res >= 1 ? ' The store filled up, so <b>' + fmt(Math.round(r.res)) + '</b> went into the Larder.' : r.lost >= 1 ? ' The store filled up and ' + fmt(Math.round(r.lost)) + ' was left on the surface.' : ''));
+    if (total)
+        beat('#ffd35a', 'The queen laid and the nurses raised <b>' + total + ' new ant' + (total > 1 ? 's' : '') + '</b>: ' + parts.join(', ') + '.' + (r.gold ? ' A golden egg hatched a <b>Super Major</b>! +' + 10 * r.gold + ' jelly.' : ''));
     if (r.dg0 < 1 && S.dug >= 1)
-        s += '<p>Your workers <b>broke through to the surface</b>. Invaders will come soon.</p>';
-    else if (S.dug > r.dg0 + .005)
-        s += '<p>Your workers dug the tunnel <b>' + Math.round((S.dug - r.dg0) * 100) + '%</b> further.</p>';
+        beat('#f5b23c', 'With a last push, <b>' + awayName(2) + '</b> broke through to the <b>surface</b>. Invaders will come soon.');
+    else if (S.dug > r.dg0 + .005 || r.tun > 0)
+        beat('#f5b23c', 'The diggers worked on' + (S.dug > r.dg0 + .005 ? ', pushing the tunnel <b>' + Math.round((S.dug - r.dg0) * 100) + '%</b> further' : '') + (r.tun > 0 ? (S.dug > r.dg0 + .005 ? ' and finishing ' : ' and finished ') + '<b>' + r.tun + ' new tunnel' + (r.tun > 1 ? 's' : '') + '</b>' : '') + '.');
     if (r.healed)
-        s += '<p>Nurses healed <b>' + r.healed + ' injured ant' + (r.healed > 1 ? 's' : '') + '</b>.</p>';
-    s += '<p>The queen is rested and the food spots have grown back.</p>';
+        beat('#ff9db0', 'Nurses tended <b>' + r.healed + ' hurt ant' + (r.healed > 1 ? 's' : '') + '</b> until they were well again.');
+    if (S.dug >= 1)
+        beat('#cfe9d8', '<b>' + awayName(3) + '</b> the soldier stood guard at the tunnel mouth all the while.');
+    diaryLines().filter(function (l) { return l.indexOf('stood guard') < 0; }).slice(0, 1).forEach(function (l) { beat('#93bfa4', '<i>' + l + '</i>'); });
+    var s = '<h3>While you were away</h3><p class="mute" style="margin-top:-4px">' + dur + (r.capped ? ' (your ants work for up to ' + awayMax() / 3600 + ' hours)' : '') + '</p><ul class="story">' + st.join('') + '</ul>';
     if (r.rest)
         s += '<p style="border-left:3px solid var(--accent2);padding-left:9px"><b>Rested colony!</b> Your foragers carry <b>25% more food</b> for the next ' + r.rest + ' minutes.</p>';
     if (r.full)
         s += '<p class="mute">The nest filled up. Dig a bigger nest to keep growing.</p>';
-    else if (r.hungry)
+    else if (r.hungry && r.got >= 1)
         s += '<p class="mute">The colony ran short of food for eggs. More foragers would help.</p>';
-    var dl = diaryLines();
-    if (dl.length)
-        s += '<p class="mute" style="margin-bottom:4px"><b>From the colony diary</b></p>' + dl.map(function (l) { return '<p class="mute" style="margin:0 0 6px;font-style:italic">' + l + '</p>'; }).join('');
+    if (r.find != null) {
+        var F = FINDS[r.find];
+        s += '<div class="afind" id="afind"><b>Your scouts found ' + F.t + '.</b><span>What should the colony do?</span>' + F.o.map(function (o, i) { return '<button class="card" data-i="' + i + '"><strong>' + o.n + '</strong><em>' + o.d + '</em></button>'; }).join('') + '</div>';
+    }
     return s;
+}
+function awayFind(r) {
+    var box = $('afind');
+    if (!box || r.find == null)
+        return;
+    [].forEach.call(box.querySelectorAll('button'), function (b) {
+        b.onclick = function () {
+            var o = FINDS[r.find].o[+b.getAttribute('data-i')];
+            o.go();
+            r.find = null;
+            box.innerHTML = '<b>' + o.n + '.</b><span>' + o.d + '. Done!</span>';
+            SFX.claim && SFX.claim();
+            sync();
+            save();
+        };
+    });
 }
 
 function showAway(r) {
@@ -1853,6 +1949,7 @@ function showAway(r) {
             goldFanfare(); };
     }
     $('awayt').innerHTML = awayText(r);
+    awayFind(r);
     var db = $('awaydbl'), extraF = Math.min(Math.round(r.got || 0), Math.max(0, foodCap() - Math.round(S.food)));
     db.style.display = extraF >= 10 ? '' : 'none';
     db.disabled = false;
@@ -4821,6 +4918,10 @@ function wave() {
         var b = boss && i === 0, h = Math.max(base * (b ? 2.2 : .65), unit * (b ? 2.2 : 1)) * (tp === 3 ? 1.4 : 1);
         foes.push({ p: -.06 * i, tp: tp, boss: b, hp: h, max: h, kl: tp === 3 ? 1 + Math.floor(Math.random() * 2) : 0, kt: 1.2, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i - (cnt - 1) / 2) * 2 });
     }
+    if (S.baitNext > 0) {
+        foes.forEach(function (f) { f.hp *= S.baitNext; });
+        S.baitNext = 0;
+    }
     wvi = { n: cnt, boss: boss, w: 1 };
     SFX.alarm();
     alarmT = 5;
@@ -4830,8 +4931,10 @@ function wave() {
     burst(en.x, en.y, boss ? 26 : 14, ['#a07a50', '#7a5636', '#c9a46a'], boss ? 90 : 60);
     fx.push({ x: en.x, y: en.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
     fx.push({ x: en.x, y: en.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: boss ? 22 : 17, c: '#ff5a3a', g: 0, pop: 1 });
-    if (boss)
+    if (boss) {
         shake = Math.max(shake, .4);
+        bossStart();
+    }
     toast(boss ? 'Boss wave! A giant ' + FN[tp] + ' leads the attack. Preparation ' + prep + ' of 3: it is ' + prep * 12 + '% weaker.' : tp === 0 ? 'Armoured beetles! Soldiers struggle; Super Majors and Barracks cut through the armour.' : 'Wave ' + S.wave + ': ' + cnt + ' ' + FN[tp] + (cnt > 1 ? 's' : '') + ' in the tunnel!');
 }
 
@@ -5582,6 +5685,159 @@ function nsRoyalGuard(g, t, now) {
         nsAnt(g, qx + Math.cos(an) * rx, qy + Math.sin(an) * ry - (1 - e) * 30, an + Math.sin(t * 6 + m.rg.slot) * .12, m.k, t * 4, false);
         g.globalAlpha = 1;
     });
+}
+
+/* threats/bosstac.js
+   Boss fights you play (build 96).
+   1. Tactic: when a boss wave breaks in the boss waits at the tunnel mouth while you pick how to meet it:
+      Hold the line (super majors plug the tunnel, the boss crawls), Ambush (soldiers strike from a side tunnel,
+      more damage to the boss) or Bait (spend food on a trap that tears off part of its health). If you do not
+      choose in time the colony picks for you, so idle players are never stuck.
+   2. Weak spots: during the fight glowing spots open on the boss for a moment. Tap one for a heavy hit.
+      Good hits earn extra jelly when the boss falls.
+   Ordinary waves stay automatic. Nothing here is saved (a reload mid-fight just plays on without a tactic).
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+var BT = null;
+
+function bossTacs() {
+    var C = TUNING.boss;
+    return [
+        { k: 'hold', n: 'Hold the line', d: 'Super majors plug the tunnel. The boss crawls at a third of its speed.', ok: S.superMajors > 0, why: 'Needs super majors' },
+        { k: 'amb', n: 'Ambush', d: 'Soldiers strike from a side tunnel: +' + Math.round(C.ambush * 100) + '% damage to the boss.', ok: S.sideTunnels > 0 && S.sideDug[0] >= 1, why: 'Needs a side tunnel' },
+        { k: 'bait', n: 'Bait trap', d: 'Spend ' + fmt(baitCost()) + ' food on a trap. It tears off ' + Math.round(C.bait * 100) + '% of the boss’s health.', ok: S.food >= baitCost(), why: 'Needs ' + fmt(baitCost()) + ' food' }
+    ];
+}
+function baitCost() { return Math.max(30, Math.round(foodCap() * TUNING.boss.baitCost)); }
+function bossFoe() { for (var i = 0; i < foes.length; i++) if (foes[i].boss) return foes[i]; return null; }
+
+// called from wave() when a boss wave starts
+function bossStart() {
+    BT = { ph: 'pick', t: TUNING.boss.pickTime, tac: null, ws: null, wt: 1.5, hits: 0 };
+    bossCard();
+}
+function bossCard() {
+    var el = $('bossc');
+    if (!el || !BT)
+        return;
+    el.innerHTML = '<small>Boss wave</small><b>How do we meet it?</b>' + bossTacs().map(function (t) {
+        return '<button class="card bt' + (t.ok ? '' : ' no') + '" data-k="' + t.k + '"' + (t.ok ? '' : ' disabled') + '><strong>' + t.n + '</strong><span>' + (t.ok ? t.d : t.why) + '</span></button>';
+    }).join('') + '<em id="bctime"></em>';
+    el.className = 'on';
+    [].forEach.call(el.querySelectorAll('button.bt'), function (b) { b.onclick = function () { bossPick(b.getAttribute('data-k')); }; });
+}
+function bossPick(k, auto) {
+    if (!BT || BT.ph !== 'pick')
+        return;
+    var C = TUNING.boss, f = bossFoe();
+    BT.ph = 'fight';
+    BT.tac = k;
+    $('bossc').className = '';
+    if (k === 'bait' && f) {
+        S.food = Math.max(0, S.food - baitCost());
+        f.hp -= f.max * C.bait;
+        var a = at(Math.max(0, f.p));
+        burst(a.x, a.y, 22, ['#f5b23c', '#c98a2a', '#ffe08a'], 80);
+        fx.push({ x: a.x, y: a.y - 20, vx: 0, vy: -18, l: 1.4, t: 'TRAP!', f: 18, c: '#ffd35a', g: 0, pop: 1 });
+    }
+    var T = bossTacs().filter(function (t) { return t.k === k; })[0];
+    toast((auto ? 'No orders, so the colony chose: ' : '') + (T ? T.n + '! ' : '') + 'Tap the glowing weak spots on the boss for heavy hits.');
+    feed('Tactic: ' + (T ? T.n : 'charge') + '. Tap the weak spots on the boss!', 'info', function () { var b = bossFoe(); return b ? at(Math.max(0, b.p)) : null; });
+    SFX.rally && SFX.rally();
+}
+
+// boss movement multiplier: still while you choose, a crawl when the line holds
+function bossSpd(f) {
+    if (!BT || !f.boss)
+        return BT && BT.ph === 'pick' ? 0 : 1;
+    return BT.ph === 'pick' ? 0 : BT.tac === 'hold' ? TUNING.boss.holdSlow : 1;
+}
+// boss damage multiplier from the ambush
+function bossDmg(f) { return f.boss && BT && BT.tac === 'amb' ? 1 + TUNING.boss.ambush : 1; }
+
+function bossTick(dt) {
+    if (!BT)
+        return;
+    var C = TUNING.boss, f = bossFoe();
+    if (!f) {
+        if (BT.ph !== 'pick' && BT.hits) {
+            var j = Math.min(C.hitJellyMax, Math.floor(BT.hits / C.hitsPerJelly));
+            if (j > 0) {
+                gainJelly(j);
+                toast(BT.hits + ' weak-spot hits! +' + j + ' extra royal jelly.');
+            }
+        }
+        $('bossc').className = '';
+        BT = null;
+        return;
+    }
+    if (BT.ph === 'pick') {
+        BT.t -= dt;
+        var e = $('bctime');
+        if (e)
+            e.textContent = 'The colony decides in ' + Math.max(0, Math.ceil(BT.t)) + 's';
+        if (BT.t <= 0) {
+            var ok = bossTacs().filter(function (t) { return t.ok && t.k !== 'bait'; });
+            bossPick(ok.length ? ok[0].k : 'none', true);
+        }
+        return;
+    }
+    // weak spots: one at a time, open for a moment on the boss's body
+    if (BT.ws) {
+        BT.ws.l -= dt;
+        if (BT.ws.l <= 0)
+            BT.ws = null;
+    }
+    else if (f.p > .02) {
+        BT.wt -= dt;
+        if (BT.wt <= 0) {
+            BT.wt = C.spotGap * (.7 + Math.random() * .6);
+            BT.ws = { l: C.spotLife, L: C.spotLife, ox: (Math.random() - .5) * 18, oy: (Math.random() - .5) * 10 };
+        }
+    }
+}
+function spotPos(f) { var a = at(Math.max(0, f.p)); return { x: a.x + BT.ws.ox, y: a.y + BT.ws.oy - 4 }; }
+
+// a tap on the canvas (world coordinates); true if it hit a weak spot
+function bossTap(wx, wy) {
+    var f = bossFoe();
+    if (!BT || !BT.ws || !f)
+        return false;
+    var s = spotPos(f), r = 16 + 14 / uz;
+    if (Math.hypot(wx - s.x, wy - s.y) > r)
+        return false;
+    var d = f.max * TUNING.boss.spotHit;
+    f.hp -= d;
+    f.hf = 1;
+    BT.hits++;
+    BT.ws = null;
+    BT.wt = TUNING.boss.spotGap * .6;
+    burst(s.x, s.y, 14, ['#fff3b0', '#ffd35a', '#ff8a3a'], 90);
+    fx.push({ x: s.x, y: s.y - 12, vx: 0, vy: -22, l: 1.1, t: 'WEAK SPOT! ' + fmt(d), f: 14, c: '#ffe27a', g: 0, pop: 1 });
+    shake = Math.max(shake, .18);
+    SFX.squish && SFX.squish();
+    return true;
+}
+
+function drawBossFx(now) {
+    var f = bossFoe();
+    if (!BT || !BT.ws || !f)
+        return;
+    var s = spotPos(f), k = BT.ws.l / BT.ws.L, r = 7 + 3 * Math.sin(now * .02);
+    cx.save();
+    cx.globalCompositeOperation = 'lighter';
+    glow(s.x, s.y, 26, '255,210,90', .35 + .25 * k);
+    cx.restore();
+    cx.strokeStyle = 'rgba(255,230,140,' + (.5 + .5 * k) + ')';
+    cx.lineWidth = 2.2;
+    cx.beginPath();
+    cx.arc(s.x, s.y, r, 0, 7);
+    cx.stroke();
+    cx.strokeStyle = 'rgba(255,255,255,.8)';
+    cx.lineWidth = 1.4;
+    cx.beginPath();
+    cx.arc(s.x, s.y, r + 6, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * k);
+    cx.stroke();
 }
 
 /* threats/termites.js
@@ -11249,7 +11505,7 @@ function nsQueenInfo(g, W, Hs, t, xf) {
 // ---- hud, screens and tutorial ----
 
 // the HUD and menus (DOM), refreshed a few times a second from the main loop
-function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); nestFit(); }
+function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); unlockTick(); renderGoals(); chapTick(); nestFit(); }
 
 // the Nest tab's cavern reaches down to the tab bar; if the goal card above it changes height, refit it
 function nestFit() {
@@ -11549,6 +11805,7 @@ function goalsTick() {
     }
 }
 
+var GH = { i: -1, until: 0, html: '' };
 function renderGoals() {
     var g = $('goals'), p = $('goal'), G;
     if (S.goalIndex >= GOALS.length) {
@@ -11559,7 +11816,15 @@ function renderGoals() {
     }
     p.style.display = 'none';
     G = GOALS[S.goalIndex];
-    g.innerHTML = '<div class="gcard"><div class="gh">Goal ' + (S.goalIndex + 1) + ' of ' + GOALS.length + ' <span>Reward: ' + G.r + '</span></div><div class="gi on"><span class="gk">▶</span><span class="gt">' + G.t + (G.n ? ' <em>' + G.n() + '</em>' : '') + '</span></div>' + (G.h ? '<div class="gh2">' + G.h + '</div>' : '') + '</div>';
+    if (GH.i !== S.goalIndex) {
+        GH.i = S.goalIndex;
+        GH.until = performance.now() + 9000;
+    }
+    var html = '<div class="gcard' + (performance.now() < GH.until ? ' hint' : '') + '"><div class="gh">' + chapHead(S.goalIndex) + ' <span>' + G.r + '</span></div><div class="gi on"><span class="gk">▶</span><span class="gt">' + G.t + (G.n ? ' <em>' + G.n() + '</em>' : '') + '</span></div>' + (G.h ? '<div class="gh2">' + G.h + '</div>' : '') + '</div>';
+    if (html !== GH.html) {
+        GH.html = html;
+        g.innerHTML = html;
+    }
     // a first invasion pulls towards the Tunnel tab; during any fight the goal card does not pull away from it
     var nt = (wvi.ff && foes.length) || (ffW > 0 && !S.firstFoes) ? 'tun' : foes.length && tab === 'tun' ? null : G.tab;
     document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('nudge', !!nt && b.dataset.t === nt && tab !== nt); });
@@ -12835,6 +13100,89 @@ function feedGo() {
     e.at = Math.min(e.at, performance.now() - 8000);
 }
 
+/* ui/unlock.js
+   A gentler first ten minutes (build 95).
+   1. Buttons and tabs appear when they first matter, not all at once. Each feature has a rule; while it is false
+      the body lacks class u-<key> and CSS hides the feature. When it turns true during play the feature glows and
+      one line says what it is for. Once unlocked it stays (S.unl, optional save field). On a game's first check
+      (old saves, stage jumps) everything already earned unlocks quietly.
+   2. The 22 opening goals are told as five short chapters with a title card between them (S.chap, optional).
+   Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
+
+var UNL = [
+    { k: 'tun', ok: function () { return S.goalIndex >= 2 || S.tier >= 1; }, sel: '.nav button[data-t="tun"]', tx: 'New: the Tunnel tab. Watch your workers dig and your foragers carry food home.' },
+    { k: 'col', ok: function () { return S.goalIndex >= 5 || S.tier >= 1; }, sel: '.nav button[data-t="col"]', tx: 'New: the Colony tab. Dig bigger nests, build, and level up your ants there.' },
+    { k: 'ants', ok: function () { return S.goalIndex >= 6 || S.tier >= 2; }, sel: '#ctabs [data-c="ants"]', tx: 'New on the Colony tab: Ants. Spend royal jelly to level them up.' },
+    { k: 'jelly', ok: function () { return S.jelly > 0 || S.goalIndex >= 4 || S.tier >= 1; }, sel: '.jlc', tx: '' },
+    { k: 'nav2', ok: function () { return S.tier >= 1; }, sel: '#tmap', tx: 'New: the colony map and Watch mode. Sit back and the camera follows the action.' },
+    { k: 'today', ok: function () { return S.tier >= 1 && S.goalIndex >= 9; }, sel: '#ctabs [data-c="today"]', tx: 'New on the Colony tab: Today. Daily tasks and quests for extra jelly.' },
+    { k: 'feed', ok: function () { return S.goalIndex >= 12 || S.tier >= 2; }, sel: '', tx: '' },
+    { k: 'more', ok: function () { return S.tier >= 2; }, sel: '#ctabs [data-c="more"]', tx: 'New on the Colony tab: More. Orders, achievements and, one day, the royal flight.' },
+    { k: 'store', ok: function () { return S.goalIndex >= 19 || S.tier >= 3 || (P.gen || 0) > 0; }, sel: '.nav button[data-t="store"]', tx: 'New: the Store. Skins, biomes and nest themes for your colony.' }
+];
+var UNLI = { init: 0, t: 0 };
+
+function unlockTick() {
+    if (!S || !document.body)
+        return;
+    var u = S.unl || (S.unl = {}), b = document.body.classList, quiet = !UNLI.init || (P.gen || 0) > 0, told = 0;
+    UNL.forEach(function (f) {
+        if (!u[f.k] && ((P.gen || 0) > 0 || f.ok())) {
+            u[f.k] = 1;
+            if (!quiet && f.tx && !told++) {
+                toast(f.tx);
+                var e = f.sel && document.querySelector(f.sel);
+                if (e) {
+                    e.classList.remove('newly');
+                    void e.offsetWidth;
+                    e.classList.add('newly');
+                    setTimeout(function () { e.classList.remove('newly'); }, 4200);
+                }
+            }
+        }
+        if (b.contains('u-' + f.k) !== !!u[f.k])
+            b.toggle('u-' + f.k, !!u[f.k]);
+    });
+    UNLI.init = 1;
+}
+
+// ---- chapters ----
+var CHAPS = [
+    { at: 0, t: 'The First Egg', s: 'Deep beneath the roots, a queen begins her colony.' },
+    { at: 5, t: 'Breaking Ground', s: 'Your first workers dig. The nest must grow.' },
+    { at: 10, t: 'A Growing Nest', s: 'More mouths, more tunnels, more food to find.' },
+    { at: 16, t: 'A Real Colony', s: 'The colony reaches for the surface and the sky.' },
+    { at: 19, t: 'The First Defence', s: 'The world above has noticed you. Stand your ground.' }
+];
+function chapOf(i) { var c = 0; for (var j = 0; j < CHAPS.length; j++) if (i >= CHAPS[j].at) c = j; return c; }
+// header for the goal card: chapter name and a dot for each goal in the chapter
+function chapHead(i) {
+    var c = chapOf(i), a = CHAPS[c].at, z = c + 1 < CHAPS.length ? CHAPS[c + 1].at : GOALS.length, d = '';
+    for (var j = a; j < z; j++)
+        d += '<i class="' + (j < i ? 'd' : j === i ? 'c' : '') + '"></i>';
+    return 'Chapter ' + (c + 1) + ' · ' + CHAPS[c].t + ' <b class="cdots">' + d + '</b>';
+}
+function chapTick() {
+    if (S.goalIndex >= GOALS.length || dead || OPEN_PENDING)
+        return;
+    var c = chapOf(S.goalIndex) + 1;
+    if (S.chap == null && (S.goalIndex > 0 || (P.gen || 0) > 0)) {
+        S.chap = c;
+        return;
+    }
+    if ((S.chap || 0) >= c || document.querySelector('.intro.on,.over.on'))
+        return;
+    S.chap = c;
+    var el = $('chapc');
+    if (!el)
+        return;
+    el.innerHTML = '<small>Chapter ' + c + '</small><b>' + CHAPS[c - 1].t + '</b><span>' + CHAPS[c - 1].s + '</span>';
+    el.className = 'on';
+    clearTimeout(UNLI.t);
+    UNLI.t = setTimeout(function () { el.className = ''; }, 3600);
+    SFX.goal && SFX.goal();
+}
+
 /* ui/events.js
    Random events, achievements, the golden beetle and worms.
    Part of Antropolis. All files are joined into one script by tools/build.py (see README). */
@@ -13769,7 +14117,7 @@ function batteryLabel() { var b = $('setbat'); if (b)
     b.textContent = power === 'saver' ? 'Battery saver: 30 frames a second, lighter picture' : power === 'smooth' ? 'Smooth: always 60 frames a second (uses more battery)' : 'Auto (recommended): 60 frames a second, 30 once the colony is big'; }
 
 // APP_VER is what players see and goes up with each public update; BUILD counts every build we make
-var APP_VER = '1.0', BUILD = 94, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
+var APP_VER = '1.0', BUILD = 97, FEEDBACK_EMAIL = 'AntropolisFeedback@outlook.com', GAME_VER;
 function sendFeedback() {
     var txt = ($('fbtext').value || '').trim();
     if (!txt) { setNote('Type a short message first.'); return; }
@@ -14732,7 +15080,7 @@ function initTapToSelect() {
             return;
         }
         var r = cv.getBoundingClientRect(), sc = K * uz, wx = camX + (e.clientX - r.left) / sc, wy = cam + (e.clientY - r.top) / sc, best = null, bd = 12 + 8 / uz;
-        if (goldTap(wx, wy))
+        if (bossTap(wx, wy) || goldTap(wx, wy))
             return;
         marchers.forEach(function (m) { if (m.wx == null)
             return; var d = Math.hypot(m.wx - wx, m.wy - wy); if (d < bd) {
@@ -14826,12 +15174,12 @@ function frame(n) {
                     return false;
             }
             else
-                f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt);
+                f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt * bossSpd(f));
             if (WALL.length && f.p > p0 && wallHolds(WALL, p0))
                 f.p = p0 + (f.p - p0) * TUNING.fights.wallSlow;
             var a = at(f.p);
             if (f.p > .05) {
-                var d = team * dt * (f.tp === 0 ? 1 - armBlock : 1);
+                var d = team * dt * (f.tp === 0 ? 1 - armBlock : 1) * bossDmg(f);
                 f.hp -= d;
                 f.acc += d;
                 f.tm -= dt;
@@ -15012,7 +15360,7 @@ function drawDeadQueen() {
     cx.restore();
 }
 
-function drawT(now) { drawWorld(now); drawTrails(now); drawAlarm(now); drawRivalScout(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawSignals(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); }
+function drawT(now) { drawWorld(now); drawTrails(now); drawAlarm(now); drawRivalScout(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawSignals(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawBossFx(now); drawSel(now); deco(now); }
 var lastTouchEnd = 0;
 
 /* main/boot.js
@@ -15269,4 +15617,7 @@ catch (e) { }
 // skipped it for the Nest, so a game opened on the Nest kept the old scrolling page)
 go(lastTab === 'tun' || lastTab === 'col' || lastTab === 'store' ? lastTab : 'nest');
 requestAnimationFrame(frame);
+
+// build 95: tap the goal card to see its hint again
+$('goals').onclick = function () { GH.until = performance.now() + 9000; GH.html = ''; renderGoals(); };
 </script></body></html>

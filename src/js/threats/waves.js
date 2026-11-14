@@ -23,6 +23,10 @@ function wave() {
         var b = boss && i === 0, h = Math.max(base * (b ? 2.2 : .65), unit * (b ? 2.2 : 1)) * (tp === 3 ? 1.4 : 1);
         foes.push({ p: -.06 * i, tp: tp, boss: b, hp: h, max: h, kl: tp === 3 ? 1 + Math.floor(Math.random() * 2) : 0, kt: 1.2, at: .5 + Math.random() * .6, tm: .3, acc: 0, o: (i - (cnt - 1) / 2) * 2 });
     }
+    if (S.baitNext > 0) {
+        foes.forEach(function (f) { f.hp *= S.baitNext; });
+        S.baitNext = 0;
+    }
     wvi = { n: cnt, boss: boss, w: 1 };
     SFX.alarm();
     alarmT = 5;
@@ -32,8 +36,10 @@ function wave() {
     burst(en.x, en.y, boss ? 26 : 14, ['#a07a50', '#7a5636', '#c9a46a'], boss ? 90 : 60);
     fx.push({ x: en.x, y: en.y, vx: 0, vy: 0, l: .7, ring: 6, c: 'rgba(255,90,60,.9)', g: 0 });
     fx.push({ x: en.x, y: en.y - 16, vx: 0, vy: -14, l: 1.2, t: '!', f: boss ? 22 : 17, c: '#ff5a3a', g: 0, pop: 1 });
-    if (boss)
+    if (boss) {
         shake = Math.max(shake, .4);
+        bossStart();
+    }
     toast(boss ? 'Boss wave! A giant ' + FN[tp] + ' leads the attack. Preparation ' + prep + ' of 3: it is ' + prep * 12 + '% weaker.' : tp === 0 ? 'Armoured beetles! Soldiers struggle; Super Majors and Barracks cut through the armour.' : 'Wave ' + S.wave + ': ' + cnt + ' ' + FN[tp] + (cnt > 1 ? 's' : '') + ' in the tunnel!');
 }
 

@@ -438,6 +438,10 @@ function colony(dt) {
                 S.eggs.push({ t: et, d: et, b: performance.now(), c: rollClass() });
             }
             S.layTimer = layGap();
+            if (S.quickEggs > 0) {
+                S.quickEggs--;
+                S.layTimer = Math.min(S.layTimer, 2);
+            }
             pulse = 1;
             SFX.lay();
             var qr = qRear(); fx.push({ x: qr.x, y: qr.y - 2, vx: Q.fx * -20, vy: -20, l: .9, t: '@egg', f: 10, g: 140 });
@@ -486,4 +490,4 @@ function colony(dt) {
         lose();
 }
 
-function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); qgTick(dt); signalsTick(dt); }
+function extra(dt) { branches(dt); poll(); colony(dt); achTick(dt); evTick(dt); larderTick(dt); rivalTick(dt); counterTick(dt); qgTick(dt); bossTick(dt); signalsTick(dt); }

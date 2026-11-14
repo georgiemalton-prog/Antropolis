@@ -5,7 +5,7 @@
 // ---- hud, screens and tutorial ----
 
 // the HUD and menus (DOM), refreshed a few times a second from the main loop
-function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); renderGoals(); nestFit(); }
+function ui() { ordersUi(); greatUi(); hudColony(); hudClasses(); unlockTick(); renderGoals(); chapTick(); nestFit(); }
 
 // the Nest tab's cavern reaches down to the tab bar; if the goal card above it changes height, refit it
 function nestFit() {
@@ -305,6 +305,7 @@ function goalsTick() {
     }
 }
 
+var GH = { i: -1, until: 0, html: '' };
 function renderGoals() {
     var g = $('goals'), p = $('goal'), G;
     if (S.goalIndex >= GOALS.length) {
@@ -315,7 +316,15 @@ function renderGoals() {
     }
     p.style.display = 'none';
     G = GOALS[S.goalIndex];
-    g.innerHTML = '<div class="gcard"><div class="gh">Goal ' + (S.goalIndex + 1) + ' of ' + GOALS.length + ' <span>Reward: ' + G.r + '</span></div><div class="gi on"><span class="gk">▶</span><span class="gt">' + G.t + (G.n ? ' <em>' + G.n() + '</em>' : '') + '</span></div>' + (G.h ? '<div class="gh2">' + G.h + '</div>' : '') + '</div>';
+    if (GH.i !== S.goalIndex) {
+        GH.i = S.goalIndex;
+        GH.until = performance.now() + 9000;
+    }
+    var html = '<div class="gcard' + (performance.now() < GH.until ? ' hint' : '') + '"><div class="gh">' + chapHead(S.goalIndex) + ' <span>' + G.r + '</span></div><div class="gi on"><span class="gk">▶</span><span class="gt">' + G.t + (G.n ? ' <em>' + G.n() + '</em>' : '') + '</span></div>' + (G.h ? '<div class="gh2">' + G.h + '</div>' : '') + '</div>';
+    if (html !== GH.html) {
+        GH.html = html;
+        g.innerHTML = html;
+    }
     // a first invasion pulls towards the Tunnel tab; during any fight the goal card does not pull away from it
     var nt = (wvi.ff && foes.length) || (ffW > 0 && !S.firstFoes) ? 'tun' : foes.length && tab === 'tun' ? null : G.tab;
     document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('nudge', !!nt && b.dataset.t === nt && tab !== nt); });

@@ -48,12 +48,12 @@ function frame(n) {
                     return false;
             }
             else
-                f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt);
+                f.p = Math.min(1, f.p + .02 * (f.tp === 3 ? .55 : 1) * dt * bossSpd(f));
             if (WALL.length && f.p > p0 && wallHolds(WALL, p0))
                 f.p = p0 + (f.p - p0) * TUNING.fights.wallSlow;
             var a = at(f.p);
             if (f.p > .05) {
-                var d = team * dt * (f.tp === 0 ? 1 - armBlock : 1);
+                var d = team * dt * (f.tp === 0 ? 1 - armBlock : 1) * bossDmg(f);
                 f.hp -= d;
                 f.acc += d;
                 f.tm -= dt;
@@ -234,5 +234,5 @@ function drawDeadQueen() {
     cx.restore();
 }
 
-function drawT(now) { drawWorld(now); drawTrails(now); drawAlarm(now); drawRivalScout(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawSignals(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawSel(now); deco(now); }
+function drawT(now) { drawWorld(now); drawTrails(now); drawAlarm(now); drawRivalScout(now); drawRooms(now); drawLarder(now); drawArmoury(now); drawCrickets(now); drawCaves(now); drawMole(now); drawHill(now); drawFood(now); drawGold(now); drawDeadQueen(); lighting(now); eggs(now); drawSignals(now); drawArmy(now); drawCrew(now); drawFarDig(now); drawFoesFx(now); drawBossFx(now); drawSel(now); deco(now); }
 var lastTouchEnd = 0;
